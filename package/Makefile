@@ -7,16 +7,16 @@ DEPTH		= ..
 
 include $(DEPTH)/config/autoconf.mk
 
-PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
+PREF_JS_EXPORTS = $(srcdir)/prefs/annealmail.js
 
 COMPFILES = \
-            enigmail.js \
+            annealmail.js \
             pgpmimeHandler.js \
             mimeEncrypt.js \
             prefs-service.js \
             msgCompFields.js
 
-PREFFILES = prefs/enigmail.js
+PREFFILES = prefs/annealmail.js
 
 MODFILES = \
            app.jsm \
@@ -35,7 +35,7 @@ MODFILES = \
            core.jsm \
            errorHandling.jsm \
            funcs.jsm \
-           gpgAgent.jsm \
+           ccrAgent.jsm \
            protocolHandler.jsm \
            events.jsm \
            execution.jsm \
@@ -44,7 +44,7 @@ MODFILES = \
            fixExchangeMsg.jsm \
            glodaMime.jsm \
            glodaUtils.jsm \
-           gpg.jsm \
+           ccr.jsm \
            hash.jsm \
            httpProxy.jsm \
            installGnuPG.jsm \

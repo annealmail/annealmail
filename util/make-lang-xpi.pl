@@ -31,11 +31,11 @@ else {
 open INFILE, "$inputfile";
 open OUTFILE, ">$outdir/jar.mn";
 
-print OUTFILE "enigmail.jar:\n";
+print OUTFILE "annealmail.jar:\n";
 
 my @genFiles = (
-  "enigmail.properties",
-  "enigmail.dtd"
+  "annealmail.properties",
+  "annealmail.dtd"
 );
 
 my @files = (

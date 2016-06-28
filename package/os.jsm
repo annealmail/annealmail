@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailOS"];
+var EXPORTED_SYMBOLS = ["AnnealMailOS"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -19,16 +19,16 @@ function getOS() {
   return Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime).OS;
 }
 
-const EnigmailOS = {
+const AnnealMailOS = {
   isWin32: (getOS() == "WINNT"),
 
   getOS: getOS,
 
   isDosLike: function() {
-    if (EnigmailOS.isDosLikeVal === undefined) {
-      EnigmailOS.isDosLikeVal = (EnigmailOS.getOS() == "WINNT" || EnigmailOS.getOS() == "OS2");
+    if (AnnealMailOS.isDosLikeVal === undefined) {
+      AnnealMailOS.isDosLikeVal = (AnnealMailOS.getOS() == "WINNT" || AnnealMailOS.getOS() == "OS2");
     }
-    return EnigmailOS.isDosLikeVal;
+    return AnnealMailOS.isDosLikeVal;
   },
 
   // get a Windows registry value (string)

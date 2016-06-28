@@ -1,5 +1,5 @@
-# enigmail-provisioning
-Contains provisioning scripts for developing Enigmail, for Vagrant and Docker
+# annealmail-provisioning
+Contains provisioning scripts for developing AnnealMail, for Vagrant and Docker
 
 If you have problems with permissions on the shared directory, this incantation is useful:
  chcon -Rt svirt_sandbox_file_t $DIR
@@ -34,6 +34,6 @@ Once the vagrant tools are installed...
 1. `cd provisioning`
 2. `vagrant up` - Call vagrant to grab an instance of Ubuntu and provision it
 3. `vagrant ssh` - ssh into the Ubuntu machine
-4. `cd /enigmail-src` - This will be the same directory as the main project folder.
+4. `cd /annealmail-src` - This will be the same directory as the main project folder.
 5. `./build.sh `
 6. `./test.sh `

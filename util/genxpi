@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #
-# This script generates the Enigmail XPI
+# This script generates the AnnealMail XPI
 #
 
 echo "genxpi: Generating $1 in $3"
@@ -42,7 +42,7 @@ if [ "$enableLang" = "yes" ]; then
     echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
     for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-      echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
+      echo 'locale        annealmail    '$lang'       jar:chrome/annealmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
     done
   fi
 fi
@@ -54,7 +54,7 @@ cd "$targetDir"
 
 mkdir -p "${targetDir}/wrappers"
 
-cp ${cwd}/util/gpg-agent-wrapper.sh wrappers
+cp ${cwd}/util/ccr-agent-wrapper.sh wrappers
 
 echo "Creating ${xpiFile} file"
 
@@ -66,7 +66,7 @@ zip --must-match\
     components/msgCompFields.js \
     components/pgpmimeHandler.js \
     components/mimeEncrypt.js \
-    defaults/preferences/enigmail.js \
+    defaults/preferences/annealmail.js \
     modules/app.jsm \
     modules/armor.jsm \
     modules/attachment.jsm \
@@ -83,7 +83,7 @@ zip --must-match\
     modules/configBackup.jsm \
     modules/errorHandling.jsm \
     modules/funcs.jsm \
-    modules/gpgAgent.jsm \
+    modules/ccrAgent.jsm \
     modules/protocolHandler.jsm \
     modules/events.jsm \
     modules/execution.jsm \
@@ -92,7 +92,7 @@ zip --must-match\
     modules/fixExchangeMsg.jsm \
     modules/glodaMime.jsm \
     modules/glodaUtils.jsm \
-    modules/gpg.jsm \
+    modules/ccr.jsm \
     modules/hash.jsm \
     modules/httpProxy.jsm \
     modules/installGnuPG.jsm \
@@ -125,7 +125,7 @@ zip --must-match\
     modules/uris.jsm \
     modules/verify.jsm \
     modules/windows.jsm \
-    wrappers/gpg-agent-wrapper.sh \
+    wrappers/ccr-agent-wrapper.sh \
     chrome/${xpiModule}.jar \
     chrome.manifest \
     install.rdf

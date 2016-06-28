@@ -1,0 +1,461 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+   %brandDTD;
+  <!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+  %annealMailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
+
+<window id="annealmailKeyManager"
+        title="&annealmail.keyMan.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="annealmailKeyManagerLoad();"
+        height="450"
+        width="700"
+        windowtype="annealmail:KeyManager"
+        persist="screenX screenY width height">
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailKeyManager.js"/>
+
+  <commandset id="tasksCommands"/>
+
+  <command id="cmd_close" oncommand="window.close()"/>
+  <command id="cmd_quit"/>
+  <command id="cmd_annealmailDeleteKey" oncommand="annealmailDeleteKey()"/>
+
+  <keyset id="winKeys">
+    <key id="key_selectAll" key="&annealmail.keyMan.selectAll.key;"
+         oncommand="annealmailSelectAllKeys()" modifiers="accel"/>
+
+    <key id="key_keyDetails" key="&annealmail.keyMan.keyDetails.key;"
+         oncommand="annealmailKeyDetails()" modifiers="accel"
+         observes="bcOneKey"/>
+
+    <key id="key_refreshKey" key="&annealmail.keyMan.refreshKey.key;"
+         oncommand="annealmailReceiveKey()" modifiers="accel"
+         observes="bcNoKey"/>
+
+    <key id="key_enigDelete"
+         keycode="VK_DELETE"
+         command="cmd_annealmailDeleteKey"/>
+    <key id="key_close"/>
+    <key id="key_quit"/>
+  </keyset>
+
+  <broadcasterset>
+    <broadcaster id="bcNoKey" disabled="false"/>
+    <broadcaster id="bcSignKey" disabled="false"/>
+    <broadcaster id="bcSetTrust" disabled="false"/>
+    <broadcaster id="bcViewPhoto" disabled="false"/>
+    <broadcaster id="bcEditKey" disabled="false"/>
+    <broadcaster id="bcRevoke" disabled="false"/>
+    <broadcaster id="bcOneKey" disabled="false"/>
+    <broadcaster id="bcDeleteKey" disabled="false"/>
+    <broadcaster id="bcClipbrd" disabled="false"/>
+    <broadcaster id="bcEnableKey" disabled="false" label=""/>
+  </broadcasterset>
+
+  <menubar id="main-menubar" grippyhidden="true">
+    <menu label="&annealmail.keyMan.fileMenu.label;"
+          id="menu_File"
+          accesskey="&annealmail.keyMan.fileMenu.accesskey;">
+      <menupopup id="menu_FilePopup" onpopupshowing="annealmailKeyMenu()">
+
+        <menuitem label="&annealmail.keyMan.importFromFile.label;"
+          id="importFromFile"
+          accesskey="&annealmail.keyMan.importFromFile.accesskey;"
+          oncommand="annealmailImportKeysFromFile()"/>
+        <menuitem label="&annealmail.keyMan.exportToFile.label;"
+          id="exportKey"
+          observes="bcNoKey"
+          accesskey="&annealmail.keyMan.exportToFile.accesskey;"
+          oncommand="annealmailExportKeys()"/>
+
+        <menuitem label="&annealmail.keyMan.sendKeys.label;"
+          id="sendKey"
+          observes="bcNoKey"
+          accesskey="&annealmail.keyMan.sendKeys.accesskey;"
+          oncommand="enigCreateKeyMsg()"/>
+
+        <menuitem label="&annealmail.keyMan.createMail.label;"
+          id="createMail"
+          observes="bcNoKey"
+          accesskey="&annealmail.keyMan.createMail.accesskey;"
+          oncommand="createNewMail()"/>
+
+        <menuseparator/>
+
+        <menuitem label="&annealmail.adminSmartCard.label;"
+                id="cardData"
+                accesskey="&annealmail.adminSmartCard.accesskey;"
+                oncommand="EngmailCardDetails()"/>
+
+        <menuseparator/>
+
+        <menuitem label="&annealmail.keyMan.reload.label;"
+                id="refreshKeys"
+                accesskey="&annealmail.keyMan.reload.accesskey;"
+                oncommand="refreshKeys();"/>
+
+        <menuseparator/>
+
+        <!-- add Close and Exit menu items -->
+        <menuitem id="menu_close"/>
+      </menupopup>
+    </menu>
+
+    <menu label="&annealmail.keyMan.editMenu.label;"
+          accesskey="&annealmail.keyMan.editMenu.accesskey;">
+      <menupopup onpopupshowing="annealmailKeyMenu()">
+
+        <menuitem label="&annealmail.keyMan.importFromClipbrd.label;"
+                  id="importFromClipbrd"
+                  observes="bcClipbrd"
+                  accesskey="&annealmail.keyMan.importFromClipbrd.accesskey;"
+                  oncommand="annealmailImportFromClipbrd()"/>
+        <menuitem label="&annealmail.keyMan.importFromUrl.label;"
+                  id="importFromUrl"
+                  accesskey="&annealmail.keyMan.importFromUrl.accesskey;"
+                  oncommand="annealmailImportKeysFromUrl()"/>
+        <menuitem label="&annealmail.keyMan.copyToClipbrd.label;"
+                  id="copyToClipbrd"
+                  observes="bcNoKey"
+                  accesskey="&annealmail.keyMan.copyToClipbrd.accesskey;"
+                  oncommand="annealmailCopyToClipbrd()"/>
+
+        <menuseparator/>
+
+        <menuitem label="&annealmail.keyMan.sign.label;"
+                  id="signKey"
+                  observes="bcSignKey"
+                  accesskey="&annealmail.keyMan.sign.accesskey;"
+                  oncommand="enigSignKey()"/>
+        <menuitem label="&annealmail.keyMan.setTrust.label;"
+                  id="setTrust"
+                  observes="bcNoKey"
+                  accesskey="&annealmail.keyMan.setTrust.accesskey;"
+                  oncommand="enigEditKeyTrust()"/>
+
+        <menuseparator/>
+
+        <menuitem id="enableKey"
+          observes="bcEnableKey"
+          accesskey="&annealmail.keyMan.enableKey.accesskey;"
+          oncommand="annealmailEnableKey()"/>
+        <menuitem label="&annealmail.keyMan.revokeKey.label;"
+          id="revokeKey"
+          observes="bcRevoke"
+          accesskey="&annealmail.keyMan.revokeKey.accesskey;"
+          oncommand="annealmailRevokeKey()"/>
+
+        <menuitem label="&annealmail.keyMan.delKey.label;"
+          id="deleteKey"
+          key="key_enigDelete"
+          observes="bcNoKey"
+          accesskey="&annealmail.keyMan.delKey.accesskey;"
+          oncommand="annealmailDeleteKey()"/>
+
+        <menuseparator/>
+
+        <menuitem id="manageUid"
+                  label="&annealmail.keyMan.manageUid.label;"
+                  observes="bcOneKey"
+                  accesskey="&annealmail.keyMan.manageUid.accesskey;"
+                  oncommand="annealmailManageUids()"/>
+
+        <menuitem id="changeExpiry"
+                  label="&annealmail.keyMan.changeExpiry.label;"
+                  observes="bcOneKey"
+                  accesskey="&annealmail.keyMan.changeExpiry.accesskey;"
+                  oncommand="enigEditKeyExpiry()"/>
+
+        <menuitem id="changePwd"
+                  label="&annealmail.keyMan.changePwd.label;"
+                  observes="bcEditKey"
+                  accesskey="&annealmail.keyMan.changePwd.accesskey;"
+                  oncommand="annealmailChangePwd()"/>
+
+        <menuitem id="addPhoto"
+                  label="&annealmail.keyMan.addPhoto.label;"
+                  observes="bcRevoke"
+                  accesskey="&annealmail.keyMan.addPhoto.accesskey;"
+                  oncommand="annealmailAddPhoto()"/>
+
+        <menuitem id="addToRule"
+                  label="&annealmail.keyMan.addToPRRule.label;"
+                  observes="bcSignKey"
+                  oncommand="addToPRRule()"/>
+
+        <menuseparator/>
+
+        <menuitem id="selectAll"
+                  label="&annealmail.keyMan.selectAll.label;"
+                  accesskey="&annealmail.keyMan.selectAll.accesskey;"
+                  oncommand="annealmailSelectAllKeys()"
+                  key="key_selectAll"/>
+
+      </menupopup>
+    </menu>
+
+      <menu id="viewMenu"
+        label="&annealmail.keyMan.viewMenu.label;"
+        accesskey="&annealmail.keyMan.viewMenu.accesskey;">
+      <menupopup onpopupshowing="annealmailKeyMenu()"> <!-- view menu -->
+        <menuitem label="&annealmail.keyMan.viewPhoto.label;"
+                  id="viewPhoto"
+                  observes="bcViewPhoto"
+                  accesskey="&annealmail.keyMan.showPhoto.accesskey;"
+                  oncommand="enigShowPhoto()"/>
+        <menuitem label="&annealmail.keyMan.keyProps.label;"
+                  id="keyDetails"
+                  observes="bcOneKey"
+                  accesskey="&annealmail.keyMan.keyDetails.accesskey;"
+                  key="key_keyDetails"
+                  oncommand="annealmailKeyDetails()"/>
+        <menuseparator/>
+        <menuitem label="&annealmail.keyMan.showInvalidKeys.label;"
+                  id="showInvalidKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&annealmail.keyMan.showInvalidKeys.accesskey;"
+                  oncommand="onSearchInput()"/>
+        <menuitem label="&annealmail.keyMan.showUntrustedKeys.label;"
+                  id="showUntrustedKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&annealmail.keyMan.showUntrustedKeys.accesskey;"
+                  oncommand="onSearchInput()"/>
+        <menuitem label="&annealmail.keyMan.showOthersKeys.label;"
+                  id="showOthersKeys"
+                  type="checkbox"
+                  checked="true"
+                  persist="checked"
+                  accesskey="&annealmail.keyMan.showOthersKeys.accesskey;"
+                  oncommand="onSearchInput()"/>
+
+      </menupopup>
+    </menu>
+
+    <menu id="keyserverMenu"
+          label="&annealmail.keyMan.keyserverMenu.label;"
+          accesskey="&annealmail.keyMan.keyserverMenu.accesskey;">
+      <menupopup onpopupshowing="annealmailKeyMenu()"> <!-- keyserverMenu menu -->
+
+        <menuitem label="&annealmail.keyMan.refreshSelKeys.label;"
+                  id="refreshKey"
+                  observes="bcNoKey"
+                  accesskey="&annealmail.keyMan.refreshSelKeys.accesskey;"
+                  key="key_refreshKey"
+                  oncommand="annealmailReceiveKey()"/>
+        <menuitem label="&annealmail.keyMan.importFromServer.label;"
+                  id="importFromServer"
+                  accesskey="&annealmail.keyMan.importFromServer.accesskey;"
+                  oncommand="annealmailSearchKey()"/>
+        <menuitem label="&annealmail.keyMan.uploadToServer.label;"
+                  id="uploadToServer"
+                  observes="bcNoKey"
+                  accesskey="&annealmail.keyMan.uploadToServer.accesskey;"
+                  oncommand="annealmailUploadKeys()"/>
+        <menuseparator/>
+        <menuitem label="&annealmail.keyMan.refreshAllKeys.label;"
+                  id="refreshAllKeys"
+                  accesskey="&annealmail.keyMan.refreshAllKeys.accesskey;"
+                  oncommand="annealmailRefreshAllKeys()"/>
+        <menuitem label="&annealmail.keyMan.downloadContactKeys.label;"
+                  accesskey="&annealmail.keyMan.downloadContactKeys.accesskey;"
+                  id="downloadContactKeys"
+                  oncommand="annealmailDownloadContactKeys()"/>
+      </menupopup>
+    </menu>
+
+    <menu id="generateMenu"
+          label="&annealmail.keyMan.generateMenu.label;"
+          accesskey="&annealmail.keyMan.generateMenu.accesskey;">
+      <menupopup onpopupshowing="annealmailKeyMenu()"> <!-- generate menu -->
+        <menuitem label="&annealmail.keyMan.generate.label;"
+                  id="genKey"
+                  accesskey="&annealmail.keyMan.generate.accesskey;"
+                  oncommand="EnigKeygen();"/>
+        <menuitem label="&annealmail.keyMan.genRevoke.label;"
+                  id="revokationCertificate"
+                  observes="bcRevoke"
+                  accesskey="&annealmail.keyMan.genRevoke.accesskey;"
+                  oncommand="enigCreateRevokeCert()"/>
+      </menupopup>
+    </menu>
+
+  </menubar>
+
+  <popupset>
+    <menupopup id="ctxmenu"
+           onpopupshowing="annealmailKeyMenu();">
+      <menuitem label="&annealmail.keyMan.ctxCopyToClipbrd.label;"
+                id="ctxCopyToClipbrd"
+                oncommand="annealmailCopyToClipbrd()"/>
+      <menuitem label="&annealmail.keyMan.ctxExportToFile.label;"
+                id="ctxExport"
+                oncommand="annealmailExportKeys()"/>
+      <menuitem label="&annealmail.keyMan.sendKeys.label;"
+                id="ctxSendKey"
+                oncommand="enigCreateKeyMsg()"/>
+
+      <menuseparator/>
+
+      <menuitem label="&annealmail.keyMan.ctxUploadToServer.label;"
+                id="ctxUpload"
+                oncommand="annealmailUploadKeys()"/>
+      <menuitem label="&annealmail.keyMan.ctxRefreshKey.label;"
+                id="ctxRefreshKey"
+                oncommand="annealmailReceiveKey()"/>
+
+      <menuseparator/>
+
+      <menuitem id="ctxSign" observes="bcSignKey" label="&annealmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
+      <menuitem id="ctxTrust" label="&annealmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
+      <menuitem id="ctxAddToRule" observes="bcSignKey" label="&annealmail.keyMan.addToPRRule.label;" oncommand="addToPRRule()"/>
+
+      <menuseparator/>
+
+
+      <menuitem id="ctxEnableKey" observes="bcEnableKey" oncommand="annealmailEnableKey()"/>
+      <menuitem id="ctxRevokeKey" observes="bcRevoke" label="&annealmail.keyMan.revokeKey.label;" oncommand="annealmailRevokeKey()"/>
+      <menuitem id="ctxDeleteKey" label="&annealmail.keyMan.delKey.label;" oncommand="annealmailDeleteKey()"/>
+
+      <menuseparator/>
+
+      <menuitem id="ctxManageUid" observes="bcOneKey" label="&annealmail.keyMan.manageUid.label;" oncommand="annealmailManageUids()"/>
+      <menuitem id="ctxChangeExpiry" observes="bcEditKey" label="&annealmail.keyMan.changeExpiry.label;" oncommand="enigEditKeyExpiry()"/>
+      <menuitem id="ctxChangePwd" observes="bcEditKey" label="&annealmail.keyMan.changePwd.label;" oncommand="annealmailChangePwd()"/>
+      <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&annealmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
+      <menuitem id="ctxAddPhoto" observes="bcRevoke" label="&annealmail.keyMan.addPhoto.label;" oncommand="annealmailAddPhoto()"/>
+
+      <menuseparator/>
+
+      <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&annealmail.keyMan.ctxViewPhoto.label;" oncommand="enigShowPhoto()"/>
+      <menuitem id="ctxDetails" observes="bcOneKey" label="&annealmail.keyMan.keyProps.label;"
+                oncommand="annealmailKeyDetails()"/>
+    </menupopup>
+  </popupset>
+
+  <hbox flex="0" align="center">
+    <label value="&annealmail.keyMan.filter.label;" control="filterKey"/>
+    <textbox id="filterKey" size="30"
+             type="search"
+             timeout="500"
+             oncommand="onSearchInput();"/>
+    <separator orient="vertical"/>
+    <checkbox label="&annealmail.keyMan.showAllKeys.label;"
+          checked="true"
+          id="showAllKeys"
+          accesskey="&annealmail.keyMan.showAllKeys.accesskey;"
+          oncommand="annealmailToggleShowAll(this)"/>
+
+  </hbox>
+
+  <tooltip id="emptyTree" label="&annealmail.keyMan.emptyTree.tooltip;" noautohide="true"/>
+  <tooltip id="nothingFound" label="&annealmail.keyMan.nothingFound.tooltip;" noautohide="true"/>
+  <tooltip id="pleaseWait" label="&annealmail.keyMan.pleaseWait.tooltip;" noautohide="true"/>
+
+  <groupbox width="700px" flex="1">
+    <hbox flex="1">
+      <tree id="pgpKeyList" flex="1"
+        enableColumnDrag="true"
+        seltype="multiple"
+        persist="sortDirection sortResource"
+        sortDirection="ascending"
+        sortResource="enigUserNameCol"
+        hidecolumnpicker="false">
+
+        <treecols>
+          <treecol id="enigUserNameCol" primary="true"
+                  flex="1"
+                  class="sortDirectionIndicator"
+                  onclick="sortTree(this)"
+                  label="&annealmail.keyMan.userId.label;"
+                  style="width: 50px"
+                  persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="keyCol" style="width:90px"
+                   label="&annealmail.keyId.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="typeCol" style="width:70px"
+                   label="&annealmail.keyMan.keyType.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   hidden="true"
+                   persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="validityCol" style="width:70px"
+                   label="&annealmail.keyMan.calcTrust.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   hidden="true"
+                   persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="trustCol" style="width:70px"
+                   label="&annealmail.keyMan.ownerTrust.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   hidden="true"
+                   persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="expCol" style="width:70px"
+                   label="&annealmail.keyExpiry.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   hidden="true"
+                   persist="width ordinal hidden"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="fprCol" style="width:70px"
+                   label="&annealmail.keyMan.fingerprint.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   hidden="true"
+                   persist="width ordinal hidden"/>
+        </treecols>
+
+        <treechildren id="pgpKeyListChildren" properties=""
+                      context="ctxmenu"/>
+
+      </tree>
+    </hbox>
+  </groupbox>
+
+  <hbox id="statusLine">
+    <label id="statusText" value=" "/>
+    <progressmeter id="progressBar" mode="undetermined" value="0" collapsed="true"/>
+    <description id="cancelBox" collapsed="true">
+      <a class="annealmailLink" href=""
+         id="cancelButton" onclick="enigSendKeyCancel()">&annealmail.keyMan.stopTransfer.label;</a>
+    </description>
+  </hbox>
+</window>

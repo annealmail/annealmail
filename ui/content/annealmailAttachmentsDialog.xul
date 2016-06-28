@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<dialog id="attachmentsDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="annealmailAttachDlgLoad();"
+        ondialogaccept="return annealmailAttachDlgAccept();"
+        minheight="250">
+
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAttachmentsDialog.js"/>
+
+  <description id="annealmailAttachDesc">&annealmail.annealmailAttachDesc.label;</description>
+
+  <radiogroup id="annealmailAttachOptions" aria-labelledby="annealmailAttachDesc">
+
+    <radio id="enigEncryptAttachNone"
+          value="0"
+          label="&annealmail.enigEncryptAttachNone.label;"
+          data-signLabel="&annealmail.enigAttachNoneSign.label;"
+          data-encryptLabel="&annealmail.enigAttachNoneEncrypt.label;"
+          data-encryptAndSignLabel="&annealmail.enigAttachNoneEncryptAndSign.label;"
+          />
+
+    <radio id="enigEncryptAttachInline"
+          value="1"
+          label="&annealmail.enigEncryptAttachInline.label;"
+          data-signLabel="&annealmail.enigAttachInlineSign.label;"
+          data-encryptLabel="&annealmail.enigAttachInlineEncrypt.label;"
+          data-encryptAndSignLabel="&annealmail.enigAttachInlineEncryptAndSign.label;"
+          />
+
+    <radio id="enigEncryptAttachPgpMime"
+          value="2"
+          label="&annealmail.enigEncryptAttachPgpMime.label;"
+          data-signLabel="&annealmail.enigAttachPgpMimeSign.label;"
+          data-encryptLabel="&annealmail.enigAttachPgpMimeEncrypt.label;"
+          data-encryptAndSignLabel="&annealmail.enigAttachPgpMimeEncryptAndSign.label;"
+          />
+
+    <radio id="enigEncryptAttachDontEncryptMsg"
+          value="3"
+          label="&annealmail.enigEncryptAttachDontEncryptMsg.label;"
+          data-signLabel="&annealmail.enigAttachDontEncryptMsgSign.label;"
+          data-encryptLabel="&annealmail.enigAttachDontEncryptMsgEncrypt.label;"
+          data-encryptAndSignLabel="&annealmail.enigAttachDontEncryptMsgEncryptAndSign.label;"
+          />
+
+  </radiogroup>
+
+  <spacer flex="1"/>
+  <groupbox>
+    <description id="enigPgpMimeDetails" maxwidth="500px">...</description>
+  </groupbox>
+  <checkbox id="annealmailAttachSkipDlg" value="0" label="&annealmail.encryptAttachSkipDlg.label;"/>
+</dialog>

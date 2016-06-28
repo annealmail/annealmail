@@ -10,14 +10,14 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("mime.jsm"); /*global EnigmailMime: false */
+testing("mime.jsm"); /*global AnnealMailMime: false */
 
 test(function getBoundaryTest() {
-  var got = EnigmailMime.getBoundary("content-type: application/pgp-encrypted;\n  boundary='abc'; procol='any'\n");
+  var got = AnnealMailMime.getBoundary("content-type: application/pgp-encrypted;\n  boundary='abc'; procol='any'\n");
   Assert.equal(got, "abc", "get boundary 1");
-  got = EnigmailMime.getBoundary("content-type: application/pgp-encrypted; boundary='abc'; protocol='any'");
+  got = AnnealMailMime.getBoundary("content-type: application/pgp-encrypted; boundary='abc'; protocol='any'");
   Assert.equal(got, "abc", "get boundary 2");
-  got = EnigmailMime.getBoundary('content-type: application/pgp-encrypted; boundary="abc"; protocol="any"');
+  got = AnnealMailMime.getBoundary('content-type: application/pgp-encrypted; boundary="abc"; protocol="any"');
   Assert.equal(got, "abc", "get boundary 2");
 });
 
@@ -30,7 +30,7 @@ test(function extractProtectedHeadersTest() {
     '--OuterBoundary\n' +
     'Content-Transfer-Encoding: base64\n' +
     'Content-Type: text/rfc822-headers; charset="us-ascii";\n' +
-    '  protected-headers="v1,<12345678@enigmail-test.net>"\n' +
+    '  protected-headers="v1,<12345678@annealmail-test.net>"\n' +
     'Content-Disposition: inline\n' +
     '\n' +
     'U3ViamVjdDogVGhlIGhpZGRlbiBzdWJqZWN0CkRhdGU6IFN1biwgMjEgSnVuIDIwMTUgMT\n' +
@@ -52,7 +52,7 @@ test(function extractProtectedHeadersTest() {
     '--innerContent--\n' +
     '--OuterBoundary--\n\n';
 
-  var r = EnigmailMime.extractProtectedHeaders(inputData);
+  var r = AnnealMailMime.extractProtectedHeaders(inputData);
 
   var expected = 'Content-Type: multipart/mixed; boundary="OuterBoundary"\n' +
     'References: <some@msg.id>\n' +
@@ -80,19 +80,19 @@ test(function extractProtectedHeadersTest() {
   Assert.equal(got, expected, "subject");
 
   got = r.newHeaders.from;
-  expected = "Starworks <strikefreedom@enigmail-test.net>";
+  expected = "Starworks <strikefreedom@annealmail-test.net>";
   Assert.equal(got, expected, "from");
 
   got = r.newHeaders.to;
-  expected = "Patrick <patrick@enigmail-test.net>, Bingo <bingo@enigmail-test.net>";
+  expected = "Patrick <patrick@annealmail-test.net>, Bingo <bingo@annealmail-test.net>";
   Assert.equal(got, expected, "to");
 
   got = r.newHeaders.cc;
-  expected = "Patrick <patrick2@enigmail-test.net>, Bingo <2bingo@enigmail-test.net>";
+  expected = "Patrick <patrick2@annealmail-test.net>, Bingo <2bingo@annealmail-test.net>";
   Assert.equal(got, expected, "cc");
 
   got = r.newHeaders["reply-to"];
-  expected = "Starworks alternative <alternative@enigmail-test.net>";
+  expected = "Starworks alternative <alternative@annealmail-test.net>";
   Assert.equal(got, expected, "reply-to");
 
   got = r.newHeaders.date;

@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<dialog id="annealmailSignKeyDlg"
+        title="&annealmail.sKeyDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        buttons="accept,cancel"
+        ondialogaccept="return onAccept();">
+
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailSignKeyDlg.js"/>
+
+  <vbox orient="vertical">
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+      <rows autostretch="never">
+        <row>
+          <label value="&annealmail.sKeyDlg.signKey.label;"/>
+          <description class="plain" id="keyId" value="?" crop="end"/>
+        </row>
+        <row>
+          <label value="&annealmail.sKeyDlg.fingerprint.label;"/>
+          <label id="fingerprint" value="?"/>
+        </row>
+        <row id="secondaryUidRow" collapsed="true">
+          <label value="&annealmail.keyDetails.alsoKnown.label;:"/>
+          <vbox id="secondaryUids" />
+        </row>
+        <separator/>
+        <row>
+          <hbox align="center">
+            <label value="&annealmail.sKeyDlg.signWithKey.label;" control="signWithKey"/>
+          </hbox>
+          <menulist id="signWithKey" oncommand="enigKeySelCb()"/>
+        </row>
+        <row>
+          <label value=" "/>
+          <label value="&annealmail.sKeyDlg.ownKeyTrust.label;"/>
+        </row>
+        <row>
+          <label value=" "/>
+          <label id="alreadySigned" value="" collapsed="true"/>
+        </row>
+      </rows>
+    </grid>
+    <vbox>
+      <groupbox>
+        <caption label="&annealmail.sKeyDlg.checked.label;"/>
+          <radiogroup id="trustLevel">
+            <radio value="0"
+                   selected="true"
+                   label="&annealmail.sKeyDlg.noAnswer.label;"/>
+           <radio value="1"
+                   label="&annealmail.sKeyDlg.notChecked.label;"/>
+            <radio value="2"
+                   label="&annealmail.sKeyDlg.casualCheck.label;"/>
+            <radio value="3"
+                   label="&annealmail.sKeyDlg.carefulCheck.label;"/>
+          </radiogroup>
+       </groupbox>
+    </vbox>
+    <vbox>
+      <checkbox checked="false"
+            id="localSig"
+            label="&annealmail.sKeyDlg.createLocal.label;"
+            oncommand="enigKeySelCb()"/>
+    </vbox>
+  </vbox>
+  <!-- vbox align="end">
+    <hbox>
+      <button id="acceptButton" dlgtype="accept"/>
+      <button dlgtype="cancel"/>
+    </hbox>
+  </vbox -->
+
+</dialog>

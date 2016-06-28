@@ -6,15 +6,15 @@
  */
 
 
-/* global EnigmailLog: false, EnigmailLocale: false, EnigmailKey: false, EnigmailKeyRing: false */
+/* global AnnealMailLog: false, AnnealMailLocale: false, AnnealMailKey: false, AnnealMailKeyRing: false */
 
-// from enigmailCommon.js:
-/* global GetEnigmailSvc: false, nsIEnigmail: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
+// from annealmailCommon.js:
+/* global GetAnnealMailSvc: false, nsIAnnealMail: false, EnigAlert: false, EnigConvertCcrToUnicode: false */
 /* global EnigCleanGuiList: false, EnigGetTrustLabel: false, EnigShowPhoto: false, EnigSignKey: false */
 /* global EnigEditKeyExpiry: false, EnigEditKeyTrust: false, EnigChangeKeyPwd: false, EnigRevokeKey: false */
 /* global EnigCreateRevokeCert: false */
 
-// from enigmailKeyManager.js:
+// from annealmailKeyManager.js:
 /* global keyMgrAddPhoto: false */
 
 "use strict";
@@ -28,7 +28,7 @@ function onLoad() {
 
   gKeyId = window.arguments[0].keyId;
 
-  let accept = document.getElementById("enigmailKeyDetailsDlg").getButton("accept");
+  let accept = document.getElementById("annealmailKeyDetailsDlg").getButton("accept");
   accept.focus();
 
   reloadData();
@@ -49,9 +49,9 @@ function setLabel(elementId, label) {
 }
 
 function reloadData() {
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-    EnigAlert(EnigmailLocale.getString("accessError"));
+  var annealmailSvc = GetAnnealMailSvc();
+  if (!annealmailSvc) {
+    EnigAlert(AnnealMailLocale.getString("accessError"));
     window.close();
     return;
   }
@@ -72,20 +72,20 @@ function reloadData() {
   EnigCleanGuiList(treeChildren);
   EnigCleanGuiList(uidList);
 
-  let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
+  let keyObj = AnnealMailKeyRing.getKeyById(gKeyId);
   if (keyObj) {
 
     if (keyObj.secretAvailable) {
-      setLabel("keyType", EnigmailLocale.getString("keyTypePair"));
+      setLabel("keyType", AnnealMailLocale.getString("keyTypePair"));
       document.getElementById("ownKeyCommands").removeAttribute("hidden");
     }
     else {
       document.getElementById("ownKeyCommands").setAttribute("hidden", "true");
-      setLabel("keyType", EnigmailLocale.getString("keyTypePublic"));
+      setLabel("keyType", AnnealMailLocale.getString("keyTypePublic"));
     }
 
     if (keyObj.photoAvailable === true) {
-      photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
+      photoImg.setAttribute("src", "annealmail://photo/0x" + gKeyId);
       photoImg.removeAttribute("hidden");
     }
     else {
@@ -113,7 +113,7 @@ function reloadData() {
     gUserId = keyObj.userId;
     let expiryDate = keyObj.expiry;
     if (expiryDate.length === 0) {
-      expiryDate = EnigmailLocale.getString("keyDoesNotExpire");
+      expiryDate = AnnealMailLocale.getString("keyDoesNotExpire");
     }
     setLabel("userId", gUserId);
     setText("keyValidity", getTrustLabel(keyObj.keyTrust));
@@ -121,7 +121,7 @@ function reloadData() {
     setText("keyCreated", keyObj.created);
     setText("keyExpiry", expiryDate);
     if (keyObj.fpr) {
-      setLabel("fingerprint", EnigmailKey.formatFpr(keyObj.fpr));
+      setLabel("fingerprint", AnnealMailKey.formatFpr(keyObj.fpr));
     }
   }
 }
@@ -143,7 +143,7 @@ function createUidData(listNode, keyDetails) {
 function getTrustLabel(trustCode) {
   var trustTxt = EnigGetTrustLabel(trustCode);
   if (trustTxt == "-" || trustTxt.length === 0) {
-    trustTxt = EnigmailLocale.getString("keyValid.unknown");
+    trustTxt = AnnealMailLocale.getString("keyValid.unknown");
   }
   return trustTxt;
 }
@@ -194,7 +194,7 @@ function setOwnerTrust() {
 }
 
 function manageUids() {
-  let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
+  let keyObj = AnnealMailKeyRing.getKeyById(gKeyId);
 
   var inputObj = {
     keyId: keyObj.keyId,
@@ -204,7 +204,7 @@ function manageUids() {
   var resultObj = {
     refresh: false
   };
-  window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
+  window.openDialog("chrome://annealmail/content/annealmailManageUidDlg.xul",
     "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
   if (resultObj.refresh) {
     enableRefresh();
@@ -246,7 +246,7 @@ function SigListView(keyObj) {
     for (let j in sigObj[i].sigList) {
       let s = sigObj[i].sigList[j];
       if (s.sigKnown) {
-        let sig = EnigmailKeyRing.getKeyById(s.signerKeyId);
+        let sig = AnnealMailKeyRing.getKeyById(s.signerKeyId);
         k.sigList.push({
           uid: s.userId,
           created: s.created,
@@ -318,7 +318,7 @@ SigListView.prototype = {
         case "sig_uid_col":
           return s.uid;
         case "sig_fingerprint_col":
-          return EnigmailKey.formatFpr(s.fpr);
+          return AnnealMailKey.formatFpr(s.fpr);
         case "sig_created_col":
           return s.created;
       }
@@ -404,17 +404,17 @@ function createSubkeyItem(subkey) {
   // Get expiry state of this subkey
   let expire;
   if (subkey.keyTrust === "r") {
-    expire = EnigmailLocale.getString("keyValid.revoked");
+    expire = AnnealMailLocale.getString("keyValid.revoked");
   }
   else if (subkey.expiryTime === 0) {
-    expire = EnigmailLocale.getString("keyExpiryNever");
+    expire = AnnealMailLocale.getString("keyExpiryNever");
   }
   else {
     expire = subkey.expiry;
   }
 
-  let subkeyType = subkey.type === "pub" ? EnigmailLocale.getString("keyTypePublic") :
-    EnigmailLocale.getString("keyTypeSubkey");
+  let subkeyType = subkey.type === "pub" ? AnnealMailLocale.getString("keyTypePublic") :
+    AnnealMailLocale.getString("keyTypeSubkey");
 
   let usagetext = "";
   let i;
@@ -432,25 +432,25 @@ function createSubkeyItem(subkey) {
         if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
-        usagetext = usagetext + EnigmailLocale.getString("keyUsageEncrypt");
+        usagetext = usagetext + AnnealMailLocale.getString("keyUsageEncrypt");
         break;
       case "s":
         if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
-        usagetext = usagetext + EnigmailLocale.getString("keyUsageSign");
+        usagetext = usagetext + AnnealMailLocale.getString("keyUsageSign");
         break;
       case "c":
         if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
-        usagetext = usagetext + EnigmailLocale.getString("keyUsageCertify");
+        usagetext = usagetext + AnnealMailLocale.getString("keyUsageCertify");
         break;
       case "a":
         if (usagetext.length > 0) {
           usagetext = usagetext + ", ";
         }
-        usagetext = usagetext + EnigmailLocale.getString("keyUsageAuthentication");
+        usagetext = usagetext + AnnealMailLocale.getString("keyUsageAuthentication");
         break;
     } // * case *
   } // * for *
@@ -458,7 +458,7 @@ function createSubkeyItem(subkey) {
   let keyObj = {
     keyType: subkeyType,
     keyId: "0x" + subkey.keyId.substr(-8, 8),
-    algo: EnigmailLocale.getString("keyAlgorithm_" + subkey.algorithm),
+    algo: AnnealMailLocale.getString("keyAlgorithm_" + subkey.algorithm),
     size: subkey.keySize,
     creationDate: subkey.created,
     expiry: expire,

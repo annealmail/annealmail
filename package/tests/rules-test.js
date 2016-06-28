@@ -1,6 +1,6 @@
-/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, EnigmailApp: false */
-/*global component: false, withTestGpgHome: false, withEnigmail: false */
-/*global EnigmailRules: false, rulesListHolder: false, EC: false */
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, AnnealMailApp: false */
+/*global component: false, withTestCcrHome: false, withAnnealMail: false */
+/*global AnnealMailRules: false, rulesListHolder: false, EC: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,39 +13,39 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("rules.jsm");
-component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
+component("annealmail/keyRing.jsm"); /* global AnnealMailKeyRing: false */
 
 // getRulesFile
 test(function getRulesFileReturnsTheFile() {
-  EnigmailRules.clearRules();
-  let profD = EnigmailApp.getProfileDirectory().clone();
+  AnnealMailRules.clearRules();
+  let profD = AnnealMailApp.getProfileDirectory().clone();
   profD.append("pgprules.xml");
-  Assert.equal(profD.path, EnigmailRules.getRulesFile().path);
+  Assert.equal(profD.path, AnnealMailRules.getRulesFile().path);
 });
 
 // loadRulesFile
 test(function loadRulesFileReturnsFalseIfNoRulesFileExists() {
-  EnigmailRules.clearRules();
-  var result = EnigmailRules.loadRulesFile();
+  AnnealMailRules.clearRules();
+  var result = AnnealMailRules.loadRulesFile();
   Assert.ok(!result);
 });
 
 test(function loadRulesFileReturnsFalseIfTheFileExistsButIsEmpty() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/emptyRules.xml", false);
   }, function() {
-    var result = EnigmailRules.loadRulesFile();
+    var result = AnnealMailRules.loadRulesFile();
     Assert.ok(!result);
   });
 });
 
 test(function loadRulesFileReturnsTrueIfTheFileExists() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules.xml", false);
   }, function() {
-    var result = EnigmailRules.loadRulesFile();
+    var result = AnnealMailRules.loadRulesFile();
     Assert.ok(result);
   });
 });
@@ -71,11 +71,11 @@ function xmlToData(x) {
 }
 
 test(function loadRulesFileSetsRulesBasedOnTheFile() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     var d = xmlToData(rulesListHolder.rulesList);
     var expected = [{
       tagName: "pgpRule",
@@ -98,20 +98,20 @@ test(function loadRulesFileSetsRulesBasedOnTheFile() {
 
 // getRulesData
 test(function getRulesDataReturnsFalseAndNullIfNoRulesExist() {
-  EnigmailRules.clearRules();
+  AnnealMailRules.clearRules();
   var res = {};
-  var ret = EnigmailRules.getRulesData(res);
+  var ret = AnnealMailRules.getRulesData(res);
   Assert.ok(!ret);
   Assert.equal(null, res.value);
 });
 
 test(function getRulesDataReturnsTrueAndTheRulesListIfExist() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules.xml", false);
   }, function() {
     var res = {};
-    var ret = EnigmailRules.getRulesData(res);
+    var ret = AnnealMailRules.getRulesData(res);
     Assert.ok(ret);
     Assert.equal(rulesListHolder.rulesList, res.value);
   });
@@ -122,7 +122,7 @@ test(function getRulesDataReturnsTrueAndTheRulesListIfExist() {
 // test mapAddrsToKeys():
 // *****************************************************
 
-var EnigmailRulesTests = {
+var AnnealMailRulesTests = {
   testSingleEmailToKeys(addr, arg2, arg3) {
     // second argument is optional (extracted addr from initial addr)
     let expVal;
@@ -138,7 +138,7 @@ var EnigmailRulesTests = {
     // perform test:
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(addr,
+    let ret = AnnealMailRules.mapAddrsToKeys(addr,
       false, null, matchedKeysRet, flagsRet);
     Assert.ok(ret);
     let expKL = [{
@@ -151,17 +151,17 @@ var EnigmailRulesTests = {
   }
 };
 
-test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
+test(withTestCcrHome(withAnnealMail(function mapAddrsToKeys_simpleFlags() {
   importKeys();
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let matchedKeysRet = {};
     let flagsRet = {};
 
-    EnigmailRules.mapAddrsToKeys("sign@some.domain", false, null, matchedKeysRet, flagsRet);
+    AnnealMailRules.mapAddrsToKeys("sign@some.domain", false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "2",
@@ -170,7 +170,7 @@ test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
     };
     Assert.deepEqual(expectedFlags, flagsRet);
 
-    EnigmailRules.mapAddrsToKeys("nosign@some.domain", false, null, matchedKeysRet, flagsRet);
+    AnnealMailRules.mapAddrsToKeys("nosign@some.domain", false, null, matchedKeysRet, flagsRet);
     expectedFlags = {
       value: true,
       sign: "0",
@@ -179,7 +179,7 @@ test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
     };
     Assert.deepEqual(expectedFlags, flagsRet);
 
-    EnigmailRules.mapAddrsToKeys("encrypt@some.domain", false, null, matchedKeysRet, flagsRet);
+    AnnealMailRules.mapAddrsToKeys("encrypt@some.domain", false, null, matchedKeysRet, flagsRet);
     expectedFlags = {
       value: true,
       sign: "1",
@@ -188,7 +188,7 @@ test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
     };
     Assert.deepEqual(expectedFlags, flagsRet);
 
-    EnigmailRules.mapAddrsToKeys("noencrypt@some.domain", false, null, matchedKeysRet, flagsRet);
+    AnnealMailRules.mapAddrsToKeys("noencrypt@some.domain", false, null, matchedKeysRet, flagsRet);
     expectedFlags = {
       value: true,
       sign: "1",
@@ -200,15 +200,15 @@ test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
 })));
 
 test(function mapAddrsToKeys_signAndEncrypt() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "sign@some.domain, encrypt@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "2",
@@ -233,15 +233,15 @@ test(function mapAddrsToKeys_signAndEncrypt() {
 });
 
 test(function mapAddrsToKeys_conflict() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "sign@some.domain, noencrypt@some.domain, nosign@some.domain, encrypt@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "99",
@@ -272,15 +272,15 @@ test(function mapAddrsToKeys_conflict() {
 });
 
 test(function mapAddrsToKeys_twoKeysAndNoKey() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "two@some.domain, nokey@qqq.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "1",
@@ -306,15 +306,15 @@ test(function mapAddrsToKeys_twoKeysAndNoKey() {
 });
 
 test(function mapAddrsToKeys_noKeyAndSomeKeysReverse() { // important to test reverse order than in rules
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "nokey@qqq.domain, two@some.domain, one@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "1",
@@ -344,15 +344,15 @@ test(function mapAddrsToKeys_noKeyAndSomeKeysReverse() { // important to test re
 });
 
 test(function mapAddrsToKeys_spaces() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "    ,,oneRule,;;; , ;";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "1",
@@ -374,15 +374,15 @@ test(function mapAddrsToKeys_spaces() {
 });
 
 test(function mapAddrsToKeys_manyKeys() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "one@some.domain, two@some.domain, nokey@qqq.domain, nosign@some.domain, nofurtherrules@some.domain, nofurtherrules2@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "0",
@@ -424,15 +424,15 @@ test(function mapAddrsToKeys_manyKeys() {
 });
 
 test(function mapAddrsToKeys_multipleMatches() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
+    AnnealMailRules.loadRulesFile();
     let emailAddrs = "one@some.domain, nico@xx.com, patrick@xx.com, one@some.domain";
     let matchedKeysRet = {};
     let flagsRet = {};
-    let ret = EnigmailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
+    let ret = AnnealMailRules.mapAddrsToKeys(emailAddrs, false, null, matchedKeysRet, flagsRet);
     let expectedFlags = {
       value: true,
       sign: "1",
@@ -474,36 +474,36 @@ test(function mapAddrsToKeys_multipleMatches() {
 });
 
 test(function mapAddrsToKeys_infix() {
-  EnigmailRules.clearRules();
-  resetting(EnigmailRules, 'getRulesFile', function() {
+  AnnealMailRules.clearRules();
+  resetting(AnnealMailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
   }, function() {
-    EnigmailRules.loadRulesFile();
-    EnigmailRulesTests.testSingleEmailToKeys("company@suffix.qqq",
+    AnnealMailRules.loadRulesFile();
+    AnnealMailRulesTests.testSingleEmailToKeys("company@suffix.qqq",
       "0xCOMPREFIX");
-    EnigmailRulesTests.testSingleEmailToKeys("hello@computer.qqq",
+    AnnealMailRulesTests.testSingleEmailToKeys("hello@computer.qqq",
       "0xCOMINFIX");
-    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.dcom",
+    AnnealMailRulesTests.testSingleEmailToKeys("hello@komputer.dcom",
       "0xCOMSUFFIX");
-    EnigmailRulesTests.testSingleEmailToKeys("company@postfix.dcom",
+    AnnealMailRulesTests.testSingleEmailToKeys("company@postfix.dcom",
       "0xCOMSUFFIX");
-    EnigmailRulesTests.testSingleEmailToKeys("company@postfix.com",
+    AnnealMailRulesTests.testSingleEmailToKeys("company@postfix.com",
       "0xDOTCOMORDOTDE");
-    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.de",
+    AnnealMailRulesTests.testSingleEmailToKeys("hello@komputer.de",
       "0xDOTCOMORDOTDE");
-    EnigmailRulesTests.testSingleEmailToKeys("aa@qqq.domain",
+    AnnealMailRulesTests.testSingleEmailToKeys("aa@qqq.domain",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.bb",
+    AnnealMailRulesTests.testSingleEmailToKeys("xx@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    EnigmailRulesTests.testSingleEmailToKeys("aa@qqq.bb",
+    AnnealMailRulesTests.testSingleEmailToKeys("aa@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    EnigmailRulesTests.testSingleEmailToKeys("hello@komputer.DE",
+    AnnealMailRulesTests.testSingleEmailToKeys("hello@komputer.DE",
       "hello@komputer.de",
       "0xDOTCOMORDOTDE");
-    EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.BB",
+    AnnealMailRulesTests.testSingleEmailToKeys("xx@qqq.BB",
       "xx@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
+    AnnealMailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
       "info@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
   });
@@ -515,7 +515,7 @@ function importKeys() {
   //var secretKey = do_get_file("resources/dev-strike.sec", false);
   var errorMsgObj = {};
   var importedKeysObj = {};
-  var publicImportResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
-  //  var secretImportResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
+  var publicImportResult = AnnealMailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  //  var secretImportResult = AnnealMailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
   return [publicImportResult /*, secretImportResult */ ];
 }

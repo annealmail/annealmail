@@ -9,22 +9,22 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyUsability"];
+var EXPORTED_SYMBOLS = ["AnnealMailKeyUsability"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Cu.import("resource://annealmail/prefs.jsm"); /*global AnnealMailPrefs: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 const DAY = 86400; // number of seconds of 1 day
 
-var EnigmailKeyUsability = {
+var AnnealMailKeyUsability = {
   /**
    * Check whether some key pairs expire in less than N days from now.
    *
@@ -35,21 +35,21 @@ var EnigmailKeyUsability = {
    */
 
   getExpiryForKeySpec: function(keySpecArr, numDays) {
-    EnigmailLog.DEBUG("keyUsability.jsm: getExpiryForKeySpec()\n");
+    AnnealMailLog.DEBUG("keyUsability.jsm: getExpiryForKeySpec()\n");
     let now = Math.floor(Date.now() / 1000);
-    let enigmailSvc = EnigmailCore.getService();
-    if (!enigmailSvc) return [];
+    let annealmailSvc = AnnealMailCore.getService();
+    if (!annealmailSvc) return [];
 
     let result = keySpecArr.reduce(function(p, keySpec) {
       let keys;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = EnigmailKeyRing.getKeyById(keySpec);
+        let key = AnnealMailKeyRing.getKeyById(keySpec);
         if (!key) return p;
         keys = [key];
       }
       else {
-        keys = EnigmailKeyRing.getKeysByUserId(keySpec);
+        keys = AnnealMailKeyRing.getKeysByUserId(keySpec);
         if (keys.length === 0) return p;
       }
 
@@ -75,12 +75,12 @@ var EnigmailKeyUsability = {
 
   /**
    * Determine the configured key specifications for all identities
-   * where Enigmail is enabled
+   * where AnnealMail is enabled
    *
    * @return  Array of Strings - list of keyId and email addresses
    */
   getKeysSpecForIdentities: function() {
-    EnigmailLog.DEBUG("keyUsability.jsm: getKeysSpecForIdentities()\n");
+    AnnealMailLog.DEBUG("keyUsability.jsm: getKeysSpecForIdentities()\n");
     let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
 
     let keySpecList = [];
@@ -112,9 +112,9 @@ var EnigmailKeyUsability = {
    *          null in case no check was performed
    */
   getNewlyExpiredKeys: function() {
-    EnigmailLog.DEBUG("keyUsability.jsm: getNewlyExpiredKeys()\n");
+    AnnealMailLog.DEBUG("keyUsability.jsm: getNewlyExpiredKeys()\n");
 
-    let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
+    let numDays = AnnealMailPrefs.getPref("warnKeyExpiryNumDays");
     if (numDays < 1) return null;
 
     let now = Date.now();
@@ -124,7 +124,7 @@ var EnigmailKeyUsability = {
       lastCheck: 0
     };
 
-    let lastRes = EnigmailPrefs.getPref("keyCheckResult");
+    let lastRes = AnnealMailPrefs.getPref("keyCheckResult");
     if (lastRes.length > 0) {
       lastResult = JSON.parse(lastRes);
     }
@@ -135,7 +135,7 @@ var EnigmailKeyUsability = {
 
     if (keys.length === 0) {
       lastResult.lastCheck = now;
-      EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(lastResult));
+      AnnealMailPrefs.setPref("keyCheckResult", JSON.stringify(lastResult));
       return [];
     }
 
@@ -151,7 +151,7 @@ var EnigmailKeyUsability = {
       lastCheck: now
     };
 
-    EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(newResult));
+    AnnealMailPrefs.setPref("keyCheckResult", JSON.stringify(newResult));
 
     let warnList = expired.reduce(function _f(p, key) {
       if (lastResult.expiredList.indexOf(key.keyId) < 0) {
@@ -164,22 +164,22 @@ var EnigmailKeyUsability = {
   },
 
   keyExpiryCheck: function() {
-    EnigmailLog.DEBUG("keyUsability.jsm: keyExpiryCheck()\n");
+    AnnealMailLog.DEBUG("keyUsability.jsm: keyExpiryCheck()\n");
 
     let expiredKeys = this.getNewlyExpiredKeys();
     if (!expiredKeys || expiredKeys.length === 0) return "";
 
-    let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
+    let numDays = AnnealMailPrefs.getPref("warnKeyExpiryNumDays");
 
     if (expiredKeys.length === 1) {
-      return EnigmailLocale.getString("expiry.keyExpiresSoon", [getKeyDesc(expiredKeys[0]), numDays]);
+      return AnnealMailLocale.getString("expiry.keyExpiresSoon", [getKeyDesc(expiredKeys[0]), numDays]);
     }
     else {
       let keyDesc = "";
       for (let i = 0; i < expiredKeys.length; i++) {
         keyDesc += "- " + getKeyDesc(expiredKeys[i]) + "\n";
       }
-      return EnigmailLocale.getString("expiry.keysExpireSoon", [numDays, keyDesc]);
+      return AnnealMailLocale.getString("expiry.keysExpireSoon", [numDays, keyDesc]);
     }
   },
 
@@ -194,20 +194,20 @@ var EnigmailKeyUsability = {
    */
 
   getOwnerTrustForKeySpec: function(keySpecArr) {
-    EnigmailLog.DEBUG("keyUsability.jsm: getOwnerTrustForKeySpec()\n");
-    let enigmailSvc = EnigmailCore.getService();
-    if (!enigmailSvc) return [];
+    AnnealMailLog.DEBUG("keyUsability.jsm: getOwnerTrustForKeySpec()\n");
+    let annealmailSvc = AnnealMailCore.getService();
+    if (!annealmailSvc) return [];
 
     let result = keySpecArr.reduce(function(p, keySpec) {
       let keys;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = EnigmailKeyRing.getKeyById(keySpec);
+        let key = AnnealMailKeyRing.getKeyById(keySpec);
         if (!key) return p;
         keys = [key];
       }
       else {
-        keys = EnigmailKeyRing.getKeysByUserId(keySpec);
+        keys = AnnealMailKeyRing.getKeysByUserId(keySpec);
         if (keys.length === 0) return p;
       }
 
@@ -233,7 +233,7 @@ var EnigmailKeyUsability = {
    */
 
   keyOwnerTrustCheck: function(resultObj) {
-    EnigmailLog.DEBUG("keyUsability.jsm: keyOwnerTrustCheck()\n");
+    AnnealMailLog.DEBUG("keyUsability.jsm: keyOwnerTrustCheck()\n");
     resultObj.Count = 0;
 
     let keys = this.getKeysSpecForIdentities();
@@ -251,14 +251,14 @@ var EnigmailKeyUsability = {
     if (keysMissingOwnertrust.length === 1) {
       let keyDesc = getKeyDesc(keysMissingOwnertrust[0]);
       resultObj.keyId = keysMissingOwnertrust[0].keyId;
-      return EnigmailLocale.getString("expiry.keyMissingOwnerTrust", keyDesc);
+      return AnnealMailLocale.getString("expiry.keyMissingOwnerTrust", keyDesc);
     }
     else {
       let keyDesc = "";
       for (let i = 0; i < keysMissingOwnertrust.length; i++) {
         keyDesc += "- " + getKeyDesc(keysMissingOwnertrust[i]) + "\n";
       }
-      return EnigmailLocale.getString("expiry.keysMissingOwnerTrust", keyDesc);
+      return AnnealMailLocale.getString("expiry.keysMissingOwnerTrust", keyDesc);
     }
   }
 };

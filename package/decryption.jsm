@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailData: false, EnigmailLog: false, EnigmailPrefs: false, EnigmailLocale: false, EnigmailArmor: false, EnigmailExecution: false, EnigmailDialog: false */
+/*global Components: false, AnnealMailData: false, AnnealMailLog: false, AnnealMailPrefs: false, AnnealMailLocale: false, AnnealMailArmor: false, AnnealMailExecution: false, AnnealMailDialog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,35 +9,35 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailDecryption"];
+var EXPORTED_SYMBOLS = ["AnnealMailDecryption"];
 
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
-Cu.import("resource://enigmail/armor.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/execution.jsm");
-Cu.import("resource://enigmail/dialog.jsm");
-Cu.import("resource://enigmail/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/data.jsm");
+Cu.import("resource://annealmail/log.jsm");
+Cu.import("resource://annealmail/prefs.jsm");
+Cu.import("resource://annealmail/armor.jsm");
+Cu.import("resource://annealmail/locale.jsm");
+Cu.import("resource://annealmail/data.jsm");
+Cu.import("resource://annealmail/execution.jsm");
+Cu.import("resource://annealmail/dialog.jsm");
+Cu.import("resource://annealmail/httpProxy.jsm"); /*global AnnealMailHttpProxy: false */
+Cu.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Cu.import("resource://annealmail/errorHandling.jsm"); /*global AnnealMailErrorHandling: false */
+Cu.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Cu.import("resource://annealmail/key.jsm"); /*global AnnealMailKey: false */
+Cu.import("resource://annealmail/passwords.jsm"); /*global AnnealMailPassword: false */
 
-const nsIEnigmail = Ci.nsIEnigmail;
-const EC = EnigmailCore;
+const nsIAnnealMail = Ci.nsIAnnealMail;
+const EC = AnnealMailCore;
 
-const STATUS_ERROR = nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.DECRYPTION_FAILED;
-const STATUS_DECRYPTION_OK = nsIEnigmail.DECRYPTION_OKAY;
-const STATUS_GOODSIG = nsIEnigmail.GOOD_SIGNATURE;
+const STATUS_ERROR = nsIAnnealMail.BAD_SIGNATURE | nsIAnnealMail.DECRYPTION_FAILED;
+const STATUS_DECRYPTION_OK = nsIAnnealMail.DECRYPTION_OKAY;
+const STATUS_GOODSIG = nsIAnnealMail.GOOD_SIGNATURE;
 
 const NS_WRONLY = 0x02;
 
@@ -61,31 +61,31 @@ function newStatusObject() {
   }, {}, {}, {}, {}, {}, {}, {}, {});
 }
 
-const EnigmailDecryption = {
+const AnnealMailDecryption = {
   decryptMessageStart: function(win, verifyOnly, noOutput, listener,
     statusFlagsObj, errorMsgObj, mimeSignatureFile,
     maxOutputLength) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
 
-    if (!EnigmailCore.getService(win)) {
-      EnigmailLog.ERROR("enigmailCommon.jsm: decryptMessageStart: not yet initialized\n");
-      errorMsgObj.value = EnigmailLocale.getString("notInit");
+    if (!AnnealMailCore.getService(win)) {
+      AnnealMailLog.ERROR("annealmailCommon.jsm: decryptMessageStart: not yet initialized\n");
+      errorMsgObj.value = AnnealMailLocale.getString("notInit");
       return null;
     }
 
-    if (EnigmailKeyRing.isGeneratingKey()) {
-      errorMsgObj.value = EnigmailLocale.getString("notComplete");
+    if (AnnealMailKeyRing.isGeneratingKey()) {
+      errorMsgObj.value = AnnealMailLocale.getString("notComplete");
       return null;
     }
 
-    var args = EnigmailGpg.getStandardArgs(true);
+    var args = AnnealMailCcr.getStandardArgs(true);
 
-    var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+    var keyserver = AnnealMailPrefs.getPref("autoKeyRetrieve");
     if (keyserver && keyserver !== "") {
       keyserver = keyserver.trim();
       args.push("--keyserver-options");
       var keySrvArgs = "auto-key-retrieve";
-      var srvProxy = EnigmailHttpProxy.getHttpProxy(keyserver);
+      var srvProxy = AnnealMailHttpProxy.getHttpProxy(keyserver);
       if (srvProxy) {
         keySrvArgs += ",http-proxy=" + srvProxy;
       }
@@ -112,14 +112,14 @@ const EnigmailDecryption = {
       args.push("--decrypt");
     }
 
-    var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath,
+    var proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath,
       args, !verifyOnly, win,
       listener, statusFlagsObj);
 
-    if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
-      EnigmailLog.ERROR("enigmailCommon.jsm: decryptMessageStart: Error - no passphrase supplied\n");
+    if (statusFlagsObj.value & nsIAnnealMail.MISSING_PASSPHRASE) {
+      AnnealMailLog.ERROR("annealmailCommon.jsm: decryptMessageStart: Error - no passphrase supplied\n");
 
-      errorMsgObj.value = EnigmailLocale.getString("noPassphrase");
+      errorMsgObj.value = AnnealMailLocale.getString("noPassphrase");
       return null;
     }
 
@@ -128,21 +128,21 @@ const EnigmailDecryption = {
 
 
   decryptMessageEnd: function(stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: uiFlags=" + uiFlags + ", verifyOnly=" + verifyOnly + ", noOutput=" + noOutput + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: uiFlags=" + uiFlags + ", verifyOnly=" + verifyOnly + ", noOutput=" + noOutput + "\n");
 
     stderrStr = stderrStr.replace(/\r\n/g, "\n");
-    EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: stderrStr=\n" + stderrStr + "\n");
-    var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
-    var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-    var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-    var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: stderrStr=\n" + stderrStr + "\n");
+    var interactive = uiFlags & nsIAnnealMail.UI_INTERACTIVE;
+    var pgpMime = uiFlags & nsIAnnealMail.UI_PGP_MIME;
+    var allowImport = uiFlags & nsIAnnealMail.UI_ALLOW_KEY_IMPORT;
+    var unverifiedEncryptedOK = uiFlags & nsIAnnealMail.UI_UNVERIFIED_ENC_OK;
     var j;
 
     retStatusObj.statusFlags = 0;
     retStatusObj.errorMsg = "";
     retStatusObj.blockSeparation = "";
 
-    var errorMsg = EnigmailErrorHandling.parseErrorOutput(stderrStr, retStatusObj);
+    var errorMsg = AnnealMailErrorHandling.parseErrorOutput(stderrStr, retStatusObj);
     if (retStatusObj.statusFlags & STATUS_ERROR) {
       retStatusObj.errorMsg = errorMsg;
     }
@@ -151,18 +151,18 @@ const EnigmailDecryption = {
     }
 
     if (pgpMime) {
-      retStatusObj.statusFlags |= verifyOnly ? nsIEnigmail.PGP_MIME_SIGNED : nsIEnigmail.PGP_MIME_ENCRYPTED;
+      retStatusObj.statusFlags |= verifyOnly ? nsIAnnealMail.PGP_MIME_SIGNED : nsIAnnealMail.PGP_MIME_ENCRYPTED;
     }
 
     var statusMsg = retStatusObj.statusMsg;
-    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj);
+    exitCode = AnnealMailExecution.fixExitCode(exitCode, retStatusObj);
     if ((exitCode === 0) && !noOutput && !outputLen &&
       ((retStatusObj.statusFlags & (STATUS_DECRYPTION_OK | STATUS_GOODSIG)) === 0)) {
       exitCode = -1;
     }
 
-    if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE && retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
-      EnigmailDialog.alert(null, statusMsg);
+    if (retStatusObj.statusFlags & nsIAnnealMail.DISPLAY_MESSAGE && retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
+      AnnealMailDialog.alert(null, statusMsg);
       return -1;
     }
 
@@ -175,7 +175,7 @@ const EnigmailDecryption = {
       errLines = stderrStr.split(/\r?\n/);
     }
 
-    // possible STATUS Patterns (see GPG dod DETAILS.txt):
+    // possible STATUS Patterns (see CCR dod DETAILS.txt):
     // one of these should be set for a signature:
     var goodsigPat = /GOODSIG (\w{16}) (.*)$/i;
     var badsigPat = /BADSIG (\w{16}) (.*)$/i;
@@ -201,7 +201,7 @@ const EnigmailDecryption = {
     var encToArray = []; // collect ENC_TO lines here
 
     for (j = 0; j < errLines.length; j++) {
-      EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: process: " + errLines[j] + "\n");
+      AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: process: " + errLines[j] + "\n");
 
       // ENC_TO entry
       // - collect them for later processing to print details
@@ -224,7 +224,7 @@ const EnigmailDecryption = {
       matches = errLines[j].match(goodsigPat);
       if (matches && (matches.length > 2)) {
         if (signed) {
-          EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+          AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
         }
         signed = true;
         goodOrExpOrRevSignature = true;
@@ -236,7 +236,7 @@ const EnigmailDecryption = {
         matches = errLines[j].match(badsigPat);
         if (matches && (matches.length > 2)) {
           if (signed) {
-            EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+            AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
           }
           signed = true;
           goodOrExpOrRevSignature = false;
@@ -248,7 +248,7 @@ const EnigmailDecryption = {
           matches = errLines[j].match(expsigPat);
           if (matches && (matches.length > 2)) {
             if (signed) {
-              EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+              AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
             }
             signed = true;
             goodOrExpOrRevSignature = true;
@@ -260,7 +260,7 @@ const EnigmailDecryption = {
             matches = errLines[j].match(expkeysigPat);
             if (matches && (matches.length > 2)) {
               if (signed) {
-                EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+                AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
               }
               signed = true;
               goodOrExpOrRevSignature = true;
@@ -272,7 +272,7 @@ const EnigmailDecryption = {
               matches = errLines[j].match(revkeysigPat);
               if (matches && (matches.length > 2)) {
                 if (signed) {
-                  EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+                  AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
                 }
                 signed = true;
                 goodOrExpOrRevSignature = true;
@@ -284,7 +284,7 @@ const EnigmailDecryption = {
                 matches = errLines[j].match(errsigPat);
                 if (matches && (matches.length > 2)) {
                   if (signed) {
-                    EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
+                    AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: OOPS: multiple SIGN entries\n");
                   }
                   signed = true;
                   goodOrExpOrRevSignature = false;
@@ -315,43 +315,33 @@ const EnigmailDecryption = {
       }
     }
 
-    if (sigUserId && sigKeyId && EnigmailPrefs.getPref("displaySecondaryUid")) {
-      let keyObj = EnigmailKeyRing.getKeyById(sigKeyId);
+    if (sigUserId && sigKeyId && AnnealMailPrefs.getPref("displaySecondaryUid")) {
+      let keyObj = AnnealMailKeyRing.getKeyById(sigKeyId);
       if (keyObj) {
         if (keyObj.photoAvailable) {
-          retStatusObj.statusFlags |= nsIEnigmail.PHOTO_AVAILABLE;
+          retStatusObj.statusFlags |= nsIAnnealMail.PHOTO_AVAILABLE;
         }
-        sigUserId = EnigmailKeyRing.getValidUids(sigKeyId).join("\n");
+        sigUserId = AnnealMailKeyRing.getValidUids(sigKeyId).join("\n");
       }
     }
     else if (sigUserId) {
-      sigUserId = EnigmailData.convertToUnicode(sigUserId, "UTF-8");
+      sigUserId = AnnealMailData.convertToUnicode(sigUserId, "UTF-8");
     }
 
     // add list of keys used for encryption if known (and their user IDs) if known
-    // Parsed status messages are something like (here the German version):
-    //    [GNUPG:] ENC_TO AAAAAAAAAAAAAAAA 1 0
-    //    [GNUPG:] ENC_TO 5B820D2D4553884F 16 0
-    //    [GNUPG:] ENC_TO 37904DF2E631552F 1 0
-    //    [GNUPG:] ENC_TO BBBBBBBBBBBBBBBB 1 0
-    //    gpg: verschlüsselt mit 3072-Bit RSA Schlüssel, ID BBBBBBBB, erzeugt 2009-11-28
-    //          "Joe Doo <joe.doo@domain.de>"
-    //    [GNUPG:] NO_SECKEY E71712DF47BBCC40
-    //    gpg: verschlüsselt mit RSA Schlüssel, ID AAAAAAAA
-    //    [GNUPG:] NO_SECKEY AAAAAAAAAAAAAAAA
     if (encToArray.length > 0) {
       // for each key also show an associated user ID if known:
       for (var encIdx = 0; encIdx < encToArray.length; ++encIdx) {
         var localKeyId = encToArray[encIdx];
         // except for ID 00000000, which signals hidden keys
         if (localKeyId != "0x0000000000000000") {
-          let localKey = EnigmailKeyRing.getKeyById(localKeyId);
+          let localKey = AnnealMailKeyRing.getKeyById(localKeyId);
           if (localKey) {
             encToArray[encIdx] += " (" + localKey.userId + ")";
           }
         }
         else {
-          encToArray[encIdx] = EnigmailLocale.getString("hiddenKey");
+          encToArray[encIdx] = AnnealMailLocale.getString("hiddenKey");
         }
       }
       encToDetails = "\n  " + encToArray.join(",\n  ") + "\n";
@@ -365,46 +355,46 @@ const EnigmailDecryption = {
     if (signed) {
       var trustPrefix = "";
 
-      if (retStatusObj.statusFlags & nsIEnigmail.UNTRUSTED_IDENTITY) {
-        trustPrefix += EnigmailLocale.getString("prefUntrusted") + " ";
+      if (retStatusObj.statusFlags & nsIAnnealMail.UNTRUSTED_IDENTITY) {
+        trustPrefix += AnnealMailLocale.getString("prefUntrusted") + " ";
       }
 
-      if (retStatusObj.statusFlags & nsIEnigmail.REVOKED_KEY) {
-        trustPrefix += EnigmailLocale.getString("prefRevoked") + " ";
+      if (retStatusObj.statusFlags & nsIAnnealMail.REVOKED_KEY) {
+        trustPrefix += AnnealMailLocale.getString("prefRevoked") + " ";
       }
 
-      if (retStatusObj.statusFlags & nsIEnigmail.EXPIRED_KEY_SIGNATURE) {
-        trustPrefix += EnigmailLocale.getString("prefExpiredKey") + " ";
+      if (retStatusObj.statusFlags & nsIAnnealMail.EXPIRED_KEY_SIGNATURE) {
+        trustPrefix += AnnealMailLocale.getString("prefExpiredKey") + " ";
 
       }
-      else if (retStatusObj.statusFlags & nsIEnigmail.EXPIRED_SIGNATURE) {
-        trustPrefix += EnigmailLocale.getString("prefExpired") + " ";
+      else if (retStatusObj.statusFlags & nsIAnnealMail.EXPIRED_SIGNATURE) {
+        trustPrefix += AnnealMailLocale.getString("prefExpired") + " ";
       }
 
       if (goodOrExpOrRevSignature) {
-        retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefGood", [sigUserId]);
-        /* + ", " + EnigmailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
+        retStatusObj.errorMsg = trustPrefix + AnnealMailLocale.getString("prefGood", [sigUserId]);
+        /* + ", " + AnnealMailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
       }
       else {
         if (sigUserId.length > 0) {
-          retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefBad", [sigUserId]);
+          retStatusObj.errorMsg = trustPrefix + AnnealMailLocale.getString("prefBad", [sigUserId]);
         }
         if (!exitCode)
           exitCode = 1;
       }
     }
 
-    if (retStatusObj.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-      retStatusObj.keyId = EnigmailKey.extractPubkey(statusMsg);
+    if (retStatusObj.statusFlags & nsIAnnealMail.UNVERIFIED_SIGNATURE) {
+      retStatusObj.keyId = AnnealMailKey.extractPubkey(statusMsg);
 
-      if (retStatusObj.statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
+      if (retStatusObj.statusFlags & nsIAnnealMail.DECRYPTION_OKAY) {
         exitCode = 0;
       }
     }
 
     if (exitCode !== 0) {
       // Error processing
-      EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: command execution exit code: " + exitCode + "\n");
+      AnnealMailLog.DEBUG("annealmailCommon.jsm: decryptMessageEnd: command execution exit code: " + exitCode + "\n");
     }
 
     return exitCode;
@@ -414,11 +404,11 @@ const EnigmailDecryption = {
    *  Decrypts a PGP ciphertext and returns the the plaintext
    *
    *in  @parent a window object
-   *in  @uiFlags see flag options in nsIEnigmail.idl, UI_INTERACTIVE, UI_ALLOW_KEY_IMPORT
+   *in  @uiFlags see flag options in nsIAnnealMail.idl, UI_INTERACTIVE, UI_ALLOW_KEY_IMPORT
    *in  @cipherText a string containing a PGP Block
    *out @signatureObj
    *out @exitCodeObj contains the exit code
-   *out @statusFlagsObj see status flags in nslEnigmail.idl, GOOD_SIGNATURE, BAD_SIGNATURE
+   *out @statusFlagsObj see status flags in nslAnnealMail.idl, GOOD_SIGNATURE, BAD_SIGNATURE
    *out @keyIdObj holds the key id
    *out @userIdObj holds the user id
    *out @sigDetailsObj
@@ -433,19 +423,19 @@ const EnigmailDecryption = {
     signatureObj, exitCodeObj,
     statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj, errorMsgObj,
     blockSeparationObj, encToDetailsObj) {
-    const esvc = EnigmailCore.getEnigmailService();
+    const esvc = AnnealMailCore.getAnnealMailService();
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: " + cipherText.length + " bytes, " + uiFlags + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.decryptMessage: " + cipherText.length + " bytes, " + uiFlags + "\n");
 
     if (!cipherText)
       return "";
 
-    var interactive = uiFlags & nsIEnigmail.UI_INTERACTIVE;
-    var allowImport = uiFlags & nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-    var unverifiedEncryptedOK = uiFlags & nsIEnigmail.UI_UNVERIFIED_ENC_OK;
+    var interactive = uiFlags & nsIAnnealMail.UI_INTERACTIVE;
+    var allowImport = uiFlags & nsIAnnealMail.UI_ALLOW_KEY_IMPORT;
+    var unverifiedEncryptedOK = uiFlags & nsIAnnealMail.UI_UNVERIFIED_ENC_OK;
     var oldSignature = signatureObj.value;
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: oldSignature=" + oldSignature + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.decryptMessage: oldSignature=" + oldSignature + "\n");
 
     signatureObj.value = "";
     exitCodeObj.value = -1;
@@ -457,10 +447,10 @@ const EnigmailDecryption = {
     var beginIndexObj = {};
     var endIndexObj = {};
     var indentStrObj = {};
-    var blockType = EnigmailArmor.locateArmoredBlock(cipherText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
+    var blockType = AnnealMailArmor.locateArmoredBlock(cipherText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
     if (!blockType || blockType == "SIGNATURE") {
-      errorMsgObj.value = EnigmailLocale.getString("noPGPblock");
-      statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+      errorMsgObj.value = AnnealMailLocale.getString("noPGPblock");
+      statusFlagsObj.value |= nsIAnnealMail.DISPLAY_MESSAGE;
       return "";
     }
 
@@ -483,7 +473,7 @@ const EnigmailDecryption = {
 
     // HACK to better support messages from Outlook: if there are empty lines, drop them
     if (pgpBlock.search(/MESSAGE-----\r?\n\r?\nVersion/) >= 0) {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: apply Outlook empty line workaround\n");
+      AnnealMailLog.DEBUG("annealmail.js: AnnealMail.decryptMessage: apply Outlook empty line workaround\n");
       pgpBlock = pgpBlock.replace(/\r?\n\r?\n/g, "\n");
     }
 
@@ -493,18 +483,18 @@ const EnigmailDecryption = {
 
     if (publicKey) {
       if (!allowImport) {
-        errorMsgObj.value = EnigmailLocale.getString("keyInMessageBody");
-        statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
-        statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
+        errorMsgObj.value = AnnealMailLocale.getString("keyInMessageBody");
+        statusFlagsObj.value |= nsIAnnealMail.DISPLAY_MESSAGE;
+        statusFlagsObj.value |= nsIAnnealMail.INLINE_KEY;
 
         return "";
       }
 
       // Import public key
-      exitCodeObj.value = EnigmailKeyRing.importKey(parent, true, pgpBlock, "",
+      exitCodeObj.value = AnnealMailKeyRing.importKey(parent, true, pgpBlock, "",
         errorMsgObj);
       if (exitCodeObj.value === 0) {
-        statusFlagsObj.value |= nsIEnigmail.IMPORTED_KEY;
+        statusFlagsObj.value |= nsIAnnealMail.IMPORTED_KEY;
       }
       return "";
     }
@@ -512,11 +502,11 @@ const EnigmailDecryption = {
     var newSignature = "";
 
     if (verifyOnly) {
-      newSignature = EnigmailArmor.extractSignaturePart(pgpBlock, nsIEnigmail.SIGNATURE_ARMOR);
+      newSignature = AnnealMailArmor.extractSignaturePart(pgpBlock, nsIAnnealMail.SIGNATURE_ARMOR);
       if (oldSignature && (newSignature != oldSignature)) {
-        EnigmailLog.ERROR("enigmail.js: Enigmail.decryptMessage: Error - signature mismatch " + newSignature + "\n");
-        errorMsgObj.value = EnigmailLocale.getString("sigMismatch");
-        statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+        AnnealMailLog.ERROR("annealmail.js: AnnealMail.decryptMessage: Error - signature mismatch " + newSignature + "\n");
+        errorMsgObj.value = AnnealMailLocale.getString("sigMismatch");
+        statusFlagsObj.value |= nsIAnnealMail.DISPLAY_MESSAGE;
 
         return "";
       }
@@ -525,7 +515,7 @@ const EnigmailDecryption = {
     var startErrorMsgObj = {};
     var noOutput = false;
 
-    var listener = EnigmailExecution.newSimpleListener(
+    var listener = AnnealMailExecution.newSimpleListener(
       function _stdin(pipe) {
         pipe.write(pgpBlock);
         pipe.close();
@@ -533,13 +523,13 @@ const EnigmailDecryption = {
 
     var maxOutput = pgpBlock.length * 100; // limit output to 100 times message size
     // to avoid DoS attack
-    var proc = EnigmailDecryption.decryptMessageStart(parent, verifyOnly, noOutput, listener,
+    var proc = AnnealMailDecryption.decryptMessageStart(parent, verifyOnly, noOutput, listener,
       statusFlagsObj, startErrorMsgObj,
       null, maxOutput);
 
     if (!proc) {
       errorMsgObj.value = startErrorMsgObj.value;
-      statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+      statusFlagsObj.value |= nsIAnnealMail.DISPLAY_MESSAGE;
 
       return "";
     }
@@ -547,10 +537,10 @@ const EnigmailDecryption = {
     // Wait for child to close
     proc.wait();
 
-    var plainText = EnigmailData.getUnicodeData(listener.stdoutData);
+    var plainText = AnnealMailData.getUnicodeData(listener.stdoutData);
 
     var retStatusObj = {};
-    var exitCode = EnigmailDecryption.decryptMessageEnd(EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
+    var exitCode = AnnealMailDecryption.decryptMessageEnd(AnnealMailData.getUnicodeData(listener.stderrData), listener.exitCode,
       plainText.length, verifyOnly, noOutput,
       uiFlags, retStatusObj);
     exitCodeObj.value = exitCode;
@@ -567,7 +557,7 @@ const EnigmailDecryption = {
 
     if ((head.search(/\S/) >= 0) ||
       (tail.search(/\S/) >= 0)) {
-      statusFlagsObj.value |= nsIEnigmail.PARTIALLY_PGP;
+      statusFlagsObj.value |= nsIAnnealMail.PARTIALLY_PGP;
     }
 
 
@@ -576,7 +566,7 @@ const EnigmailDecryption = {
 
       var doubleDashSeparator = false;
       try {
-        doubleDashSeparator = EnigmailPrefs.getPrefBranch().getBoolPref("doubleDashSeparator");
+        doubleDashSeparator = AnnealMailPrefs.getPrefBranch().getBoolPref("doubleDashSeparator");
       }
       catch (ex) {}
 
@@ -585,23 +575,23 @@ const EnigmailDecryption = {
         plainText = plainText.replace(/(\r|\n)--(\r|\n)/, "$1-- $2");
       }
 
-      statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
+      statusFlagsObj.value |= nsIAnnealMail.DISPLAY_MESSAGE;
 
       if (verifyOnly && indentStrObj.value) {
         plainText = plainText.replace(/^/gm, indentStrObj.value);
       }
 
-      return EnigmailDecryption.inlineInnerVerification(parent, uiFlags, plainText,
+      return AnnealMailDecryption.inlineInnerVerification(parent, uiFlags, plainText,
         statusObjectFrom(signatureObj, exitCodeObj, statusFlagsObj, keyIdObj, userIdObj,
           sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj));
     }
 
     var pubKeyId = keyIdObj.value;
 
-    if (statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE) {
+    if (statusFlagsObj.value & nsIAnnealMail.BAD_SIGNATURE) {
       if (verifyOnly && indentStrObj.value) {
         // Probably replied message that could not be verified
-        errorMsgObj.value = EnigmailLocale.getString("unverifiedReply") + "\n\n" + errorMsgObj.value;
+        errorMsgObj.value = AnnealMailLocale.getString("unverifiedReply") + "\n\n" + errorMsgObj.value;
         return "";
       }
 
@@ -610,12 +600,12 @@ const EnigmailDecryption = {
 
     }
     else if (pubKeyId &&
-      (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      (statusFlagsObj.value & nsIAnnealMail.UNVERIFIED_SIGNATURE)) {
 
       var innerKeyBlock;
       if (verifyOnly) {
         // Search for indented public key block in signed message
-        var innerBlockType = EnigmailArmor.locateArmoredBlock(pgpBlock, 0, "- ", beginIndexObj, endIndexObj, indentStrObj);
+        var innerBlockType = AnnealMailArmor.locateArmoredBlock(pgpBlock, 0, "- ", beginIndexObj, endIndexObj, indentStrObj);
         if (innerBlockType == "PUBLIC KEY BLOCK") {
 
           innerKeyBlock = pgpBlock.substr(beginIndexObj.value,
@@ -623,8 +613,8 @@ const EnigmailDecryption = {
 
           innerKeyBlock = innerKeyBlock.replace(/- -----/g, "-----");
 
-          statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
-          EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: innerKeyBlock found\n");
+          statusFlagsObj.value |= nsIAnnealMail.INLINE_KEY;
+          AnnealMailLog.DEBUG("annealmail.js: AnnealMail.decryptMessage: innerKeyBlock found\n");
         }
       }
 
@@ -634,22 +624,22 @@ const EnigmailDecryption = {
 
         if (innerKeyBlock) {
           var importErrorMsgObj = {};
-          var exitStatus = EnigmailKeyRing.importKey(parent, true, innerKeyBlock,
+          var exitStatus = AnnealMailKeyRing.importKey(parent, true, innerKeyBlock,
             pubKeyId, importErrorMsgObj);
 
           importedKey = (exitStatus === 0);
 
           if (exitStatus > 0) {
-            EnigmailDialog.alert(parent, EnigmailLocale.getString("cantImport") + importErrorMsgObj.value);
+            AnnealMailDialog.alert(parent, AnnealMailLocale.getString("cantImport") + importErrorMsgObj.value);
           }
         }
 
         if (importedKey) {
-          // Recursive call; note that nsIEnigmail.UI_ALLOW_KEY_IMPORT is unset
+          // Recursive call; note that nsIAnnealMail.UI_ALLOW_KEY_IMPORT is unset
           // to break the recursion
-          var uiFlagsDeep = interactive ? nsIEnigmail.UI_INTERACTIVE : 0;
+          var uiFlagsDeep = interactive ? nsIAnnealMail.UI_INTERACTIVE : 0;
           signatureObj.value = "";
-          return EnigmailDecryption.decryptMessage(parent, uiFlagsDeep, pgpBlock,
+          return AnnealMailDecryption.decryptMessage(parent, uiFlagsDeep, pgpBlock,
             signatureObj, exitCodeObj, statusFlagsObj,
             keyIdObj, userIdObj, sigDetailsObj, errorMsgObj);
         }
@@ -668,11 +658,11 @@ const EnigmailDecryption = {
   },
 
   inlineInnerVerification: function(parent, uiFlags, text, statusObject) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.inlineInnerVerification\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.inlineInnerVerification\n");
 
     if (text && text.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === 0) {
       var status = newStatusObject();
-      var newText = EnigmailDecryption.decryptMessage(parent, uiFlags, text,
+      var newText = AnnealMailDecryption.decryptMessage(parent, uiFlags, text,
         status.signature, status.exitCode, status.statusFlags, status.keyId, status.userId,
         status.sigDetails, status.message, status.blockSeparation, status.encToDetails);
       if (status.exitCode.value === 0) {
@@ -692,29 +682,29 @@ const EnigmailDecryption = {
 
   decryptAttachment: function(parent, outFile, displayName, byteData,
     exitCodeObj, statusFlagsObj, errorMsgObj) {
-    const esvc = EnigmailCore.getEnigmailService();
+    const esvc = AnnealMailCore.getAnnealMailService();
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptAttachment: parent=" + parent + ", outFileName=" + outFile.path + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.decryptAttachment: parent=" + parent + ", outFileName=" + outFile.path + "\n");
 
     var attachmentHead = byteData.substr(0, 200);
     if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
       // attachment appears to be a PGP key file
 
-      if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),
-          EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
+      if (AnnealMailDialog.confirmDlg(parent, AnnealMailLocale.getString("attachmentPgpKey", [displayName]),
+          AnnealMailLocale.getString("keyMan.button.import"), AnnealMailLocale.getString("dlg.button.view"))) {
 
-        var preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
+        var preview = AnnealMailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
         exitCodeObj.keyList = preview;
         var exitStatus = 0;
 
         if (errorMsgObj.value === "") {
           if (preview.length > 0) {
             if (preview.length == 1) {
-              exitStatus = EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
+              exitStatus = AnnealMailDialog.confirmDlg(parent, AnnealMailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
             }
             else {
-              exitStatus = EnigmailDialog.confirmDlg(parent,
-                EnigmailLocale.getString("doImportMultiple", [
+              exitStatus = AnnealMailDialog.confirmDlg(parent,
+                AnnealMailLocale.getString("doImportMultiple", [
                   preview.map(function(a) {
                     return "\t" + a.name + " (" + a.id + ")";
                   }).
@@ -723,41 +713,41 @@ const EnigmailDecryption = {
             }
 
             if (exitStatus) {
-              exitCodeObj.value = EnigmailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
-              statusFlagsObj.value = nsIEnigmail.IMPORTED_KEY;
+              exitCodeObj.value = AnnealMailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
+              statusFlagsObj.value = nsIAnnealMail.IMPORTED_KEY;
             }
             else {
               exitCodeObj.value = 0;
-              statusFlagsObj.value = nsIEnigmail.DISPLAY_MESSAGE;
+              statusFlagsObj.value = nsIAnnealMail.DISPLAY_MESSAGE;
             }
           }
         }
       }
       else {
         exitCodeObj.value = 0;
-        statusFlagsObj.value = nsIEnigmail.DISPLAY_MESSAGE;
+        statusFlagsObj.value = nsIAnnealMail.DISPLAY_MESSAGE;
       }
       return true;
     }
 
-    var outFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
+    var outFileName = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
 
-    var args = EnigmailGpg.getStandardArgs(true);
+    var args = AnnealMailCcr.getStandardArgs(true);
     args = args.concat(["-o", outFileName, "--yes"]);
-    args = args.concat(EnigmailPassword.command());
+    args = args.concat(AnnealMailPassword.command());
     args.push("-d");
 
 
     statusFlagsObj.value = 0;
 
-    var listener = EnigmailExecution.newSimpleListener(
+    var listener = AnnealMailExecution.newSimpleListener(
       function _stdin(pipe) {
         pipe.write(byteData);
         pipe.close();
       });
 
 
-    var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent,
+    var proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath, args, false, parent,
       listener, statusFlagsObj);
 
     if (!proc) {
@@ -770,13 +760,13 @@ const EnigmailDecryption = {
     var statusMsgObj = {};
     var cmdLineObj = {};
 
-    exitCodeObj.value = EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+    exitCodeObj.value = AnnealMailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
     return true;
   },
 
   registerOn: function(target) {
-    target.decryptMessage = EnigmailDecryption.decryptMessage;
-    target.decryptAttachment = EnigmailDecryption.decryptAttachment;
+    target.decryptMessage = AnnealMailDecryption.decryptMessage;
+    target.decryptAttachment = AnnealMailDecryption.decryptAttachment;
   }
 };

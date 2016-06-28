@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailOS: false */
+/*global Components: false, AnnealMailLog: false, AnnealMailOS: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,9 +8,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLocale"];
+var EXPORTED_SYMBOLS = ["AnnealMailLocale"];
 
-Components.utils.import("resource://enigmail/log.jsm");
+Components.utils.import("resource://annealmail/log.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -19,21 +19,21 @@ var enigStringBundle = null;
 
 const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
 
-const EnigmailLocale = {
+const AnnealMailLocale = {
   get: function() {
     return Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
   },
 
-  // retrieves a localized string from the enigmail.properties stringbundle
+  // retrieves a localized string from the annealmail.properties stringbundle
   getString: function(aStr, subPhrases) {
     if (!enigStringBundle) {
       try {
         var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
         strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
-        enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+        enigStringBundle = strBundleService.createBundle("chrome://annealmail/locale/annealmail.properties");
       }
       catch (ex) {
-        EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
+        AnnealMailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
       }
     }
 
@@ -52,7 +52,7 @@ const EnigmailLocale = {
         }
       }
       catch (ex) {
-        EnigmailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '" + aStr + "'\n");
+        AnnealMailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '" + aStr + "'\n");
       }
     }
     return aStr;

@@ -6,29 +6,29 @@
 -->
 
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
 %brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
-%enigMailDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
 ]>
 
-<dialog id="enigmailKeyDetailsDlg"
-        title="&enigmail.keyDetails.title;"
+<dialog id="annealmailKeyDetailsDlg"
+        title="&annealmail.keyDetails.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
         buttons="accept"
         minwidth="450px"
         persist="width height"
-        buttonlabelaccept="&enigmail.cardDetails.closeWindow.label;"
+        buttonlabelaccept="&annealmail.cardDetails.closeWindow.label;"
         onload="onLoad();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/keyDetailsDlg.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/keyDetailsDlg.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailKeyManager.js"/>
 
   <broadcasterset>
     <broadcaster id="ownKeyCommands" hidden="true"/>
@@ -43,24 +43,24 @@
         </columns>
         <rows>
           <row>
-            <label value="&enigmail.keyDetails.userId.label;" control="userId"/>
+            <label value="&annealmail.keyDetails.userId.label;" control="userId"/>
             <textbox id="userId" class="plain" style="white-space: pre;"
               readonly="true" value="?" multiline="false" size="60"/>
           </row>
           <row>
-            <label value="&enigmail.keyDetails.keyType.label;" control="keyType"/>
+            <label value="&annealmail.keyDetails.keyType.label;" control="keyType"/>
             <textbox id="keyType" class="plain" style="white-space: pre;"
               readonly="true" value="?" multiline="false" size="60"/>
           </row>
           <row>
-            <label value="&enigmail.keyDetails.fingerprint.label;" control="fingerprint"/>
+            <label value="&annealmail.keyDetails.fingerprint.label;" control="fingerprint"/>
             <textbox id="fingerprint" class="plain" style="white-space: pre;"
               readonly="true" value="?" multiline="false" size="60"/>
           </row>
         </rows>
       </grid>
       <groupbox id="alsoknown" flex="1">
-        <caption label="&enigmail.keyDetails.alsoKnown.label;:"/>
+        <caption label="&annealmail.keyDetails.alsoKnown.label;:"/>
         <listbox id="additionalUid" rows="3" flex="1"/>
       </groupbox>
     </vbox>
@@ -73,9 +73,9 @@
 
   <tabbox flex="1" style="margin:5px" id="mainTabs">
     <tabs id="mainTabBox">
-      <tab id="basicTab"       label="&enigmail.basic.label;"/>
-      <tab id="signaturesTab"  label="&enigmail.keyDetails.signaturesTab;"/>
-      <tab id="structureTab"   label="&enigmail.keyDetails.structureTab;"/>
+      <tab id="basicTab"       label="&annealmail.basic.label;"/>
+      <tab id="signaturesTab"  label="&annealmail.keyDetails.signaturesTab;"/>
+      <tab id="structureTab"   label="&annealmail.keyDetails.structureTab;"/>
     </tabs>
 
     <tabpanels flex="1" id="mainTabPanel">
@@ -89,35 +89,35 @@
           </html:colgroup>
           <html:tr>
             <html:td style="white-space: nowrap; padding: 0 15px 0 0;">
-              &enigmail.keyDetails.created.label;
+              &annealmail.keyDetails.created.label;
             </html:td>
             <html:td id="keyCreated"/>
           </html:tr>
           <html:tr>
             <html:td style="white-space: nowrap; padding: 0 15px 0 0;">
-              &enigmail.keyDetails.expiry.label;
+              &annealmail.keyDetails.expiry.label;
             </html:td>
             <html:td id="keyExpiry"/>
             <html:td>
-              <button observes="ownKeyCommands" label="&enigmail.keyDetails.change.label;" oncommand="changeExpirationDate()"/>
+              <button observes="ownKeyCommands" label="&annealmail.keyDetails.change.label;" oncommand="changeExpirationDate()"/>
             </html:td>
           </html:tr>
           <html:tr>
             <html:td>
-              &enigmail.keyDetails.keyValidity.label;
+              &annealmail.keyDetails.keyValidity.label;
             </html:td>
             <html:td id="keyValidity"/>
             <html:td>
-              <button label="&enigmail.keyDetails.signKey.label;" oncommand="signKey()"/>
+              <button label="&annealmail.keyDetails.signKey.label;" oncommand="signKey()"/>
             </html:td>
           </html:tr>
           <html:tr>
             <html:td style="white-space: nowrap; padding: 0 15px 0 0;">
-              &enigmail.keyDetails.trustStatus.label;
+              &annealmail.keyDetails.trustStatus.label;
             </html:td>
             <html:td id="ownerTrust"/>
             <html:td>
-              <button label="&enigmail.keyDetails.change.label;" oncommand="setOwnerTrust()"/>
+              <button label="&annealmail.keyDetails.change.label;" oncommand="setOwnerTrust()"/>
             </html:td>
           </html:tr>
         </html:table>
@@ -131,15 +131,15 @@
 
           <treecols>
             <treecol id="sig_uid_col" flex="1"
-                label="&enigmail.keyDetails.uidCertifiedCol;"
+                label="&annealmail.keyDetails.uidCertifiedCol;"
                 primary="true"/>
             <splitter class="tree-splitter"/>
             <splitter class="tree-splitter"/>
             <treecol id="sig_fingerprint_col"
-                     label="&enigmail.keyDetails.fingerprint.label;"
+                     label="&annealmail.keyDetails.fingerprint.label;"
                      persist="width"/>
             <treecol id="sig_created_col"
-                     label="&enigmail.keyDetails.created.label;"
+                     label="&annealmail.keyDetails.created.label;"
                      persist="width"/>
           </treecols>
 
@@ -157,32 +157,32 @@
 
             <treecols>
               <treecol id="keyTypeCol" primary="true"
-                  label="&enigmail.keyDetails.keyPart.label;"
+                  label="&annealmail.keyDetails.keyPart.label;"
                   style="width:71px"
                   persist="width"/>
               <splitter class="tree-splitter"/>
               <treecol id="keyUsageCol"
-                       label="&enigmail.keyDetails.usage.label;"
+                       label="&annealmail.keyDetails.usage.label;"
                        flex="1"/>
               <splitter class="tree-splitter"/>
               <treecol id="keyIdCol" style="width:77px"
-                       label="&enigmail.keyDetails.ID.label;"
+                       label="&annealmail.keyDetails.ID.label;"
                        persist="width"/>
               <splitter class="tree-splitter"/>
               <treecol id="algoCol" style="width:60px"
-                       label="&enigmail.keyDetails.algorithm.label;"
+                       label="&annealmail.keyDetails.algorithm.label;"
                        persist="width"/>
               <splitter class="tree-splitter"/>
               <treecol id="sizeCol" style="width:37px"
-                       label="&enigmail.keyDetails.size.label;"
+                       label="&annealmail.keyDetails.size.label;"
                        persist="width"/>
               <splitter class="tree-splitter"/>
               <treecol id="createdCol" style="width:70px"
-                       label="&enigmail.keyDetails.created.label;"
+                       label="&annealmail.keyDetails.created.label;"
                        persist="width"/>
               <splitter class="tree-splitter"/>
               <treecol id="expiryCol" style="width:70px"
-                       label="&enigmail.keyDetails.expiry.label;"
+                       label="&annealmail.keyDetails.expiry.label;"
                        persist="width"/>
             </treecols>
 
@@ -197,14 +197,14 @@
   <separator/>
 
   <hbox flex="0" observes="ownKeyCommands">
-    <button id="actions" label="&enigmail.keyDetails.selAction.label;"
-            accesskey="&enigmail.keyDetails.selAction.accesskey;" type="menu">
+    <button id="actions" label="&annealmail.keyDetails.selAction.label;"
+            accesskey="&annealmail.keyDetails.selAction.accesskey;" type="menu">
       <menupopup id="actionPopup">
-        <menuitem label="&enigmail.keyMan.manageUid.label;" oncommand="manageUids()"/>
-        <menuitem label="&enigmail.keyMan.addPhoto.label;" oncommand="keyDetailsAddPhoto()"/>
-        <menuitem label="&enigmail.keyMan.changePwd.label;" oncommand="changePassword()"/>
-        <menuitem label="&enigmail.keyMan.revokeKey.label;" oncommand="revokeKey()"/>
-        <menuitem label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="genRevocationCert()"/>
+        <menuitem label="&annealmail.keyMan.manageUid.label;" oncommand="manageUids()"/>
+        <menuitem label="&annealmail.keyMan.addPhoto.label;" oncommand="keyDetailsAddPhoto()"/>
+        <menuitem label="&annealmail.keyMan.changePwd.label;" oncommand="changePassword()"/>
+        <menuitem label="&annealmail.keyMan.revokeKey.label;" oncommand="revokeKey()"/>
+        <menuitem label="&annealmail.keyMan.ctxGenRevoke.label;" oncommand="genRevocationCert()"/>
       </menupopup>
     </button>
   </hbox>

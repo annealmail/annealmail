@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailDialog: false, EnigmailFuncs: false */
+/*global Components: false, AnnealMailLog: false, AnnealMailDialog: false, AnnealMailFuncs: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,19 +13,19 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Components.utils.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("resource://annealmail/funcs.jsm");
+Components.utils.import("resource://annealmail/dialog.jsm");
+Components.utils.import("resource://annealmail/log.jsm");
+Components.utils.import("resource://annealmail/encryption.jsm"); /*global AnnealMailEncryption: false */
+Components.utils.import("resource://annealmail/mime.jsm"); /*global AnnealMailMime: false */
+Components.utils.import("resource://annealmail/hash.jsm"); /*global AnnealMailHash: false */
+Components.utils.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 
-const PGPMIME_JS_ENCRYPT_CONTRACTID = "@enigmail.net/enigmail/composesecure;1";
+const PGPMIME_JS_ENCRYPT_CONTRACTID = "@annealmail.net/annealmail/composesecure;1";
 const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
@@ -40,7 +40,7 @@ var gDebugLogLevel = 0;
 function PgpMimeEncrypt() {}
 
 PgpMimeEncrypt.prototype = {
-  classDescription: "Enigmail JS Encryption Handler",
+  classDescription: "AnnealMail JS Encryption Handler",
   classID: PGPMIME_JS_ENCRYPT_CID,
   contractID: PGPMIME_JS_ENCRYPT_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIMsgComposeSecure, Ci.nsIStreamListener, Ci.nsIEnigScriptableMsgCompose]),
@@ -113,14 +113,14 @@ PgpMimeEncrypt.prototype = {
 
       try {
         var enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
-        return (enigSecurityInfo.sendFlags & (Ci.nsIEnigmail.SEND_SIGNED | Ci.nsIEnigmail.SEND_ENCRYPTED)) !== 0;
+        return (enigSecurityInfo.sendFlags & (Ci.nsIAnnealMail.SEND_SIGNED | Ci.nsIAnnealMail.SEND_ENCRYPTED)) !== 0;
       }
       catch (ex) {
         return false;
       }
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AnnealMailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
   },
@@ -156,17 +156,17 @@ PgpMimeEncrypt.prototype = {
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       this.win = windowManager.getMostRecentWindow(null);
 
-      if (securityInfo.sendFlags & Ci.nsIEnigmail.SEND_PGP_MIME) {
+      if (securityInfo.sendFlags & Ci.nsIAnnealMail.SEND_PGP_MIME) {
 
-        if (securityInfo.sendFlags & Ci.nsIEnigmail.SEND_ENCRYPTED) {
+        if (securityInfo.sendFlags & Ci.nsIAnnealMail.SEND_ENCRYPTED) {
           // applies to encrypted and signed & encrypted
           this.cryptoMode = MIME_ENCRYPTED;
         }
-        else if (securityInfo.sendFlags & Ci.nsIEnigmail.SEND_SIGNED) {
+        else if (securityInfo.sendFlags & Ci.nsIAnnealMail.SEND_SIGNED) {
           this.cryptoMode = MIME_SIGNED;
 
           let hashAlgoObj = {};
-          if (EnigmailHash.determineAlgorithm(this.win,
+          if (AnnealMailHash.determineAlgorithm(this.win,
               this.enigSecurityInfo.UIFlags,
               this.enigSecurityInfo.senderEmailAddr,
               hashAlgoObj) === 0) {
@@ -181,7 +181,7 @@ PgpMimeEncrypt.prototype = {
 
       var statusFlagsObj = {};
       var errorMsgObj = {};
-      this.proc = EnigmailEncryption.encryptMessageStart(this.win,
+      this.proc = AnnealMailEncryption.encryptMessageStart(this.win,
         this.enigSecurityInfo.UIFlags,
         this.enigSecurityInfo.senderEmailAddr,
         this.enigSecurityInfo.recipients,
@@ -193,12 +193,12 @@ PgpMimeEncrypt.prototype = {
         errorMsgObj);
       if (!this.proc) throw Cr.NS_ERROR_FAILURE;
 
-      this.cryptoBoundary = EnigmailMime.createBoundary();
+      this.cryptoBoundary = AnnealMailMime.createBoundary();
       this.startCryptoHeaders();
 
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AnnealMailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
 
@@ -215,7 +215,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   writeSecureHeaders: function() {
-    this.encHeader = EnigmailMime.createBoundary();
+    this.encHeader = AnnealMailMime.createBoundary();
 
     let allHdr = "";
     let visibleHdr = "";
@@ -293,12 +293,12 @@ PgpMimeEncrypt.prototype = {
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader + '"\r\n' + allHdr + '\r\n' +
       "--" + this.encHeader + "\r\n";
 
-    if (this.cryptoMode == MIME_ENCRYPTED && this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
+    if (this.cryptoMode == MIME_ENCRYPTED && this.enigSecurityInfo.sendFlags & Ci.nsIAnnealMail.ENCRYPT_HEADERS) {
       w += 'Content-Type: text/rfc822-headers; charset="utf-8";\r\n' +
         ' protected-headers="v1"\r\n' +
         'Content-Disposition: inline\r\n' +
         'Content-Transfer-Encoding: base64\r\n\r\n' +
-        EnigmailData.encodeBase64(visibleHdr) +
+        AnnealMailData.encodeBase64(visibleHdr) +
         "\r\n--" + this.encHeader + "\r\n";
     }
     this.writeToPipe(w);
@@ -397,7 +397,7 @@ PgpMimeEncrypt.prototype = {
       this.flushOutput();
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AnnealMailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
 
@@ -423,7 +423,7 @@ PgpMimeEncrypt.prototype = {
           if (this.cryptoMode == MIME_ENCRYPTED) {
             let ct = this.getHeader("content-type", false);
             if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
-              this.encapsulate = EnigmailMime.createBoundary();
+              this.encapsulate = AnnealMailMime.createBoundary();
               this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
                 this.encapsulate + '"\r\n\r\n');
               this.writeToPipe("--" + this.encapsulate + "\r\n");
@@ -431,7 +431,7 @@ PgpMimeEncrypt.prototype = {
           }
           else if (this.cryptoMode == MIME_SIGNED) {
             let ct = this.getHeader("content-type", true);
-            let hdr = EnigmailFuncs.getHeaderData(ct);
+            let hdr = AnnealMailFuncs.getHeaderData(ct);
             hdr.boundary = hdr.boundary || "";
             hdr.boundary = hdr.boundary.replace(/[\'\"]/g, "");
           }
@@ -455,7 +455,7 @@ PgpMimeEncrypt.prototype = {
       }
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AnnealMailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
 
@@ -570,7 +570,7 @@ PgpMimeEncrypt.prototype = {
 
     let retStatusObj = {};
 
-    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.enigSecurityInfo.senderEmailAddr,
+    this.exitCode = AnnealMailEncryption.encryptMessageEnd(this.enigSecurityInfo.senderEmailAddr,
       this.statusStr,
       exitCode,
       this.enigSecurityInfo.UIFlags,
@@ -579,7 +579,7 @@ PgpMimeEncrypt.prototype = {
       retStatusObj);
 
     if (this.exitCode !== 0)
-      EnigmailDialog.alert(this.win, retStatusObj.errorMsg);
+      AnnealMailDialog.alert(this.win, retStatusObj.errorMsg);
 
     if (this.inspector && this.inspector.eventLoopNestLevel > 0) {
       // unblock the waiting lock in finishCryptoEncapsulation
@@ -595,7 +595,7 @@ PgpMimeEncrypt.prototype = {
 
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLogLevel) EnigmailLog.DEBUG(str);
+  if (gDebugLogLevel) AnnealMailLog.DEBUG(str);
 }
 
 function initModule() {

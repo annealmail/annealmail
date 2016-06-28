@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<dialog id="annealmailWrapSelectionList"
+        title="&annealmail.wrapSelectionList.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        ondialogaccept="return onAccept();"
+        ondialogcancel="return onCancel();"
+        buttons="accept,cancel"
+        onload="onLoad();">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailWrapSelection.js"/>
+
+  <vbox orient="vertical">
+    <description>&annealmail.compose.excesslength.label;</description>
+    <description>&annealmail.compose.excesslength_action.label;</description>
+    <vbox>
+      <groupbox>
+        <radiogroup id="wrapSelectGroup" aria-labelledby="annealmailWrapDesc">
+          <radio value="0" id="wrap"
+              label="&annealmail.compose.wrap_radio.label;"/>
+          <radio value="1" id="sendasis"
+              label="&annealmail.compose.sendasis_radio.label;"/>
+          <radio value="2" id="usemime"
+              label="&annealmail.compose.use_mime_radio.label;"/>
+          <radio value="3" id="editmanually"
+              label="&annealmail.compose.editmanually.label;"/>
+        </radiogroup>
+      </groupbox>
+    </vbox>
+  </vbox>
+</dialog>

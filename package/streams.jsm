@@ -8,20 +8,20 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailStreams"];
+var EXPORTED_SYMBOLS = ["AnnealMailStreams"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/timer.jsm"); /*global AnnealMailTimer: false */
 
 const NS_STRING_INPUT_STREAM_CONTRACTID = "@mozilla.org/io/string-input-stream;1";
 const NS_INPUT_STREAM_CHNL_CONTRACTID = "@mozilla.org/network/input-stream-channel;1";
 
-const EnigmailStreams = {
+const AnnealMailStreams = {
   /**
    * create an nsIStreamListener object to read String data from an nsIInputStream
    *
@@ -31,7 +31,7 @@ const EnigmailStreams = {
    * @return: the nsIStreamListener to pass to the stream
    */
   newStringStreamListener: function(onStopCallback) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStreamListener\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: newStreamListener\n");
 
     return {
       data: "",
@@ -40,23 +40,23 @@ const EnigmailStreams = {
       QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
       onStartRequest: function(channel, ctxt) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
+        // AnnealMailLog.DEBUG("annealmailCommon.jsm: stringListener.onStartRequest\n");
       },
 
       onStopRequest: function(channel, ctxt, status) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
+        // AnnealMailLog.DEBUG("annealmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
         this.inStream = null;
         var cbFunc = this._onStopCallback;
         var cbData = this.data;
 
-        EnigmailTimer.setTimeout(function _cb() {
+        AnnealMailTimer.setTimeout(function _cb() {
           cbFunc(cbData);
         });
       },
 
       onDataAvailable: function(req, sup, stream, offset, count) {
         // get data from stream
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+        // AnnealMailLog.DEBUG("annealmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
         this.inStream.setInputStream(stream);
         this.data += this.inStream.readBytes(count);
       }
@@ -74,7 +74,7 @@ const EnigmailStreams = {
    * @return nsIChannel object
    */
   newStringChannel: function(uri, contentType, contentCharset, data) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: newStringChannel\n");
 
     const inputStream = Cc[NS_STRING_INPUT_STREAM_CONTRACTID].createInstance(Ci.nsIStringInputStream);
     inputStream.setData(data, -1);
@@ -104,13 +104,13 @@ const EnigmailStreams = {
     if (contentType && contentType.length) chan.contentType = contentType;
     if (contentCharset && contentCharset.length) chan.contentCharset = contentCharset;
 
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: newStringChannel - done\n");
 
     return chan;
   },
 
   newFileChannel: function(uri, file, contentType, deleteOnClose) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
 
 
     let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
@@ -130,7 +130,7 @@ const EnigmailStreams = {
     const chan = isc.QueryInterface(Ci.nsIChannel);
     if (contentType && contentType.length) chan.contentType = contentType;
 
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: newStringChannel - done\n");
 
     return chan;
   }

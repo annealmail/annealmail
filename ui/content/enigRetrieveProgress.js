@@ -7,13 +7,13 @@
 
 /* eslint no-invalid-this: 0 */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://annealmail/content/annealmailCommon.js
 
-/* global EnigmailLog: false, doSetOKCancel: false, EnigmailLocale: false, EnigmailKeyServer: false */
-/* global EnigmailErrorHandling: false */
+/* global AnnealMailLog: false, doSetOKCancel: false, AnnealMailLocale: false, AnnealMailKeyServer: false */
+/* global AnnealMailErrorHandling: false */
 
-// from enigmailCommon.js:
-/* global GetEnigmailSvc: false, nsIEnigmail: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
+// from annealmailCommon.js:
+/* global GetAnnealMailSvc: false, nsIAnnealMail: false, EnigAlert: false, EnigConvertCcrToUnicode: false */
 
 "use strict";
 
@@ -83,7 +83,7 @@ var progressListener = {
 
 function onLoad() {
   // Set global variables.
-  EnigmailLog.DEBUG("enigRetrieveProgress: onLoad\n");
+  AnnealMailLog.DEBUG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
   var subject;
   window.arguments[1].result = false;
@@ -92,8 +92,8 @@ function onLoad() {
   dialog.strings = [];
   dialog.progress = document.getElementById("dialog.progress");
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
+  var annealmailSvc = GetAnnealMailSvc();
+  if (!annealmailSvc)
     return;
 
   // Set up dialog button callbacks.
@@ -104,27 +104,27 @@ function onLoad() {
 
 
   var statTxt = document.getElementById("dialog.status2");
-  if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
-    statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
-    subject = EnigmailLocale.getString("keyserverTitle.uploading");
+  if (inArg.accessType == nsIAnnealMail.UPLOAD_KEY) {
+    statTxt.value = AnnealMailLocale.getString("keyserverProgress.uploading");
+    subject = AnnealMailLocale.getString("keyserverTitle.uploading");
   }
   else {
-    statTxt.value = EnigmailLocale.getString("keyserverProgress.refreshing");
-    subject = EnigmailLocale.getString("keyserverTitle.refreshing");
+    statTxt.value = AnnealMailLocale.getString("keyserverProgress.refreshing");
+    subject = AnnealMailLocale.getString("keyserverTitle.refreshing");
   }
 
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
   var procListener = {
     done: function(exitCode) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: subprocess terminated with " + exitCode + "\n");
+      AnnealMailLog.DEBUG("enigRetrieveProgress: subprocess terminated with " + exitCode + "\n");
       processEnd(msgProgress, exitCode);
     },
     stdout: function(data) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stdout: '" + data + "'\n");
+      AnnealMailLog.DEBUG("enigRetrieveProgress: got data on stdout: '" + data + "'\n");
     },
     stderr: function(data) {
-      EnigmailLog.DEBUG("enigRetrieveProgress: got data on stderr: '" + data + "'\n");
+      AnnealMailLog.DEBUG("enigRetrieveProgress: got data on stderr: '" + data + "'\n");
       gErrorData += data;
     }
   };
@@ -134,9 +134,9 @@ function onLoad() {
   gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj = {};
-  gProcess = EnigmailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
+  gProcess = AnnealMailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
   if (!gProcess) {
-    EnigAlert(EnigmailLocale.getString("sendKeysFailed") + "\n" + EnigConvertGpgToUnicode(errorMsgObj.value));
+    EnigAlert(AnnealMailLocale.getString("sendKeysFailed") + "\n" + EnigConvertCcrToUnicode(errorMsgObj.value));
   }
 
   document.getElementById("progressWindow").setAttribute("title", subject);
@@ -168,11 +168,11 @@ function onCancel() {
 }
 
 function processEnd(progressBar, exitCode) {
-  EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd\n");
+  AnnealMailLog.DEBUG("annealmailRetrieveProgress.js: processEnd\n");
   var errorMsg;
   if (gProcess) {
     gProcess = null;
-    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: exitCode = " + exitCode + "\n");
+    AnnealMailLog.DEBUG("annealmailRetrieveProgress.js: processEnd: exitCode = " + exitCode + "\n");
 
     var statusText = gEnigCallbackFunc(exitCode, "", false);
 
@@ -181,12 +181,12 @@ function processEnd(progressBar, exitCode) {
       if (gErrorData.length > 0) {
         var statusFlagsObj = {};
         var statusMsgObj = {};
-        errorMsg = EnigmailErrorHandling.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
+        errorMsg = AnnealMailErrorHandling.parseErrorOutput(gErrorData, statusFlagsObj, statusMsgObj);
       }
     }
     catch (ex) {}
 
-    EnigmailLog.DEBUG("enigmailRetrieveProgress.js: processEnd: errorMsg=" + errorMsg);
+    AnnealMailLog.DEBUG("annealmailRetrieveProgress.js: processEnd: errorMsg=" + errorMsg);
     if (errorMsg.search(/ec=\d+/i) >= 0) {
       exitCode = -1;
     }

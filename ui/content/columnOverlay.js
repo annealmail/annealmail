@@ -9,10 +9,10 @@
 
 /* global Components: false, gDBView: false */
 
-if (!Enigmail) var Enigmail = {};
+if (!AnnealMail) var AnnealMail = {};
 
-Enigmail.columnHandler = {
-  nsIEnigmail: Components.interfaces.nsIEnigmail,
+AnnealMail.columnHandler = {
+  nsIAnnealMail: Components.interfaces.nsIAnnealMail,
   getCellText: function(row, col) {
     return null;
   },
@@ -25,14 +25,14 @@ Enigmail.columnHandler = {
   getCellProperties: function(row, col, props) {
     let key = gDBView.getKeyAt(row);
     let hdr = gDBView.db.GetMsgHdrForKey(key);
-    let statusFlags = hdr.getUint32Property("enigmail");
+    let statusFlags = hdr.getUint32Property("annealmail");
     let newProp = null;
-    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
-      (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
+    if ((statusFlags & this.nsIAnnealMail.GOOD_SIGNATURE) &&
+      (statusFlags & this.nsIAnnealMail.DECRYPTION_OKAY))
       newProp = "enigSignedEncrypted";
-    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
+    else if (statusFlags & this.nsIAnnealMail.GOOD_SIGNATURE)
       newProp = "enigSigned";
-    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
+    else if (statusFlags & this.nsIAnnealMail.DECRYPTION_OKAY)
       newProp = "enigEncrypted";
 
     if (newProp) {
@@ -48,13 +48,13 @@ Enigmail.columnHandler = {
   getRowProperties: function(row, props) {},
   getImageSrc: function(row, col) {},
   getSortLongForRow: function(hdr) {
-    var statusFlags = hdr.getUint32Property("enigmail");
-    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
-      (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
+    var statusFlags = hdr.getUint32Property("annealmail");
+    if ((statusFlags & this.nsIAnnealMail.GOOD_SIGNATURE) &&
+      (statusFlags & this.nsIAnnealMail.DECRYPTION_OKAY))
       return 3;
-    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
+    else if (statusFlags & this.nsIAnnealMail.GOOD_SIGNATURE)
       return 2;
-    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
+    else if (statusFlags & this.nsIAnnealMail.DECRYPTION_OKAY)
       return 1;
 
     return 0;
@@ -64,7 +64,7 @@ Enigmail.columnHandler = {
     // Components.interfaces.nsIObserver
     observe: function(aMsgFolder, aTopic, aData) {
       try {
-        gDBView.addColumnHandler("enigmailStatusCol", Enigmail.columnHandler);
+        gDBView.addColumnHandler("annealmailStatusCol", AnnealMail.columnHandler);
       }
       catch (ex) {}
     }
@@ -75,7 +75,7 @@ window.addEventListener("load",
   function() {
     var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);
-    ObserverService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
+    ObserverService.addObserver(AnnealMail.columnHandler.createDbObserver, "MsgCreateDBView", false);
   },
   false
 );

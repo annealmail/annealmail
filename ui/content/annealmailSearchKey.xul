@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<dialog id="annealmailSearchKeyDlg"
+        title="&annealmail.searchKeyDlg.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="return onLoad();"
+        ondialogaccept="return onAccept();"
+        ondialogcancel="onCancel();"
+        minheight="50">
+
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailSearchKey.js"/>
+
+  <!-- <separator/> -->
+
+  <groupbox width="700px" id="keySelGroup">
+    <caption id="dialogHeader"
+             label="&annealmail.searchKeyDlgCapt.label;"/>
+
+    <tree id="annealmailKeySel" flex="1"
+      hidecolumnpicker="false"
+      style="height:350px"
+      onclick="keySelectCallback(event);">
+
+      <keyset id="winKeys">
+        <key id="key_selectAll" key="&annealmail.keySearch.selectAll.key;"
+             oncommand="selectAllKeys()" modifiers="accel"/>
+      </keyset>
+
+      <treecols>
+        <treecol id="selectionCol" style="width:25px"
+                 label="&annealmail.keySelection.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="enigUserNameCol" primary="true"
+            flex="1"
+            label="&annealmail.keyUserId.label;"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="expCol" style="width:70px"
+                 label="&annealmail.created.label;"
+                 persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="keyCol" style="width:90px"
+                 label="&annealmail.keyId.label;"
+                 persist="width"/>
+      </treecols>
+
+      <treechildren id="annealmailKeySelChildren"/>
+
+    </tree>
+
+
+  </groupbox>
+
+  <hbox id="progress.box">
+    <label value="&annealmail.progress.label;:" control="dialog.progress"/>
+    <progressmeter id="dialog.progress" mode="determined" value="0"/>
+  </hbox>
+
+    <vbox align="start">
+      <button id="selall-button"
+              label="&annealmail.searchKeyDlgSelAll.label;"
+              oncommand="selectAllKeys()"/>
+    </vbox>
+
+  <vbox align="end">
+    <hbox align="end">
+      <button id="dialog.accept" dlgtype="accept" disabled="true"/>
+      <button dlgtype="cancel"/>
+    </hbox>
+  </vbox>
+</dialog>

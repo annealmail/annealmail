@@ -39,15 +39,15 @@
 <!-- targetPlatform not required (anymore) -->
 
     <!-- Front End MetaData -->
-    <em:name>Enigmail</em:name>
+    <em:name>AnnealMail</em:name>
     <em:description>OpenPGP message encryption and authentication</em:description>
-    <em:creator>Enigmail Team</em:creator>
-    <em:homepageURL>http://www.enigmail.net/</em:homepageURL>
+    <em:creator>AnnealMail Team</em:creator>
+    <em:homepageURL>http://www.annealmail.net/</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
-    <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
-    <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
-    <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
+    <em:optionsURL>chrome://annealmail/content/pref-annealmail.xul</em:optionsURL>
+    <em:aboutURL>chrome://annealmail/content/annealmailAbout.xul</em:aboutURL>
+    <em:iconURL>chrome://annealmail/skin/annealmail-about.png</em:iconURL>
 
   </Description>
 

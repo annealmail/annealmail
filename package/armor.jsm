@@ -9,13 +9,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailArmor"];
+var EXPORTED_SYMBOLS = ["AnnealMailArmor"];
 
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
+Components.utils.import("resource://annealmail/log.jsm"); /* global AnnealMailLog: false */
 
 const Ci = Components.interfaces;
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
 // Locates STRing in TEXT occurring only at the beginning of a line
 function indexOfArmorDelimiter(text, str, offset) {
@@ -54,14 +54,14 @@ function indexOfNewline(str, off, then) {
   }
 }
 
-const EnigmailArmor = {
+const AnnealMailArmor = {
   // Locates offsets bracketing PGP armored block in text,
   // starting from given offset, and returns block type string.
   // beginIndex = offset of first character of block
   // endIndex = offset of last character of block (newline)
   // If block is not found, the null string is returned;
   locateArmoredBlock: function(text, offset, indentStr, beginIndexObj, endIndexObj, indentStrObj) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: " + offset + ", '" + indentStr + "'\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.locateArmoredBlock: " + offset + ", '" + indentStr + "'\n");
 
     beginIndexObj.value = -1;
     endIndexObj.value = -1;
@@ -110,12 +110,12 @@ const EnigmailArmor = {
     var blockType = "";
     if (matches && (matches.length > 1)) {
       blockType = matches[1];
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.locateArmoredBlock: blockType=" + blockType + "\n");
+      AnnealMailLog.DEBUG("annealmail.js: AnnealMail.locateArmoredBlock: blockType=" + blockType + "\n");
     }
 
     if (blockType == "UNVERIFIED MESSAGE") {
       // Skip any unverified message block
-      return EnigmailArmor.locateArmoredBlock(text, endIndex + 1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
+      return AnnealMailArmor.locateArmoredBlock(text, endIndex + 1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
     }
 
     beginIndexObj.value = beginIndex;
@@ -125,7 +125,7 @@ const EnigmailArmor = {
   },
 
   /*
-   *     locateArmoredBlocks returns an array with GPGBlock positions
+   *     locateArmoredBlocks returns an array with CCRBlock positions
    *
    *      Struct:
    *        int obj.begin
@@ -145,7 +145,7 @@ const EnigmailArmor = {
     var i = 0;
     var b;
 
-    while ((b = EnigmailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, {})) !== "") {
+    while ((b = AnnealMailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, {})) !== "") {
       blocks.push({
         begin: beginObj.value,
         end: endObj.value,
@@ -155,12 +155,12 @@ const EnigmailArmor = {
       i = endObj.value;
     }
 
-    EnigmailLog.DEBUG("enigmail.js: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
+    AnnealMailLog.DEBUG("annealmail.js: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
     return blocks;
   },
 
   extractSignaturePart: function(signatureBlock, part) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.extractSignaturePart: part=" + part + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.extractSignaturePart: part=" + part + "\n");
 
     return searchBlankLine(signatureBlock, function(offset) {
       return indexOfNewline(signatureBlock, offset + 1, function(offset) {
@@ -169,7 +169,7 @@ const EnigmailArmor = {
           return "";
         }
 
-        if (part === nsIEnigmail.SIGNATURE_TEXT) {
+        if (part === nsIAnnealMail.SIGNATURE_TEXT) {
           return signatureBlock.substr(offset + 1, beginIndex - offset - 1).
           replace(/^- -/, "-").
           replace(/\n- -/g, "\n-").
@@ -185,12 +185,12 @@ const EnigmailArmor = {
           var signBlock = signatureBlock.substr(offset, endIndex - offset);
 
           return searchBlankLine(signBlock, function(armorIndex) {
-            if (part == nsIEnigmail.SIGNATURE_HEADERS) {
+            if (part == nsIAnnealMail.SIGNATURE_HEADERS) {
               return signBlock.substr(1, armorIndex);
             }
 
             return indexOfNewline(signBlock, armorIndex + 1, function(armorIndex) {
-              if (part == nsIEnigmail.SIGNATURE_ARMOR) {
+              if (part == nsIAnnealMail.SIGNATURE_ARMOR) {
                 return signBlock.substr(armorIndex, endIndex - armorIndex).
                 replace(/\s*/g, "");
               }
@@ -205,8 +205,8 @@ const EnigmailArmor = {
   },
 
   registerOn: function(target) {
-    target.locateArmoredBlock = EnigmailArmor.locateArmoredBlock;
-    target.locateArmoredBlocks = EnigmailArmor.locateArmoredBlocks;
-    target.extractSignaturePart = EnigmailArmor.extractSignaturePart;
+    target.locateArmoredBlock = AnnealMailArmor.locateArmoredBlock;
+    target.locateArmoredBlocks = AnnealMailArmor.locateArmoredBlocks;
+    target.extractSignaturePart = AnnealMailArmor.extractSignaturePart;
   }
 };

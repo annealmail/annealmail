@@ -8,29 +8,29 @@
 
 <?xml-stylesheet href="chrome://messenger/skin/accountManage.css" type="text/css"?>
 
-<!DOCTYPE page SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+<!DOCTYPE page SYSTEM "chrome://annealmail/locale/annealmail.dtd">
 
 <page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
       class="color-dialog"
-      title="&enigmail.amPrefTitle.label;"
+      title="&annealmail.amPrefTitle.label;"
       onload="parent.onPanelLoaded('am-enigprefs.xul');"
-      ondialogaccept="Enigmail.edit.onAcceptEditor();"
+      ondialogaccept="AnnealMail.edit.onAcceptEditor();"
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/am-enigprefs.js"/>
 
   <broadcasterset>
-    <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>
-    <broadcaster id="enigmail_bcUseKeyId" disabled="false"/>
-    <broadcaster id="enigmail_bcUseUrl" disabled="true"/>
+    <broadcaster id="annealmail_bcEnablePgp" disabled="false"/>
+    <broadcaster id="annealmail_bcUseKeyId" disabled="false"/>
+    <broadcaster id="annealmail_bcUseUrl" disabled="true"/>
   </broadcasterset>
 
-  <dialogheader title="&enigmail.amPrefTitle.label;"/>
+  <dialogheader title="&annealmail.amPrefTitle.label;"/>
 
-  <description>&enigmail.amPrefDesc.label;</description>
+  <description>&annealmail.amPrefDesc.label;</description>
 
-  <vbox flex="1" id="enigmail_IdentityEdit"/>
+  <vbox flex="1" id="annealmail_IdentityEdit"/>
 
 </page>

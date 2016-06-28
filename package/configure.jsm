@@ -9,29 +9,29 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConfigure"];
+var EXPORTED_SYMBOLS = ["AnnealMailConfigure"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 
-/*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
+/*global AnnealMailLog: false, AnnealMailPrefs: false, AnnealMailTimer: false, AnnealMailApp: false, AnnealMailLocale: false, AnnealMailDialog: false, AnnealMailWindows: false */
 
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
-Cu.import("resource://enigmail/timer.jsm");
-Cu.import("resource://enigmail/app.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/dialog.jsm");
-Cu.import("resource://enigmail/windows.jsm");
+Cu.import("resource://annealmail/log.jsm");
+Cu.import("resource://annealmail/prefs.jsm");
+Cu.import("resource://annealmail/timer.jsm");
+Cu.import("resource://annealmail/app.jsm");
+Cu.import("resource://annealmail/locale.jsm");
+Cu.import("resource://annealmail/dialog.jsm");
+Cu.import("resource://annealmail/windows.jsm");
 
 function upgradeRecipientsSelection() {
   // Upgrade perRecipientRules and recipientsSelectionOption to
   // new recipientsSelection
 
-  var keySel = EnigmailPrefs.getPref("recipientsSelectionOption");
-  var perRecipientRules = EnigmailPrefs.getPref("perRecipientRules");
+  var keySel = AnnealMailPrefs.getPref("recipientsSelectionOption");
+  var perRecipientRules = AnnealMailPrefs.getPref("perRecipientRules");
 
   var setVal = 2;
 
@@ -70,54 +70,54 @@ function upgradeRecipientsSelection() {
   }
 
   // set new pref
-  EnigmailPrefs.setPref("recipientsSelection", setVal);
+  AnnealMailPrefs.setPref("recipientsSelection", setVal);
 
   // clear old prefs
-  EnigmailPrefs.getPrefBranch().clearUserPref("perRecipientRules");
-  EnigmailPrefs.getPrefBranch().clearUserPref("recipientsSelectionOption");
+  AnnealMailPrefs.getPrefBranch().clearUserPref("perRecipientRules");
+  AnnealMailPrefs.getPrefBranch().clearUserPref("recipientsSelectionOption");
 }
 
 function upgradePrefsSending() {
-  EnigmailLog.DEBUG("enigmailCommon.jsm: upgradePrefsSending()\n");
+  AnnealMailLog.DEBUG("annealmailCommon.jsm: upgradePrefsSending()\n");
 
-  var cbs = EnigmailPrefs.getPref("confirmBeforeSend");
-  var ats = EnigmailPrefs.getPref("alwaysTrustSend");
-  var ksfr = EnigmailPrefs.getPref("keepSettingsForReply");
-  EnigmailLog.DEBUG("enigmailCommon.jsm: upgradePrefsSending cbs=" + cbs + " ats=" + ats + " ksfr=" + ksfr + "\n");
+  var cbs = AnnealMailPrefs.getPref("confirmBeforeSend");
+  var ats = AnnealMailPrefs.getPref("alwaysTrustSend");
+  var ksfr = AnnealMailPrefs.getPref("keepSettingsForReply");
+  AnnealMailLog.DEBUG("annealmailCommon.jsm: upgradePrefsSending cbs=" + cbs + " ats=" + ats + " ksfr=" + ksfr + "\n");
 
   // Upgrade confirmBeforeSend (bool) to confirmBeforeSending (int)
   switch (cbs) {
     case false:
-      EnigmailPrefs.setPref("confirmBeforeSending", 0); // never
+      AnnealMailPrefs.setPref("confirmBeforeSending", 0); // never
       break;
     case true:
-      EnigmailPrefs.setPref("confirmBeforeSending", 1); // always
+      AnnealMailPrefs.setPref("confirmBeforeSending", 1); // always
       break;
   }
 
   // Upgrade alwaysTrustSend (bool)   to acceptedKeys (int)
   switch (ats) {
     case false:
-      EnigmailPrefs.setPref("acceptedKeys", 0); // valid
+      AnnealMailPrefs.setPref("acceptedKeys", 0); // valid
       break;
     case true:
-      EnigmailPrefs.setPref("acceptedKeys", 1); // all
+      AnnealMailPrefs.setPref("acceptedKeys", 1); // all
       break;
   }
 
   // if all settings are default settings, use convenient encryption
   if (cbs === false && ats === true && ksfr === true) {
-    EnigmailPrefs.setPref("encryptionModel", 0); // convenient
-    EnigmailLog.DEBUG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=0 (convenient)\n");
+    AnnealMailPrefs.setPref("encryptionModel", 0); // convenient
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: upgradePrefsSending() encryptionModel=0 (convenient)\n");
   }
   else {
-    EnigmailPrefs.setPref("encryptionModel", 1); // manually
-    EnigmailLog.DEBUG("enigmailCommon.jsm: upgradePrefsSending() encryptionModel=1 (manually)\n");
+    AnnealMailPrefs.setPref("encryptionModel", 1); // manually
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: upgradePrefsSending() encryptionModel=1 (manually)\n");
   }
 
   // clear old prefs
-  EnigmailPrefs.getPrefBranch().clearUserPref("confirmBeforeSend");
-  EnigmailPrefs.getPrefBranch().clearUserPref("alwaysTrustSend");
+  AnnealMailPrefs.getPrefBranch().clearUserPref("confirmBeforeSend");
+  AnnealMailPrefs.getPrefBranch().clearUserPref("alwaysTrustSend");
 }
 
 
@@ -125,25 +125,25 @@ function upgradeHeadersView() {
   // all headers hack removed -> make sure view is correct
   var hdrMode = null;
   try {
-    hdrMode = EnigmailPrefs.getPref("show_headers");
+    hdrMode = AnnealMailPrefs.getPref("show_headers");
   }
   catch (ex) {}
 
   if (!hdrMode) hdrMode = 1;
   try {
-    EnigmailPrefs.getPrefBranch().clearUserPref("show_headers");
+    AnnealMailPrefs.getPrefBranch().clearUserPref("show_headers");
   }
   catch (ex) {}
 
-  EnigmailPrefs.getPrefRoot().setIntPref("mail.show_headers", hdrMode);
+  AnnealMailPrefs.getPrefRoot().setIntPref("mail.show_headers", hdrMode);
 }
 
 function upgradeCustomHeaders() {
   try {
-    var extraHdrs = " " + EnigmailPrefs.getPrefRoot().getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
+    var extraHdrs = " " + AnnealMailPrefs.getPrefRoot().getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
 
     var extraHdrList = [
-      "x-enigmail-version",
+      "x-annealmail-version",
       "content-transfer-encoding",
       "openpgp",
       "x-mimeole",
@@ -156,7 +156,7 @@ function upgradeCustomHeaders() {
     }
 
     extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
-    EnigmailPrefs.getPrefRoot().setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs);
+    AnnealMailPrefs.getPrefRoot().setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs);
   }
   catch (ex) {}
 }
@@ -167,7 +167,7 @@ function upgradeCustomHeaders() {
 function upgradeOldPgpMime() {
   var pgpMimeMode = false;
   try {
-    pgpMimeMode = (EnigmailPrefs.getPref("usePGPMimeOption") == 2);
+    pgpMimeMode = (AnnealMailPrefs.getPref("usePGPMimeOption") == 2);
   }
   catch (ex) {
     return;
@@ -182,7 +182,7 @@ function upgradeOldPgpMime() {
       }
     }
 
-    EnigmailPrefs.getPrefBranch().clearUserPref("usePGPMimeOption");
+    AnnealMailPrefs.getPrefBranch().clearUserPref("usePGPMimeOption");
   }
   catch (ex) {}
 }
@@ -208,20 +208,20 @@ function defaultPgpMime() {
     }
   }
 
-  if (EnigmailPrefs.getPref("advancedUser") && changedSomething) {
-    EnigmailDialog.alert(null,
-      EnigmailLocale.getString("preferences.defaultToPgpMime"));
+  if (AnnealMailPrefs.getPref("advancedUser") && changedSomething) {
+    AnnealMailDialog.alert(null,
+      AnnealMailLocale.getString("preferences.defaultToPgpMime"));
   }
 }
 
-const EnigmailConfigure = {
-  configureEnigmail: function(win, startingPreferences) {
-    EnigmailLog.DEBUG("configure.jsm: configureEnigmail\n");
-    let oldVer = EnigmailPrefs.getPref("configuredVersion");
+const AnnealMailConfigure = {
+  configureAnnealMail: function(win, startingPreferences) {
+    AnnealMailLog.DEBUG("configure.jsm: configureAnnealMail\n");
+    let oldVer = AnnealMailPrefs.getPref("configuredVersion");
 
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
     if (oldVer === "") {
-      EnigmailWindows.openSetupWizard(win, false);
+      AnnealMailWindows.openSetupWizard(win, false);
     }
     else {
       if (oldVer < "0.95") {
@@ -252,19 +252,19 @@ const EnigmailConfigure = {
       if (vc.compare(oldVer, "1.7") < 0) {
         // open a modal dialog. Since this might happen during the opening of another
         // window, we have to do this asynchronously
-        EnigmailTimer.setTimeout(
+        AnnealMailTimer.setTimeout(
           function _cb() {
-            var doIt = EnigmailDialog.confirmDlg(win,
-              EnigmailLocale.getString("enigmailCommon.versionSignificantlyChanged"),
-              EnigmailLocale.getString("enigmailCommon.checkPreferences"),
-              EnigmailLocale.getString("dlg.button.close"));
+            var doIt = AnnealMailDialog.confirmDlg(win,
+              AnnealMailLocale.getString("annealmailCommon.versionSignificantlyChanged"),
+              AnnealMailLocale.getString("annealmailCommon.checkPreferences"),
+              AnnealMailLocale.getString("dlg.button.close"));
             if (!startingPreferences && doIt) {
               // same as:
-              // - EnigmailWindows.openPrefWindow(window, true, 'sendingTab');
+              // - AnnealMailWindows.openPrefWindow(window, true, 'sendingTab');
               // but
               // - without starting the service again because we do that right now
               // - and modal (waiting for its end)
-              win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+              win.openDialog("chrome://annealmail/content/pref-annealmail.xul",
                 "_blank", "chrome,resizable=yes,modal", {
                   'showBasic': true,
                   'clientType': 'thunderbird',
@@ -279,7 +279,7 @@ const EnigmailConfigure = {
       }
     }
 
-    EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
-    EnigmailPrefs.savePrefs();
+    AnnealMailPrefs.setPref("configuredVersion", AnnealMailApp.getVersion());
+    AnnealMailPrefs.savePrefs();
   }
 };

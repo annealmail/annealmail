@@ -8,15 +8,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailPrefs"];
+var EXPORTED_SYMBOLS = ["AnnealMailPrefs"];
 
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
+Components.utils.import("resource://annealmail/log.jsm"); /* global AnnealMailLog: false */
+Components.utils.import("resource://annealmail/files.jsm"); /* global AnnealMailFiles: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
+const ANNEALMAIL_PREFS_ROOT = "extensions.annealmail.";
 
 const p = {
   service: null,
@@ -29,19 +29,19 @@ function initPrefService() {
     p.service = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
     p.root = p.service.getBranch(null);
-    p.branch = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
+    p.branch = p.service.getBranch(ANNEALMAIL_PREFS_ROOT);
 
     if (p.branch.getCharPref("logDirectory")) {
-      EnigmailLog.setLogLevel(5);
+      AnnealMailLog.setLogLevel(5);
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
-    EnigmailLog.ERROR(ex.toString());
+    AnnealMailLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
+    AnnealMailLog.ERROR(ex.toString());
   }
 }
 
-var EnigmailPrefs = {
+var AnnealMailPrefs = {
   getPrefRoot: function() {
     if (!p.branch) {
       initPrefService();
@@ -84,7 +84,7 @@ var EnigmailPrefs = {
     }
     catch (ex) {
       // Failed to get pref value
-      EnigmailLog.ERROR("enigmailCommon.jsm: getPref: unknown prefName:" + prefName + " \n");
+      AnnealMailLog.ERROR("annealmailCommon.jsm: getPref: unknown prefName:" + prefName + " \n");
     }
 
     return prefValue;
@@ -99,7 +99,7 @@ var EnigmailPrefs = {
    * @return Boolean Was the value stored successfully?
    */
   setPref: function(prefName, value) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: setPref: " + prefName + ", " + value + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: setPref: " + prefName + ", " + value + "\n");
 
     if (!p.branch) {
       initPrefService();
@@ -158,7 +158,7 @@ var EnigmailPrefs = {
    * no return value
    */
   savePrefs: function() {
-    EnigmailLog.DEBUG("enigmailCommon.js: savePrefs\n");
+    AnnealMailLog.DEBUG("annealmailCommon.js: savePrefs\n");
     try {
       p.service.savePrefFile(null);
     }
@@ -166,10 +166,10 @@ var EnigmailPrefs = {
   },
 
   /**
-   * Compiles all Enigmail preferences into an object
+   * Compiles all AnnealMail preferences into an object
    */
   getAllPrefs: function() {
-    EnigmailLog.DEBUG("prefs.js: getAllPrefs\n");
+    AnnealMailLog.DEBUG("prefs.js: getAllPrefs\n");
 
     var retObj = {
       value: 0
@@ -201,7 +201,7 @@ var EnigmailPrefs = {
           prefObj[name] = branch.getBoolPref(name);
           break;
         default:
-          EnigmailLog.ERROR("Pref '" + name + "' has unknown type\n");
+          AnnealMailLog.ERROR("Pref '" + name + "' has unknown type\n");
       }
     }
 

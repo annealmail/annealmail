@@ -7,25 +7,25 @@
 
 "use strict";
 
-if (!Enigmail) var Enigmail = {};
+if (!AnnealMail) var AnnealMail = {};
 
 var gPref = null;
 
 function onInit() {
-  Enigmail.edit.onInit();
+  AnnealMail.edit.onInit();
 }
 
 function onAcceptEditor() {
-  Enigmail.edit.onSave();
+  AnnealMail.edit.onSave();
 }
 
 function onPreInit(account, accountValues) {
-  Enigmail.edit.identity = account.defaultIdentity;
-  Enigmail.edit.account = account;
+  AnnealMail.edit.identity = account.defaultIdentity;
+  AnnealMail.edit.account = account;
 }
 
 function onSave() {
-  Enigmail.edit.onSave();
+  AnnealMail.edit.onSave();
 }
 
 function onLockPreference() {
@@ -39,8 +39,8 @@ function disableIfLocked(prefstrArray) {
   // do nothing
 }
 
-function enigmailOnAcceptEditor() {
-  Enigmail.edit.onSave();
+function annealmailOnAcceptEditor() {
+  AnnealMail.edit.onSave();
 
   return true; // allow to close dialog in all cases
 }

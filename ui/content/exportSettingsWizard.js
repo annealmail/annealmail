@@ -11,15 +11,15 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/dialog.jsm"); /*global AnnealMailDialog: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Cu.import("resource://annealmail/configBackup.jsm"); /*global AnnealMailConfigBackup: false */
+Cu.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/prefs.jsm"); /*global AnnealMailPrefs: false */
 
 var osUtils = {};
 Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
@@ -43,8 +43,8 @@ function onCancel() {
 }
 
 function browseExportFile(referencedId) {
-  var filePath = EnigmailDialog.filePicker(window, EnigmailLocale.getString("specifyExportFile"),
-    "", true, "*.zip", EnigmailLocale.getString("defaultBackupFileName") + ".zip", [EnigmailLocale.getString("enigmailSettings"), "*.zip"]);
+  var filePath = AnnealMailDialog.filePicker(window, AnnealMailLocale.getString("specifyExportFile"),
+    "", true, "*.zip", AnnealMailLocale.getString("defaultBackupFileName") + ".zip", [AnnealMailLocale.getString("annealmailSettings"), "*.zip"]);
 
   if (filePath) {
 
@@ -56,7 +56,7 @@ function browseExportFile(referencedId) {
       gWorkFile.file = filePath;
     }
     else {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("cannotWriteToFile", filePath.path));
+      AnnealMailDialog.alert(window, AnnealMailLocale.getString("cannotWriteToFile", filePath.path));
     }
   }
 
@@ -71,44 +71,44 @@ function doExport(tmpDir) {
   let keyRingFile = tmpDir.clone();
   keyRingFile.append("keyring.asc");
 
-  EnigmailLog.DEBUG("importExportWizard: doExport - temp file: " + keyRingFile.path + "\n");
+  AnnealMailLog.DEBUG("importExportWizard: doExport - temp file: " + keyRingFile.path + "\n");
 
-  EnigmailKeyRing.extractKey(true, null, keyRingFile, exitCodeObj, errorMsgObj);
+  AnnealMailKeyRing.extractKey(true, null, keyRingFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
+    AnnealMailDialog.alert(window, AnnealMailLocale.getString("dataExportError"));
     return false;
   }
 
   let otFile = tmpDir.clone();
   otFile.append("ownertrust.txt");
-  EnigmailKeyRing.extractOwnerTrust(otFile, exitCodeObj, errorMsgObj);
+  AnnealMailKeyRing.extractOwnerTrust(otFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
+    AnnealMailDialog.alert(window, AnnealMailLocale.getString("dataExportError"));
     return false;
   }
 
   let prefsFile = tmpDir.clone();
   prefsFile.append("prefs.json");
-  if (EnigmailConfigBackup.backupPrefs(prefsFile) !== 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
+  if (AnnealMailConfigBackup.backupPrefs(prefsFile) !== 0) {
+    AnnealMailDialog.alert(window, AnnealMailLocale.getString("dataExportError"));
     return false;
   }
 
-  let homeDir = EnigmailGpgAgent.getGpgHomeDir();
-  let gpgConfgFile = null;
-  let zipW = EnigmailFiles.createZipFile(gWorkFile.file);
+  let homeDir = AnnealMailCcrAgent.getCcrHomeDir();
+  let ccrConfgFile = null;
+  let zipW = AnnealMailFiles.createZipFile(gWorkFile.file);
 
   zipW.addEntryFile("keyring.asc", Ci.nsIZipWriter.COMPRESSION_DEFAULT, keyRingFile, false);
   zipW.addEntryFile("ownertrust.txt", Ci.nsIZipWriter.COMPRESSION_DEFAULT, otFile, false);
   zipW.addEntryFile("prefs.json", Ci.nsIZipWriter.COMPRESSION_DEFAULT, prefsFile, false);
 
   if (homeDir) {
-    gpgConfgFile = new osUtils.FileUtils.File(homeDir);
-    gpgConfgFile.append("gpg.conf");
+    ccrConfgFile = new osUtils.FileUtils.File(homeDir);
+    ccrConfgFile.append("ccr.conf");
   }
 
-  if (gpgConfgFile && gpgConfgFile.exists()) {
-    zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
+  if (ccrConfgFile && ccrConfgFile.exists()) {
+    zipW.addEntryFile("ccr.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, ccrConfgFile, false);
   }
   zipW.close();
 
@@ -128,7 +128,7 @@ function exportFailed() {
 }
 
 function startExport() {
-  EnigmailLog.DEBUG("importExportWizard: doExport\n");
+  AnnealMailLog.DEBUG("importExportWizard: doExport\n");
   document.getElementById("errorMessage").setAttribute("hidden", "true");
 
   let wizard = getWizard();
@@ -136,12 +136,12 @@ function startExport() {
   wizard.canRewind = false;
   wizard.getButton("finish").setAttribute("disabled", "true");
 
-  let svc = EnigmailCore.getService();
+  let svc = AnnealMailCore.getService();
   if (!svc) return exportFailed();
 
   if (!gWorkFile.file) return exportFailed();
 
-  let tmpDir = EnigmailFiles.createTempSubDir("enig-exp", true);
+  let tmpDir = AnnealMailFiles.createTempSubDir("enig-exp", true);
 
   wizard.getButton("cancel").setAttribute("disabled", "true");
   document.getElementById("spinningWheel").removeAttribute("hidden");
@@ -168,11 +168,11 @@ function startExport() {
 }
 
 function checkAdditionalParam() {
-  let param = EnigmailPrefs.getPref("agentAdditionalParam");
+  let param = AnnealMailPrefs.getPref("agentAdditionalParam");
 
   if (param) {
     if (param.search(/--(homedir|trustdb-name|options)/) >= 0 || param.search(/--(primary-|secret-)?keyring/) >= 0) {
-      EnigmailDialog.alert(null, EnigmailLocale.getString("homedirParamNotSUpported"));
+      AnnealMailDialog.alert(null, AnnealMailLocale.getString("homedirParamNotSUpported"));
       return false;
     }
   }

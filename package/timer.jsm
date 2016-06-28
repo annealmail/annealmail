@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailPrefs: false */
+/*global Components: false, AnnealMailLog: false, AnnealMailPrefs: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,12 +8,12 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailTimer"];
+var EXPORTED_SYMBOLS = ["AnnealMailTimer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const EnigmailTimer = {
+const AnnealMailTimer = {
   /**
    * wait a defined number of miliseconds, then call a callback function
    * asynchronously

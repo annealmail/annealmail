@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+
+<overlay id="annealmail_IdentityEditOvl"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <vbox id="annealmail_IdentityEdit">
+    <checkbox id="annealmail_enablePgp"
+              prefstring="mail.identity.%identitykey%.enablePgp"
+              preftype="bool" prefattribute="value"
+              label="&annealmail.amPrefEnablePgp.label;"
+              oncommand="AnnealMail.edit.toggleEnable();"/>
+    <vbox>
+      <groupbox id="annealmail_encryption.titleBox">
+        <radiogroup id="annealmail_pgpKeyMode" aria-labelledby="enablePgp">
+          <radio id="annealmail_keymode_useFromAddress"
+                 label="&annealmail.amPrefUseFromAddr.label;"
+                 value="0"
+                 observes="annealmail_bcEnablePgp"
+                 oncommand="AnnealMail.edit.enableKeySel(false);"/>
+          <vbox>
+            <radio id="annealmail_keymode_usePgpkeyId"
+                   label="&annealmail.amPrefUseKeyId.label;"
+                   observes="annealmail_bcEnablePgp"
+                   value="1"
+                   oncommand="AnnealMail.edit.enableKeySel(true);"/>
+            <hbox>
+              <textbox id="annealmail_identity.pgpkeyId" aria-labelledby="keymode_usePgpkeyId"
+                       prefstring="mail.identity.%identitykey%.pgpkeyId"
+                       observes="annealmail_bcUseKeyId"
+                       readonly="true"
+                       preftype="wstring" prefattribute="value"/>
+              <button id="annealmail_selectPgpKey" label="&annealmail.amPrefSelectKey.label;"
+                      observes="annealmail_bcUseKeyId"
+                      oncommand="AnnealMail.edit.selectKeyId()"/>
+            </hbox>
+          </vbox>
+        </radiogroup>
+
+        <groupbox>
+          <caption label="&annealmail.amPrefDefaultEncrypt.label;"/>
+
+          <checkbox id="annealmail_encrypt_ifPossible"
+                    checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.defaultEncryption.label;"/>
+          <checkbox id="annealmail_sign_ifPossible"
+                    checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.defaultSigning.label;"/>
+          <checkbox id="annealmail_pgpMimeMode"
+                    checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.usePGPMimeAlways.label;"/>
+
+          <separator/>
+
+          <label value="&annealmail.afterDefaultsAndRules.label;"/>
+          <checkbox id="annealmail_sign_notEncrypted"
+                    checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.finallySignNotEncrypted.label;"/>
+          <checkbox id="annealmail_sign_encrypted"
+                    checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.finallySignEncrypted.label;"/>
+
+          <separator/>
+
+          <checkbox id="annealmail_autoEncryptDrafts" checked="false"
+                    observes="annealmail_bcEnablePgp"
+                    label="&annealmail.autoEncryptDrafts.label;"/>
+
+        </groupbox>
+
+        <hbox autostretch="never" id="annealmail_PrefsBox">
+          <spacer flex="1"/>
+          <button class="dialog"
+                  id="annealmail_advancedAccountPrefsButton"
+                  observes="annealmail_bcEnablePgp"
+                  advanced="true"
+                  label="&annealmail.advancedPrefsButton.label;"
+                  oncommand="AnnealMail.edit.advancedIdentitySettings()"/>
+          <button class="dialog"
+                  id="annealmail_openpgpPrefsButton"
+                  observes="annealmail_bcEnablePgp"
+                  label="&annealmail.openpgpPrefsButton.label;"
+                  oncommand="AnnealMailWindows.openPrefWindow(window, true, 'sendingTab');"/>
+        </hbox>
+      </groupbox>
+    </vbox>
+  </vbox>
+</overlay>

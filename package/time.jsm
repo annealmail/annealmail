@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLocale: false */
+/*global Components: false, AnnealMailLocale: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,17 +8,17 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailTime"];
+var EXPORTED_SYMBOLS = ["AnnealMailTime"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/locale.jsm");
+Cu.import("resource://annealmail/locale.jsm");
 
 const DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
 
-const EnigmailTime = {
+const AnnealMailTime = {
   /**
    * Transform a Unix-Timestamp to a human-readable date/time string
    *
@@ -31,7 +31,7 @@ const EnigmailTime = {
   getDateTime: function(dateNum, withDate, withTime) {
     if (dateNum && dateNum !== 0) {
       let dat = new Date(dateNum * 1000);
-      let appLocale = EnigmailLocale.get();
+      let appLocale = AnnealMailLocale.get();
       let dateTimeFormat = Cc[DATE_FORMAT_CONTRACTID].getService(Ci.nsIScriptableDateFormat);
 
       let dateFormat = (withDate ? dateTimeFormat.dateFormatShort : dateTimeFormat.dateFormatNone);

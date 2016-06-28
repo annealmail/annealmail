@@ -9,22 +9,22 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
+var EXPORTED_SYMBOLS = ["AnnealMailFixExchangeMsg"];
 
 const Cu = Components.utils;
 
 Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
-Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/funcs.jsm"); /*global AnnealMailFuncs: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://annealmail/streams.jsm"); /*global AnnealMailStreams: false */
 
-const EC = EnigmailCore;
+const EC = AnnealMailCore;
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const nsIEnigmail = Components.interfaces.nsIEnigmail;
+const nsIAnnealMail = Components.interfaces.nsIAnnealMail;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
@@ -38,14 +38,14 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
  *
  * @return Promise; upon success, the promise returns the messageKey
  */
-const EnigmailFixExchangeMsg = {
+const AnnealMailFixExchangeMsg = {
   fixExchangeMessage: function(hdr, brokenByApp, destFolderUri) {
     var self = this;
     return new Promise(
       function fixExchangeMessage_p(resolve, reject) {
 
         let msgUriSpec = hdr.folder.getUriForMsg(hdr);
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: msgUriSpec: " + msgUriSpec + "\n");
+        AnnealMailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: msgUriSpec: " + msgUriSpec + "\n");
 
         self.hdr = hdr;
         self.destFolder = hdr.folder;
@@ -64,12 +64,12 @@ const EnigmailFixExchangeMsg = {
         let p = self.getMessageBody();
         p.then(
           function resolved(fixedMsgData) {
-            EnigmailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: got fixedMsgData\n");
+            AnnealMailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: got fixedMsgData\n");
             self.copyToTargetFolder(fixedMsgData);
           });
         p.catch(
           function rejected(reason) {
-            EnigmailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: caught rejection: " + reason + "\n");
+            AnnealMailLog.DEBUG("fixExchangeMsg.jsm: fixExchangeMessage: caught rejection: " + reason + "\n");
             reject();
             return;
           });
@@ -78,7 +78,7 @@ const EnigmailFixExchangeMsg = {
   },
 
   getMessageBody: function() {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody:\n");
+    AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody:\n");
 
     var self = this;
 
@@ -88,16 +88,16 @@ const EnigmailFixExchangeMsg = {
         self.msgSvc.GetUrlForUri(self.hdr.folder.getUriForMsg(self.hdr), u, null);
 
         let op = (u.value.spec.indexOf("?") > 0 ? "&" : "?");
-        let url = u.value.spec; // + op + 'part=' + part+"&header=enigmailConvert";
+        let url = u.value.spec; // + op + 'part=' + part+"&header=annealmailConvert";
 
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: getting data from URL " + url + "\n");
+        AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getting data from URL " + url + "\n");
 
-        let s = EnigmailStreams.newStringStreamListener(
+        let s = AnnealMailStreams.newStringStreamListener(
           function analyzeData(data) {
-            EnigmailLog.DEBUG("fixExchangeMsg.jsm: analyzeDecryptedData: got " + data.length + " bytes\n");
+            AnnealMailLog.DEBUG("fixExchangeMsg.jsm: analyzeDecryptedData: got " + data.length + " bytes\n");
 
-            if (EnigmailLog.getLogLevel() > 5) {
-              EnigmailLog.DEBUG("*** start data ***\n'" + data + "'\n***end data***\n");
+            if (AnnealMailLog.getLogLevel() > 5) {
+              AnnealMailLog.DEBUG("*** start data ***\n'" + data + "'\n***end data***\n");
             }
 
             let hdrEnd = data.search(/\r?\n\r?\n/);
@@ -127,7 +127,7 @@ const EnigmailFixExchangeMsg = {
                 body = self.getCorrectediPGMailBodyData(data.substr(hdrEnd + 2), boundary);
                 break;
               default:
-                EnigmailLog.ERROR("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp + "\n");
+                AnnealMailLog.ERROR("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp + "\n");
                 reject(99);
                 return;
             }
@@ -149,7 +149,7 @@ const EnigmailFixExchangeMsg = {
           channel.asyncOpen(s, null);
         }
         catch (e) {
-          EnigmailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody: exception " + e + "\n");
+          AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody: exception " + e + "\n");
         }
       }
     );
@@ -164,7 +164,7 @@ const EnigmailFixExchangeMsg = {
    *      }
    */
   getFixedHeaderData: function(hdrLines) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getFixedHeaderData: hdrLines[]:'" + hdrLines.length + "'\n");
+    AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getFixedHeaderData: hdrLines[]:'" + hdrLines.length + "'\n");
     let r = {
       headers: "",
       boundary: ""
@@ -185,7 +185,7 @@ const EnigmailFixExchangeMsg = {
           else {
             // we got the complete content-type header
             contentTypeLine = contentTypeLine.replace(/[\r\n]/g, "");
-            let h = EnigmailFuncs.getHeaderData(contentTypeLine);
+            let h = AnnealMailFuncs.getHeaderData(contentTypeLine);
             r.boundary = h.boundary || "";
             break;
           }
@@ -201,7 +201,7 @@ const EnigmailFixExchangeMsg = {
     r.headers += 'Content-Type: multipart/encrypted;\r\n' +
       '  protocol="application/pgp-encrypted";\r\n' +
       '  boundary="' + r.boundary + '"\r\n' +
-      'X-Enigmail-Info: Fixed broken PGP/MIME message\r\n';
+      'X-AnnealMail-Info: Fixed broken PGP/MIME message\r\n';
 
     return r;
   },
@@ -211,12 +211,12 @@ const EnigmailFixExchangeMsg = {
    * Get corrected body for MS-Exchange messages
    */
   getCorrectedExchangeBodyData: function(bodyData, boundary) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='" + boundary + "'\n");
+    AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='" + boundary + "'\n");
     let boundRx = new RegExp("^--" + boundary, "gm");
     let match = boundRx.exec(bodyData);
 
     if (match.index < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find index of mime type to skip\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find index of mime type to skip\n");
       return null;
     }
 
@@ -224,20 +224,20 @@ const EnigmailFixExchangeMsg = {
     // found first instance -- that's the message part to ignore
     match = boundRx.exec(bodyData);
     if (match.index <= 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME version identification\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME version identification\n");
       return null;
     }
 
     let versionIdent = match.index;
 
     if (bodyData.substring(skipStart, versionIdent).search(/^content-type:[ \t]*text\/plain/mi) < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: first MIME part is not content-type text/plain\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: first MIME part is not content-type text/plain\n");
       return null;
     }
 
     match = boundRx.exec(bodyData);
     if (match.index < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME encrypted data\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: did not find boundary of PGP/MIME encrypted data\n");
       return null;
     }
 
@@ -247,16 +247,16 @@ const EnigmailFixExchangeMsg = {
     let ct = mimeHdr.extractHeader("content-type", false);
 
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of version-identification\n");
-      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of version-identification\n");
+      AnnealMailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
     mimeHdr.initialize(bodyData.substr(encData, 500));
     ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/octet-stream/i) < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of PGP/MIME data\n");
-      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of PGP/MIME data\n");
+      AnnealMailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
@@ -268,12 +268,12 @@ const EnigmailFixExchangeMsg = {
    * Get corrected body for iPGMail messages
    */
   getCorrectediPGMailBodyData: function(bodyData, boundary) {
-    EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='" + boundary + "'\n");
+    AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='" + boundary + "'\n");
     let boundRx = new RegExp("^--" + boundary, "gm");
     let match = boundRx.exec(bodyData);
 
     if (match.index < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find index of mime type to skip\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find index of mime type to skip\n");
       return null;
     }
 
@@ -281,7 +281,7 @@ const EnigmailFixExchangeMsg = {
     // found first instance -- that's the message part to ignore
     match = boundRx.exec(bodyData);
     if (match.index <= 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find boundary of text/plain msg part\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find boundary of text/plain msg part\n");
       return null;
     }
 
@@ -289,7 +289,7 @@ const EnigmailFixExchangeMsg = {
 
     match = boundRx.exec(bodyData);
     if (match.index < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find end boundary of PGP/MIME encrypted data\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: did not find end boundary of PGP/MIME encrypted data\n");
       return null;
     }
 
@@ -298,8 +298,8 @@ const EnigmailFixExchangeMsg = {
     mimeHdr.initialize(bodyData.substr(encData, 500));
     let ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: wrong content-type of PGP/MIME data\n");
-      EnigmailLog.DEBUG("   ct = '" + ct + "'\n");
+      AnnealMailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: wrong content-type of PGP/MIME data\n");
+      AnnealMailLog.DEBUG("   ct = '" + ct + "'\n");
       return null;
     }
 
@@ -352,19 +352,19 @@ const EnigmailFixExchangeMsg = {
       },
       OnStopCopy: function(statusCode) {
         if (statusCode !== 0) {
-          EnigmailLog.DEBUG("fixExchangeMsg.jsm: error copying message: " + statusCode + "\n");
+          AnnealMailLog.DEBUG("fixExchangeMsg.jsm: error copying message: " + statusCode + "\n");
           tempFile.remove(false);
           self.reject(3);
           return;
         }
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: copy complete\n");
+        AnnealMailLog.DEBUG("fixExchangeMsg.jsm: copy complete\n");
 
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: deleting message key=" + self.hdr.messageKey + "\n");
+        AnnealMailLog.DEBUG("fixExchangeMsg.jsm: deleting message key=" + self.hdr.messageKey + "\n");
         let msgArray = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
         msgArray.appendElement(self.hdr, false);
 
         self.hdr.folder.deleteMessages(msgArray, null, true, false, null, false);
-        EnigmailLog.DEBUG("fixExchangeMsg.jsm: deleted original message\n");
+        AnnealMailLog.DEBUG("fixExchangeMsg.jsm: deleted original message\n");
 
         tempFile.remove(false);
         self.resolve(this.msgKey);

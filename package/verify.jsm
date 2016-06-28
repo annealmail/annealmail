@@ -8,36 +8,36 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailVerifyAttachment"];
+var EXPORTED_SYMBOLS = ["AnnealMailVerifyAttachment"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Cu.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Cu.import("resource://annealmail/time.jsm"); /*global AnnealMailTime: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/decryption.jsm"); /*global AnnealMailDecryption: false */
 
 const Ci = Components.interfaces;
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
-const EnigmailVerifyAttachment = {
+const AnnealMailVerifyAttachment = {
   attachment: function(parent, verifyFile, sigFile, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("verify.jsm: EnigmailVerifyAttachment.attachment:\n");
+    AnnealMailLog.DEBUG("verify.jsm: AnnealMailVerifyAttachment.attachment:\n");
 
-    const verifyFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(verifyFile.QueryInterface(Ci.nsIFile)));
-    const sigFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(sigFile.QueryInterface(Ci.nsIFile)));
+    const verifyFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(verifyFile.QueryInterface(Ci.nsIFile)));
+    const sigFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(sigFile.QueryInterface(Ci.nsIFile)));
 
-    const args = EnigmailGpg.getStandardArgs(true).
+    const args = AnnealMailCcr.getStandardArgs(true).
     concat(["--verify", sigFilePath, verifyFilePath]);
 
-    const listener = EnigmailExecution.newSimpleListener();
+    const listener = AnnealMailExecution.newSimpleListener();
 
-    const proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, statusFlagsObj);
+    const proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath, args, false, parent, listener, statusFlagsObj);
 
     if (!proc) {
       return -1;
@@ -46,13 +46,13 @@ const EnigmailVerifyAttachment = {
     proc.wait();
 
     const retObj = {};
-    EnigmailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, nsIEnigmail.UI_INTERACTIVE, retObj);
+    AnnealMailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, nsIAnnealMail.UI_INTERACTIVE, retObj);
 
     if (listener.exitCode === 0) {
       const detailArr = retObj.sigDetails.split(/ /);
-      const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
+      const dateTime = AnnealMailTime.getDateTime(detailArr[2], true, true);
       const msg1 = retObj.errorMsg.split(/\n/)[0];
-      const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + retObj.keyId.substr(-8, 8), dateTime]);
+      const msg2 = AnnealMailLocale.getString("keyAndSigDate", ["0x" + retObj.keyId.substr(-8, 8), dateTime]);
       errorMsgObj.value = msg1 + "\n" + msg2;
     }
     else {
@@ -63,6 +63,6 @@ const EnigmailVerifyAttachment = {
   },
 
   registerOn: function(target) {
-    target.verifyAttachment = EnigmailVerifyAttachment.attachment;
+    target.verifyAttachment = AnnealMailVerifyAttachment.attachment;
   }
 };

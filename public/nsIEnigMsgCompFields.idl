@@ -9,13 +9,13 @@
 #include "nsIMsgSMIMECompFields.idl"
 
 /**
- * MsgCompose security info for Enigmail
+ * MsgCompose security info for AnnealMail
  */
 [scriptable, uuid(847b3a30-7ab1-11d4-8f02-006008948af5)]
 interface nsIEnigMsgCompFields : nsIMsgSMIMECompFields
 {
   /**
-   * See nsIEnigmail.idl for valid uiFlags and sendFlags
+   * See nsIAnnealMail.idl for valid uiFlags and sendFlags
    */
 
   void init(in nsIMsgSMIMECompFields smimeCompFields);
@@ -37,8 +37,8 @@ interface nsIEnigMsgCompFields : nsIMsgSMIMECompFields
 
 %{C++
 
-#define NS_ENIGMSGCOMPFIELDS_CLASSNAME  "Enigmail Msg Compose Fields"
-#define NS_ENIGMSGCOMPFIELDS_CONTRACTID "@mozdev.org/enigmail/composefields;1"
+#define NS_ENIGMSGCOMPFIELDS_CLASSNAME  "AnnealMail Msg Compose Fields"
+#define NS_ENIGMSGCOMPFIELDS_CONTRACTID "@mozdev.org/annealmail/composefields;1"
 
 #define NS_ENIGMSGCOMPFIELDS_CID                          \
 { /* 847b3a31-7ab1-11d4-8f02-006008948af5 */     \

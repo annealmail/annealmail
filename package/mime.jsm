@@ -8,15 +8,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailMime"];
+var EXPORTED_SYMBOLS = ["AnnealMailMime"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
 
-const EnigmailMime = {
+const AnnealMailMime = {
   /***
    * create a string of random characters suitable to use for a boundary in a
    * MIME message following RFC 2045
@@ -86,7 +86,7 @@ const EnigmailMime = {
     let ret = "";
 
     if (aStr.search(/[^\x01-\x7F]/) >= 0) {
-      let s = EnigmailData.convertFromUnicode(aStr, "utf-8");
+      let s = AnnealMailData.convertFromUnicode(aStr, "utf-8");
       ret = "=?UTF-8?B?" + btoa(s) + "?=";
     }
     else {
@@ -177,7 +177,7 @@ const EnigmailMime = {
     let ct = outerHdr.extractHeader("content-type", false) || "";
     if (ct === "") return null;
 
-    let bound = EnigmailMime.getBoundary(ct);
+    let bound = AnnealMailMime.getBoundary(ct);
     if (bound === "") return null;
 
     // search for "outer" MIME delimiter(s)
@@ -222,7 +222,7 @@ const EnigmailMime = {
 
     if (innerCt.search(/^text\/rfc822-headers/i) === 0) {
 
-      let charset = EnigmailMime.getCharset(innerCt);
+      let charset = AnnealMailMime.getCharset(innerCt);
       let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
 
       // determine where the headers end and the MIME-subpart body starts
@@ -235,14 +235,14 @@ const EnigmailMime = {
       let ctBodyData = contentBody.substr(bodyStartPos);
 
       if (ctt.search(/^base64/i) === 0) {
-        ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
+        ctBodyData = AnnealMailData.decodeBase64(ctBodyData) + "\n";
       }
       else if (ctt.search(/^quoted-printable/i) === 0) {
-        ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
+        ctBodyData = AnnealMailData.decodeQuotedPrintable(ctBodyData) + "\n";
       }
 
       if (charset) {
-        ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
+        ctBodyData = AnnealMailData.convertToUnicode(ctBodyData, charset);
       }
 
       // get the headers of the MIME-subpart body --> that's the ones we need

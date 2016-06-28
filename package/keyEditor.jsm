@@ -8,20 +8,20 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
+var EXPORTED_SYMBOLS = ["AnnealMailKeyEditor"];
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Components.utils.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Components.utils.import("resource://annealmail/key.jsm"); /*global AnnealMailKey: false */
+Components.utils.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Components.utils.import("resource://annealmail/os.jsm"); /*global AnnealMailOS: false */
+Components.utils.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Components.utils.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Components.utils.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
+Components.utils.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Components.utils.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Components.utils.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Components.utils.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Components.utils.import("resource://annealmail/errorHandling.jsm"); /*global AnnealMailErrorHandling: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -32,7 +32,7 @@ const GET_HIDDEN = "GET_HIDDEN";
 
 const NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1";
 
-function GpgEditorInterface(reqObserver, callbackFunc, inputData) {
+function CcrEditorInterface(reqObserver, callbackFunc, inputData) {
   this._reqObserver = reqObserver;
   this._callbackFunc = callbackFunc;
   this._inputData = inputData;
@@ -45,7 +45,7 @@ function GpgEditorInterface(reqObserver, callbackFunc, inputData) {
 }
 
 
-GpgEditorInterface.prototype = {
+CcrEditorInterface.prototype = {
   _stdin: null,
   _data: "",
   _txt: "",
@@ -58,13 +58,13 @@ GpgEditorInterface.prototype = {
   },
 
   gotData: function(data) {
-    //EnigmailLog.DEBUG("keyEditor.jsm: GpgEditorInterface.gotData: '"+data+"'\n");
+    //AnnealMailLog.DEBUG("keyEditor.jsm: CcrEditorInterface.gotData: '"+data+"'\n");
     this._data += data.replace(/\r\n/g, "\n");
     this.processData();
   },
 
   processData: function() {
-    //EnigmailLog.DEBUG("keyEditor.jsm: GpgEditorInterface.processData\n");
+    //AnnealMailLog.DEBUG("keyEditor.jsm: CcrEditorInterface.processData\n");
     var txt = "";
     while (this._data.length > 0 && this._stdin) {
       var index = this._data.indexOf("\n");
@@ -81,7 +81,7 @@ GpgEditorInterface.prototype = {
   },
 
   closeStdin: function() {
-    EnigmailLog.DEBUG("keyEditor.jsm: GpgEditorInterface.closeStdin:\n");
+    AnnealMailLog.DEBUG("keyEditor.jsm: CcrEditorInterface.closeStdin:\n");
     if (this._stdin) {
       this._stdin.close();
       this._stdin = null;
@@ -89,17 +89,17 @@ GpgEditorInterface.prototype = {
   },
 
   done: function(parentCallback, exitCode) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.done: exitCode=" + exitCode + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.done: exitCode=" + exitCode + "\n");
 
     if (exitCode === 0) exitCode = this._exitCode;
 
-    EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.done: returning exitCode " + exitCode + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.done: returning exitCode " + exitCode + "\n");
 
     parentCallback(exitCode, this.errorMsg);
   },
 
   writeLine: function(inputData) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.writeLine: '" + inputData + "'\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.writeLine: '" + inputData + "'\n");
     this._stdin.write(inputData + "\n");
   },
 
@@ -126,15 +126,15 @@ GpgEditorInterface.prototype = {
     return this._txt;
   },
 
-  handleGpgError: function(lineTxt) {
+  handleCcrError: function(lineTxt) {
     let retStatusObj = {};
 
-    EnigmailErrorHandling.parseErrorOutput(lineTxt, retStatusObj);
+    AnnealMailErrorHandling.parseErrorOutput(lineTxt, retStatusObj);
     return retStatusObj;
   },
 
   processLine: function(txt) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: '" + txt + "'\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: '" + txt + "'\n");
     var r = {
       quitNow: false,
       exitCode: -1
@@ -143,41 +143,41 @@ GpgEditorInterface.prototype = {
     try {
       if (txt.indexOf("[GNUPG:] BAD_PASSPHRASE") >= 0 ||
         txt.indexOf("[GNUPG:] SC_OP_FAILURE 2") >= 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected bad passphrase\n");
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected bad passphrase\n");
         r.exitCode = -2;
         r.quitNow = true;
-        this.errorMsg = EnigmailLocale.getString("badPhrase");
+        this.errorMsg = AnnealMailLocale.getString("badPhrase");
       }
       else if (txt.indexOf("[GNUPG:] ERROR ") >= 0 || txt.indexOf("[GNUPG:] FAILURE ") >= 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected GnuPG ERROR message\n");
-        let statusObj = this.handleGpgError(txt);
-        if (statusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) {
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected GnuPG ERROR message\n");
+        let statusObj = this.handleCcrError(txt);
+        if (statusObj.statusFlags & Ci.nsIAnnealMail.DISPLAY_MESSAGE) {
           this.errorMsg = statusObj.statusMsg;
           r.exitCode = -3;
           r.quitNow = true;
         }
       }
       else if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE") >= 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected missing card\n");
-        this.errorMsg = EnigmailLocale.getString("sc.noCardAvailable");
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected missing card\n");
+        this.errorMsg = AnnealMailLocale.getString("sc.noCardAvailable");
         r.exitCode = -3;
         r.quitNow = true;
       }
-      else if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE") === 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected general failure\n");
+      else if (txt.indexOf("[GNUPG:] ANNEALMAIL_FAILURE") === 0) {
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected general failure\n");
         r.exitCode = -3;
         r.quitNow = true;
         this.errorMsg = txt.substr(26);
       }
       else if (txt.indexOf("[GNUPG:] ALREADY_SIGNED") >= 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected key already signed\n");
-        this.errorMsg = EnigmailLocale.getString("keyAlreadySigned");
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected key already signed\n");
+        this.errorMsg = AnnealMailLocale.getString("keyAlreadySigned");
         r.exitCode = -1;
         r.quitNow = true;
       }
       else if (txt.indexOf("[GNUPG:] MISSING_PASSPHRASE") >= 0) {
-        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected missing passphrase\n");
-        this.errorMsg = EnigmailLocale.getString("noPassphrase");
+        AnnealMailLog.DEBUG("keyManagmenent.jsm: CcrEditorInterface.processLine: detected missing passphrase\n");
+        this.errorMsg = AnnealMailLocale.getString("noPassphrase");
         r.exitCode = -2;
         this._exitCode = -2;
         r.quitNow = true;
@@ -220,7 +220,7 @@ GpgEditorInterface.prototype = {
         this.closeStdin();
       }
       catch (ex) {
-        EnigmailLog.DEBUG("no more data\n");
+        AnnealMailLog.DEBUG("no more data\n");
       }
     }
 
@@ -236,16 +236,16 @@ GpgEditorInterface.prototype = {
 };
 
 function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, callbackFunc, requestObserver, parentCallback) {
-  EnigmailLog.DEBUG("keyManagmenent.jsm: editKey: parent=" + parent + ", editCmd=" + editCmd + "\n");
+  AnnealMailLog.DEBUG("keyManagmenent.jsm: editKey: parent=" + parent + ", editCmd=" + editCmd + "\n");
 
-  if (!EnigmailCore.getService(parent)) {
-    EnigmailLog.ERROR("keyManagmenent.jsm: Enigmail.editKey: not yet initialized\n");
-    parentCallback(-1, EnigmailLocale.getString("notInit"));
+  if (!AnnealMailCore.getService(parent)) {
+    AnnealMailLog.ERROR("keyManagmenent.jsm: AnnealMail.editKey: not yet initialized\n");
+    parentCallback(-1, AnnealMailLocale.getString("notInit"));
     return -1;
   }
 
   var keyIdList = keyId.split(" ");
-  var args = EnigmailGpg.getStandardArgs(false);
+  var args = AnnealMailCcr.getStandardArgs(false);
 
   var statusFlags = {};
 
@@ -262,7 +262,7 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
   if (editCmdArr[0] == "revoke") {
     // escape backslashes and ' characters
     args = args.concat(["-a", "-o"]);
-    args.push(EnigmailFiles.getEscapedFilename(inputData.outFile.path));
+    args.push(AnnealMailFiles.getEscapedFilename(inputData.outFile.path));
     args.push("--gen-revoke");
     args = args.concat(keyIdList);
   }
@@ -276,13 +276,13 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
   }
 
 
-  var command = EnigmailGpgAgent.agentPath;
-  EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+  var command = AnnealMailCcrAgent.agentPath;
+  AnnealMailLog.CONSOLE("annealmail> " + AnnealMailFiles.formatCmdLine(command, args) + "\n");
 
-  var keyEdit = new GpgEditorInterface(requestObserver, callbackFunc, inputData);
+  var keyEdit = new CcrEditorInterface(requestObserver, callbackFunc, inputData);
 
   try {
-    EnigmailExecution.execCmd2(command, args,
+    AnnealMailExecution.execCmd2(command, args,
       keyEdit.setStdin.bind(keyEdit),
       keyEdit.gotData.bind(keyEdit),
       function(result) {
@@ -291,7 +291,7 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
     );
   }
   catch (ex) {
-    EnigmailLog.ERROR("keyEditor.jsm: editKey: " + command.path + " failed\n");
+    AnnealMailLog.ERROR("keyEditor.jsm: editKey: " + command.path + " failed\n");
     parentCallback(-1, "");
   }
 
@@ -304,9 +304,9 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
  * returnCode = 0 in case of success
  * returnCode != 0 and errorMsg set in case of failure
  */
-const EnigmailKeyEditor = {
+const AnnealMailKeyEditor = {
   setKeyTrust: function(parent, keyId, trustLevel, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.setKeyTrust: trustLevel=" + trustLevel + ", keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.setKeyTrust: trustLevel=" + trustLevel + ", keyId=" + keyId + "\n");
 
     return editKey(parent, false, null, keyId, "trust", {
         trustLevel: trustLevel
@@ -333,7 +333,7 @@ const EnigmailKeyEditor = {
    *          returnCode != 0 and errorMsg set in case of failure
    */
   setKeyExpiration: function(parent, keyId, subKeys, expiryLength, timeScale, noExpiry, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.setKeyExpiry: keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.setKeyExpiry: keyId=" + keyId + "\n");
 
     expiryLength = String(expiryLength);
     if (noExpiry === true) {
@@ -362,14 +362,14 @@ const EnigmailKeyEditor = {
         subKeys: subKeys,
         currentSubKey: false
       },
-      keyExpiryCallback, /* contains the gpg communication logic */
+      keyExpiryCallback, /* contains the ccr communication logic */
       null,
       callbackFunc);
   },
 
 
   signKey: function(parent, userId, keyId, signLocally, trustLevel, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.signKey: trustLevel=" + trustLevel + ", userId=" + userId + ", keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.signKey: trustLevel=" + trustLevel + ", userId=" + userId + ", keyId=" + keyId + "\n");
     return editKey(parent, true, userId, keyId, (signLocally ? "lsign" : "sign"), {
         trustLevel: trustLevel,
         usePassphrase: true
@@ -380,7 +380,7 @@ const EnigmailKeyEditor = {
   },
 
   genRevokeCert: function(parent, keyId, outFile, reasonCode, reasonText, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.genRevokeCert: keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.genRevokeCert: keyId=" + keyId + "\n");
 
     /**
      * GnuPG < 2.1 does not properly report failures;
@@ -397,7 +397,7 @@ const EnigmailKeyEditor = {
     return editKey(parent, true, null, keyId, "revoke", {
         outFile: outFile,
         reasonCode: reasonCode,
-        reasonText: EnigmailData.convertFromUnicode(reasonText),
+        reasonText: AnnealMailData.convertFromUnicode(reasonText),
         usePassphrase: true
       },
       revokeCertCallback,
@@ -406,7 +406,7 @@ const EnigmailKeyEditor = {
   },
 
   addUid: function(parent, keyId, name, email, comment, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.addUid: keyId=" + keyId + ", name=" + name + ", email=" + email + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.addUid: keyId=" + keyId + ", name=" + name + ", email=" + email + "\n");
     return editKey(parent, true, null, keyId, "adduid", {
         email: email,
         name: name,
@@ -421,7 +421,7 @@ const EnigmailKeyEditor = {
   },
 
   deleteKey: function(parent, keyId, deleteSecretKey, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.addUid: keyId=" + keyId + ", deleteSecretKey=" + deleteSecretKey + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.addUid: keyId=" + keyId + ", deleteSecretKey=" + deleteSecretKey + "\n");
 
     var cmd = (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key");
     return editKey(parent, false, null, keyId, cmd, {
@@ -433,13 +433,13 @@ const EnigmailKeyEditor = {
   },
 
   changePassphrase: function(parent, keyId, oldPw, newPw, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.changePassphrase: keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.changePassphrase: keyId=" + keyId + "\n");
 
     var pwdObserver = new ChangePasswdObserver();
     return editKey(parent, false, null, keyId, "passwd", {
         oldPw: oldPw,
         newPw: newPw,
-        useAgent: EnigmailGpgAgent.useGpgAgent(),
+        useAgent: AnnealMailCcrAgent.useCcrAgent(),
         step: 0,
         observer: pwdObserver,
         usePassphrase: true
@@ -451,7 +451,7 @@ const EnigmailKeyEditor = {
 
 
   enableDisableKey: function(parent, keyId, disableKey, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.enableDisableKey: keyId=" + keyId + ", disableKey=" + disableKey + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.enableDisableKey: keyId=" + keyId + ", disableKey=" + disableKey + "\n");
 
     var cmd = (disableKey ? "disable" : "enable");
     return editKey(parent, false, null, keyId, cmd, {
@@ -463,7 +463,7 @@ const EnigmailKeyEditor = {
   },
 
   setPrimaryUid: function(parent, keyId, idNumber, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.setPrimaryUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.setPrimaryUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
     return editKey(parent, true, null, keyId, "", {
         idNumber: idNumber,
         step: 0,
@@ -476,7 +476,7 @@ const EnigmailKeyEditor = {
 
 
   deleteUid: function(parent, keyId, idNumber, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.deleteUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.deleteUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
     return editKey(parent, true, null, keyId, "", {
         idNumber: idNumber,
         step: 0,
@@ -489,7 +489,7 @@ const EnigmailKeyEditor = {
 
 
   revokeUid: function(parent, keyId, idNumber, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.revokeUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.revokeUid: keyId=" + keyId + ", idNumber=" + idNumber + "\n");
     return editKey(parent, true, null, keyId, "", {
         idNumber: idNumber,
         step: 0,
@@ -501,9 +501,9 @@ const EnigmailKeyEditor = {
   },
 
   addPhoto: function(parent, keyId, photoFile, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.addPhoto: keyId=" + keyId + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.addPhoto: keyId=" + keyId + "\n");
 
-    var photoFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(photoFile.QueryInterface(Ci.nsIFile)));
+    var photoFileName = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePath(photoFile.QueryInterface(Ci.nsIFile)));
 
     return editKey(parent, true, null, keyId, "addphoto", {
         file: photoFileName,
@@ -517,13 +517,13 @@ const EnigmailKeyEditor = {
 
 
   genCardKey: function(parent, name, email, comment, expiry, backupPasswd, requestObserver, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.genCardKey: \n");
-    var generateObserver = new EnigCardAdminObserver(requestObserver, EnigmailOS.isDosLike());
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.genCardKey: \n");
+    var generateObserver = new EnigCardAdminObserver(requestObserver, AnnealMailOS.isDosLike());
     return editKey(parent, false, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
-        name: EnigmailData.convertFromUnicode(name),
+        name: AnnealMailData.convertFromUnicode(name),
         email: email,
-        comment: EnigmailData.convertFromUnicode(comment),
+        comment: AnnealMailData.convertFromUnicode(comment),
         expiry: expiry,
         backupPasswd: backupPasswd,
         cardAdmin: true,
@@ -536,9 +536,9 @@ const EnigmailKeyEditor = {
   },
 
   cardAdminData: function(parent, name, firstname, lang, sex, url, login, forcepin, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardAdminData: parent=" + parent + ", name=" + name + ", firstname=" + firstname + ", lang=" + lang + ", sex=" + sex + ", url=" + url +
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.cardAdminData: parent=" + parent + ", name=" + name + ", firstname=" + firstname + ", lang=" + lang + ", sex=" + sex + ", url=" + url +
       ", login=" + login + ", forcepin=" + forcepin + "\n");
-    var adminObserver = new EnigCardAdminObserver(null, EnigmailOS.isDosLike());
+    var adminObserver = new EnigCardAdminObserver(null, AnnealMailOS.isDosLike());
     return editKey(parent, false, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
         name: name,
@@ -556,10 +556,10 @@ const EnigmailKeyEditor = {
   },
 
   cardChangePin: function(parent, action, oldPin, newPin, adminPin, pinObserver, callbackFunc) {
-    EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardChangePin: parent=" + parent + ", action=" + action + "\n");
-    var adminObserver = new EnigCardAdminObserver(pinObserver, EnigmailOS.isDosLike());
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: AnnealMail.cardChangePin: parent=" + parent + ", action=" + action + "\n");
+    var adminObserver = new EnigCardAdminObserver(pinObserver, AnnealMailOS.isDosLike());
 
-    return editKey(parent, EnigmailGpgAgent.useGpgAgent(), null, "", ["--with-colons", "--card-edit"], {
+    return editKey(parent, AnnealMailCcrAgent.useCcrAgent(), null, "", ["--with-colons", "--card-edit"], {
         step: 0,
         pinStep: 0,
         cardAdmin: true,
@@ -573,12 +573,12 @@ const EnigmailKeyEditor = {
       callbackFunc);
   }
 
-}; // EnigmailKeyEditor
+}; // AnnealMailKeyEditor
 
 // TODO: function probably not used ?!
 function keyReadCallback(outputData, ret) {
 
-  outputData.keyObj = new EnigmailKey.Entry(outputData.key);
+  outputData.keyObj = new AnnealMailKey.Entry(outputData.key);
   ret.exitCode = 0;
 }
 
@@ -624,10 +624,10 @@ function signKeyCallback(inputData, keyEdit, ret) {
     ret.writeTxt = String(inputData.trustLevel);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
@@ -635,7 +635,7 @@ function signKeyCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -655,17 +655,17 @@ function keyTrustCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
     ret.quitNow = true;
-    EnigmailKeyRing.clearCache();
+    AnnealMailKeyRing.clearCache();
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -676,11 +676,11 @@ function keyTrustCallback(inputData, keyEdit, ret) {
  *                        expiryLength (String): e.g. 8m = 8 month, 5 = 5 days, 3y = 3 years, 0 = never
  *                        subKeys (array): list of still unprocessed subkeys
  *                        currentSubKey (Integer or false): current subkey in progress
- * @param  Object  keyEdit    Readonly messages from GPG.
+ * @param  Object  keyEdit    Readonly messages from CCR.
  * @param  Object  ret
  */
 function keyExpiryCallback(inputData, keyEdit, ret) {
-  EnigmailLog.DEBUG("keyManagmenent.jsm: keyExpiryCallback()\n");
+  AnnealMailLog.DEBUG("keyManagmenent.jsm: keyExpiryCallback()\n");
 
   ret.writeTxt = "";
   ret.errorMsg = "";
@@ -723,14 +723,14 @@ function keyExpiryCallback(inputData, keyEdit, ret) {
     }
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -775,17 +775,17 @@ function addUidCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
     ret.quitNow = true;
-    EnigmailKeyRing.clearCache();
+    AnnealMailKeyRing.clearCache();
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -816,10 +816,10 @@ function revokeCertCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
     ret.exitCode = 0;
@@ -827,7 +827,7 @@ function revokeCertCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -851,7 +851,7 @@ function setPrimaryUidCallback(inputData, keyEdit, ret) {
       case 3:
         ret.exitCode = 0;
         ret.quitNow = true;
-        EnigmailKeyRing.clearCache();
+        AnnealMailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;
@@ -861,7 +861,7 @@ function setPrimaryUidCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -901,7 +901,7 @@ function changePassphraseCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -925,7 +925,7 @@ function deleteUidCallback(inputData, keyEdit, ret) {
       case 4:
         ret.exitCode = 0;
         ret.quitNow = true;
-        EnigmailKeyRing.clearCache();
+        AnnealMailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;
@@ -938,14 +938,14 @@ function deleteUidCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -969,7 +969,7 @@ function revokeUidCallback(inputData, keyEdit, ret) {
       case 7:
         ret.exitCode = 0;
         ret.quitNow = true;
-        EnigmailKeyRing.clearCache();
+        AnnealMailKeyRing.clearCache();
         break;
       default:
         ret.exitCode = -1;
@@ -997,14 +997,14 @@ function revokeUidCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -1027,20 +1027,20 @@ function deleteKeyCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
 
 function getPin(domWindow, promptMsg, ret) {
-  EnigmailLog.DEBUG("keyManagmenent.jsm: getPin: \n");
+  AnnealMailLog.DEBUG("keyManagmenent.jsm: getPin: \n");
 
   var passwdObj = {
     value: ""
@@ -1051,19 +1051,19 @@ function getPin(domWindow, promptMsg, ret) {
 
   var promptService = Cc[NS_PROMPTSERVICE_CONTRACTID].getService(Ci.nsIPromptService);
   success = promptService.promptPassword(domWindow,
-    EnigmailLocale.getString("Enigmail"),
+    AnnealMailLocale.getString("AnnealMail"),
     promptMsg,
     passwdObj,
     null,
     dummyObj);
 
   if (!success) {
-    ret.errorMsg = EnigmailLocale.getString("noPassphrase");
+    ret.errorMsg = AnnealMailLocale.getString("noPassphrase");
     ret.quitNow = true;
     return false;
   }
 
-  EnigmailLog.DEBUG("keyManagmenent.jsm: getPin: got pin\n");
+  AnnealMailLog.DEBUG("keyManagmenent.jsm: getPin: got pin\n");
   ret.writeTxt = passwdObj.value;
 
   return true;
@@ -1101,10 +1101,10 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.enter")) {
     ret.exitCode = 0;
@@ -1137,7 +1137,7 @@ function genCardKeyCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -1188,10 +1188,10 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
     }
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else if (keyEdit.doCheck(GET_LINE, "keygen.smartcard.surname")) {
     ret.exitCode = 0;
@@ -1219,7 +1219,7 @@ function cardAdminDataCallback(inputData, keyEdit, ret) {
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -1273,7 +1273,7 @@ function cardChangePinCallback(inputData, keyEdit, ret) {
   else {
     ret.exitCode = -1;
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
   }
 }
 
@@ -1303,14 +1303,14 @@ function addPhotoCallback(inputData, keyEdit, ret) {
     ret.writeTxt = "Y"; // add large file
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.adminpin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterAdminPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterAdminPin"), ret);
   }
   else if (keyEdit.doCheck(GET_HIDDEN, "passphrase.pin.ask")) {
-    getPin(inputData.parent, EnigmailLocale.getString("enterCardPin"), ret);
+    getPin(inputData.parent, AnnealMailLocale.getString("enterCardPin"), ret);
   }
   else {
     ret.quitNow = true;
-    EnigmailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
+    AnnealMailLog.ERROR("Unknown command prompt: " + keyEdit.getText() + "\n");
     ret.exitCode = -1;
   }
 }
@@ -1334,7 +1334,7 @@ EnigCardAdminObserver.prototype = {
 
   onDataAvailable: function(data) {
     var ret = "";
-    EnigmailLog.DEBUG("keyManagmenent.jsm: enigCardAdminObserver.onDataAvailable: data=" + data + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: enigCardAdminObserver.onDataAvailable: data=" + data + "\n");
     if (this._isDosLike && data.indexOf("[GNUPG:] BACKUP_KEY_CREATED") === 0) {
       data = data.replace(/\//g, "\\");
     }
@@ -1348,7 +1348,7 @@ EnigCardAdminObserver.prototype = {
         this._failureCode = 1;
     }
     if (this._failureCode == 1) {
-      ret = "[GNUPG:] ENIGMAIL_FAILURE " + data;
+      ret = "[GNUPG:] ANNEALMAIL_FAILURE " + data;
     }
     if (this._guiObserver) {
       this._guiObserver.onDataAvailable(data);
@@ -1373,9 +1373,9 @@ ChangePasswdObserver.prototype = {
 
   onDataAvailable: function(data) {
     var ret = "";
-    EnigmailLog.DEBUG("keyManagmenent.jsm: ChangePasswdObserver.onDataAvailable: data=" + data + "\n");
+    AnnealMailLog.DEBUG("keyManagmenent.jsm: ChangePasswdObserver.onDataAvailable: data=" + data + "\n");
     if (this._failureCode) {
-      ret = "[GNUPG:] ENIGMAIL_FAILURE " + data;
+      ret = "[GNUPG:] ANNEALMAIL_FAILURE " + data;
     }
     if (data.indexOf("[GNUPG:] GOOD_PASSPHRASE") >= 0) {
       this.passphraseStatus = 1;

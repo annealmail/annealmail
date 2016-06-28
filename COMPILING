@@ -1,9 +1,9 @@
-Instructions for compiling and packaging Enigmail
+Instructions for compiling and packaging AnnealMail
 =================================================
 
 Prerequisites
 -------------
-In order to build Enigmail you will need the following helper tools:
+In order to build AnnealMail you will need the following helper tools:
 - GNU make 3.81 or newer
 - zip
 - python 2.7 or newer

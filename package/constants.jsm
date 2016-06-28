@@ -9,9 +9,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConstants"];
+var EXPORTED_SYMBOLS = ["AnnealMailConstants"];
 
-const EnigmailConstants = {
+const AnnealMailConstants = {
   POSSIBLE_PGPMIME: -2081,
 
   // possible values for
@@ -19,7 +19,7 @@ const EnigmailConstants = {
   // - encryptForced, signForced, pgpmimeForced (except CONFLICT)
   // NOTE:
   // - values 0/1/2 are used with this fixed semantics in the persistent rules
-  // - see also enigmailEncryptionDlg.xul
+  // - see also annealmailEncryptionDlg.xul
   ENIG_NEVER: 0,
   ENIG_UNDEF: 1,
   ENIG_ALWAYS: 2,
@@ -38,6 +38,6 @@ const EnigmailConstants = {
   MIME_HANDLER_SMIME: 1,
   MIME_HANDLER_PGPMIME: 2,
 
-  nsIEnigmail: Components.interfaces.nsIEnigmail
+  nsIAnnealMail: Components.interfaces.nsIAnnealMail
 
 };

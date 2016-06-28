@@ -10,22 +10,22 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("log.jsm"); /*global EnigmailLog: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+testing("log.jsm"); /*global AnnealMailLog: false */
+component("annealmail/files.jsm"); /*global AnnealMailFiles: false */
 
 test(function shouldCreateLogFile() {
-  EnigmailLog.setLogDirectory(do_get_cwd().path);
-  EnigmailLog.setLogLevel(5);
-  EnigmailLog.createLogFiles();
-  const filePath = EnigmailLog.directory + "enigdbug.txt";
+  AnnealMailLog.setLogDirectory(do_get_cwd().path);
+  AnnealMailLog.setLogLevel(5);
+  AnnealMailLog.createLogFiles();
+  const filePath = AnnealMailLog.directory + "enigdbug.txt";
   const localFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-  EnigmailFiles.initPath(localFile, filePath);
+  AnnealMailFiles.initPath(localFile, filePath);
   try {
     Assert.equal(localFile.exists(), true);
   }
   finally {
     if (localFile.exists()) {
-      EnigmailLog.fileStream.close();
+      AnnealMailLog.fileStream.close();
       localFile.remove(false);
     }
   }

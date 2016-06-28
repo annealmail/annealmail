@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailConsole: false, dump: false, EnigmailFiles: false, EnigmailOS: false */
+/*global Components: false, AnnealMailConsole: false, dump: false, AnnealMailFiles: false, AnnealMailOS: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,11 +8,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLog"];
+var EXPORTED_SYMBOLS = ["AnnealMailLog"];
 
-Components.utils.import("resource://enigmail/pipeConsole.jsm");
-Components.utils.import("resource://enigmail/files.jsm");
-Components.utils.import("resource://enigmail/os.jsm");
+Components.utils.import("resource://annealmail/pipeConsole.jsm");
+Components.utils.import("resource://annealmail/files.jsm");
+Components.utils.import("resource://annealmail/os.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -21,36 +21,36 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 
-const EnigmailLog = {
+const AnnealMailLog = {
   level: 3,
   data: null,
   directory: null,
   fileStream: null,
 
   setLogLevel: function(newLogLevel) {
-    EnigmailLog.level = newLogLevel;
+    AnnealMailLog.level = newLogLevel;
   },
 
   getLogLevel: function() {
-    return EnigmailLog.level;
+    return AnnealMailLog.level;
   },
 
   setLogDirectory: function(newLogDirectory) {
-    EnigmailLog.directory = newLogDirectory + (EnigmailOS.isDosLike() ? "\\" : "/");
-    EnigmailLog.createLogFiles();
+    AnnealMailLog.directory = newLogDirectory + (AnnealMailOS.isDosLike() ? "\\" : "/");
+    AnnealMailLog.createLogFiles();
   },
 
   createLogFiles: function() {
-    if (EnigmailLog.directory && (!EnigmailLog.fileStream) && EnigmailLog.level >= 5) {
-      EnigmailLog.fileStream = EnigmailFiles.createFileStream(EnigmailLog.directory + "enigdbug.txt");
+    if (AnnealMailLog.directory && (!AnnealMailLog.fileStream) && AnnealMailLog.level >= 5) {
+      AnnealMailLog.fileStream = AnnealMailFiles.createFileStream(AnnealMailLog.directory + "enigdbug.txt");
     }
   },
 
   onShutdown: function() {
-    if (EnigmailLog.fileStream) {
-      EnigmailLog.fileStream.close();
+    if (AnnealMailLog.fileStream) {
+      AnnealMailLog.fileStream.close();
     }
-    EnigmailLog.fileStream = null;
+    AnnealMailLog.fileStream = null;
   },
 
   getLogData: function(version, prefs) {
@@ -67,7 +67,7 @@ const EnigmailLog = {
     }
     catch (ex) {}
 
-    let data = "Enigmail version " + version + "\n" +
+    let data = "AnnealMail version " + version + "\n" +
       "OS/CPU=" + oscpu + "\n" +
       "Platform=" + platform + "\n" +
       "Non-default preference values:\n";
@@ -80,7 +80,7 @@ const EnigmailLog = {
       }
     }
 
-    return data + "\n" + EnigmailLog.data;
+    return data + "\n" + AnnealMailLog.data;
   },
 
   WRITE: function(str) {
@@ -91,54 +91,54 @@ const EnigmailLog = {
     var d = new Date();
     var datStr = d.getFullYear() + "-" + withZeroes(d.getMonth() + 1, 2) + "-" + withZeroes(d.getDate(), 2) + " " + withZeroes(d.getHours(), 2) + ":" + withZeroes(d.getMinutes(), 2) + ":" +
       withZeroes(d.getSeconds(), 2) + "." + withZeroes(d.getMilliseconds(), 3) + " ";
-    if (EnigmailLog.level >= 4)
+    if (AnnealMailLog.level >= 4)
       dump(datStr + str);
 
-    if (EnigmailLog.data === null) {
-      EnigmailLog.data = "";
+    if (AnnealMailLog.data === null) {
+      AnnealMailLog.data = "";
       let appInfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
-      EnigmailLog.WRITE("Mozilla Platform: " + appInfo.name + " " + appInfo.version + "\n");
+      AnnealMailLog.WRITE("Mozilla Platform: " + appInfo.name + " " + appInfo.version + "\n");
     }
     // truncate first part of log data if it grow too much
-    if (EnigmailLog.data.length > 5120000) {
-      EnigmailLog.data = EnigmailLog.data.substr(-400000);
+    if (AnnealMailLog.data.length > 5120000) {
+      AnnealMailLog.data = AnnealMailLog.data.substr(-400000);
     }
 
-    EnigmailLog.data += datStr + str;
+    AnnealMailLog.data += datStr + str;
 
-    if (EnigmailLog.fileStream) {
-      EnigmailLog.fileStream.write(datStr, datStr.length);
-      EnigmailLog.fileStream.write(str, str.length);
+    if (AnnealMailLog.fileStream) {
+      AnnealMailLog.fileStream.write(datStr, datStr.length);
+      AnnealMailLog.fileStream.write(str, str.length);
     }
   },
 
   DEBUG: function(str) {
-    EnigmailLog.WRITE("[DEBUG] " + str);
+    AnnealMailLog.WRITE("[DEBUG] " + str);
   },
 
   WARNING: function(str) {
-    EnigmailLog.WRITE("[WARN] " + str);
-    EnigmailConsole.write(str);
+    AnnealMailLog.WRITE("[WARN] " + str);
+    AnnealMailConsole.write(str);
   },
 
   ERROR: function(str) {
     try {
       var consoleSvc = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
       var scriptError = Cc["@mozilla.org/scripterror;1"].createInstance(Ci.nsIScriptError);
-      scriptError.init(str, null, null, 0, 0, scriptError.errorFlag, "Enigmail");
+      scriptError.init(str, null, null, 0, 0, scriptError.errorFlag, "AnnealMail");
       consoleSvc.logMessage(scriptError);
     }
     catch (ex) {}
 
-    EnigmailLog.WRITE("[ERROR] " + str);
+    AnnealMailLog.WRITE("[ERROR] " + str);
   },
 
   CONSOLE: function(str) {
-    if (EnigmailLog.level >= 3) {
-      EnigmailLog.WRITE("[CONSOLE] " + str);
+    if (AnnealMailLog.level >= 3) {
+      AnnealMailLog.WRITE("[CONSOLE] " + str);
     }
 
-    EnigmailConsole.write(str);
+    AnnealMailConsole.write(str);
   },
 
   /**
@@ -148,7 +148,7 @@ const EnigmailLog = {
    *  ex:            exception object
    */
   writeException: function(referenceInfo, ex) {
-    EnigmailLog.ERROR(referenceInfo + ": caught exception: " +
+    AnnealMailLog.ERROR(referenceInfo + ": caught exception: " +
       ex.name + "\n" +
       "Message: '" + ex.message + "'\n" +
       "File:    " + ex.fileName + "\n" +

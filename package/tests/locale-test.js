@@ -10,9 +10,9 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("locale.jsm"); /*global EnigmailLocale: false */
+testing("locale.jsm"); /*global AnnealMailLocale: false */
 
 test(function shouldReadProperty() {
-  const importBtnValue = EnigmailLocale.getString("enigHeader");
-  Assert.equal("Enigmail:", importBtnValue);
+  const importBtnValue = AnnealMailLocale.getString("enigHeader");
+  Assert.equal("AnnealMail:", importBtnValue);
 });

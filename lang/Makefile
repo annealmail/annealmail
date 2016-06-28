@@ -44,6 +44,6 @@ jar: export
 
 clean:
 	for l in $(languages); do \
-	   rm -f $$l/enigmail.dtd.gen $$l/enigmail.properties.gen; \
+	   rm -f $$l/annealmail.dtd.gen $$l/annealmail.properties.gen; \
 	done
 	rm -f $(BUILD)/lang/jar.mn

@@ -1,0 +1,786 @@
+<!ENTITY annealmail.label                   "AnnealMail">
+
+<!ENTITY annealmail.keyUserId.label         "Account / User ID">
+<!ENTITY annealmail.keygenTitle.label       "Generate OpenPGP Key">
+<!ENTITY annealmail.useForSigning.label     "Use generated key for the selected identity">
+<!ENTITY annealmail.keyNoPassphrase.label   "No passphrase">
+<!ENTITY annealmail.keyPassphrase.label     "Passphrase">
+<!ENTITY annealmail.keyPassphraseRepeat.label "Passphrase (repeat)">
+<!ENTITY annealmail.generateKey.tooltip     "Generates a new OpenPGP compliant key for encryption and/or signing">
+<!ENTITY annealmail.cancelKey.label         "Cancel">
+<!ENTITY annealmail.cancelKey.tooltip       "Cancel Key Generation">
+<!ENTITY annealmail.keyGen.expiry.title     "Key expiry">
+<!ENTITY annealmail.keyGen.expire.label     "Key expires in">
+<!ENTITY annealmail.keyGen.days.label       "days">
+<!ENTITY annealmail.keyGen.months.label     "months">
+<!ENTITY annealmail.keyGen.years.label      "years">
+<!ENTITY annealmail.keyGen.noExpiry.label   "Key does not expire">
+<!ENTITY annealmail.keyGen.keySize.label    "Key size">
+<!ENTITY annealmail.keyGen.console.label    "Key Generation Console">
+<!ENTITY annealmail.keyGen.keyType.label    "Key type">
+<!ENTITY annealmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
+<!ENTITY annealmail.keyGen.keyType.rsa      "RSA">
+
+<!ENTITY annealmail.preferences.label       "AnnealMail Preferences">
+
+<!ENTITY annealmail.passwordSettings.label   "Passphrase settings">
+<!ENTITY annealmail.userNoPassphrase.label   "Never ask for any passphrase">
+<!ENTITY annealmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
+<!ENTITY annealmail.expertUserMenus.label    "Display Expert Settings and Menus">
+<!ENTITY annealmail.expertUser.tooltip       "Press if you want to see menu items and options for advanced users.">
+<!ENTITY annealmail.basicUserMenus.label     "Hide Expert Settings and Menus">
+<!ENTITY annealmail.basicUser.tooltip        "Press if you do not want to see menu items and options for advanced users.">
+
+<!ENTITY annealmail.prefs.pathsTitle.label      "Files and Directories">
+<!ENTITY annealmail.prefs.overrideCcr.label     "Override with">
+<!ENTITY annealmail.prefs.overrideCcr.tooltip   "Click to specify a location for CodeCrypt">
+
+
+<!ENTITY annealmail.agentAdditionalParam.label    "Additional parameters for CodeCrypt">
+<!ENTITY annealmail.agentAdditionalParam.tooltip  "Specify options that will be used by CodeCrypt.">
+
+<!ENTITY annealmail.protectHeadersPrefs.label    "Encrypt subject by default (PGP/MIME encrypted message only)">
+<!ENTITY annealmail.protectHeadersPrefs.tooltip  "Remove subject and other sensitive headers from encrypted messages.">
+<!ENTITY annealmail.protectedSubjectText.label    "Subject text to protect encrypted messages">
+<!ENTITY annealmail.protectedSubjectText.tooltip  "Specify the subject that will be publicly visible instead of the real subject when sending encrypted messages">
+
+
+<!ENTITY annealmail.mime_parts_on_demand.label  "Only download attachments when opened (IMAP only)">
+
+
+<!ENTITY annealmail.maxIdleMinutesHead.label "Remember passphrase for">
+<!ENTITY annealmail.maxIdleMinutesTail.label "minutes of idle time">
+<!ENTITY annealmail.maxIdleMinutes.tooltip   "Cache passphrase in memory for a limited time.">
+
+<!ENTITY annealmail.resetPrefsButton.label "Reset">
+<!ENTITY annealmail.resetPrefs.tooltip     "Set all AnnealMail preferences back to their default value.">
+
+<!ENTITY annealmail.backupPrefsButton.label "Export Settings and Keys">
+<!ENTITY annealmail.backupPrefs.tooltip     "Save all AnnealMail preferences including your OpenPGP keys to a file.">
+
+<!ENTITY annealmail.restorePrefsButton.label "Restore Settings and Keys">
+<!ENTITY annealmail.restorePrefs.tooltip     "Restore all AnnealMail preferences including your OpenPGP keys from a file.">
+
+<!ENTITY annealmail.backupRestore.desc       "Export (backup) and Restore your AnnealMail settings including your OpenPGP keys.">
+
+<!ENTITY annealmail.basic.label            "Basic">
+<!ENTITY annealmail.sending.label          "Sending">
+<!ENTITY annealmail.keySel.label           "Key Selection">
+<!ENTITY annealmail.pgpMime.label          "PGP/MIME">
+<!ENTITY annealmail.advanced.label         "Advanced">
+<!ENTITY annealmail.backupRestore.label    "Backup/Restore">
+
+<!ENTITY annealmail.basicPrefs.label       "Basic Settings">
+
+<!ENTITY annealmail.moreOptions.label       "More Options">
+
+<!ENTITY annealmail.useNonDefaultComment.label "Add AnnealMail comment in OpenPGP signature">
+
+<!ENTITY annealmail.keyserver.label         "Keyserver">
+<!ENTITY annealmail.keyserverDlg.label      "Select Keyserver">
+<!ENTITY annealmail.keyservers.label        "Specify your keyserver(s)">
+<!ENTITY annealmail.keyservers.sample       "Example: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
+
+<!ENTITY annealmail.searchForKey.label      "Search for key">
+
+
+<!ENTITY annealmail.doubleDashSeparator.label "'--' is a signature separator">
+<!ENTITY annealmail.useCcrAgent.label         "Use ccr-agent for passphrases">
+<!ENTITY annealmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">
+
+<!ENTITY annealmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
+<!ENTITY annealmail.useCcrAgent.tooltip          "Use ccr-agent for all passphrase input">
+<!ENTITY annealmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for CodeCrypt. Disable if recipients have old Hushmail keys.">
+<!ENTITY annealmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
+<!ENTITY annealmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
+
+<!ENTITY annealmail.autoKeyServerSelection.label     "Always use first keyserver">
+<!ENTITY annealmail.autoKeyServerSelection.tooltip   "Take the first keyserver from the list as default.">
+
+<!ENTITY annealmail.decryptbutton.label     "Decrypt">
+<!ENTITY annealmail.decryptbutton.tip       "Decrypt or verify the message with AnnealMail">
+
+<!ENTITY annealmail.messengermenu.accesskey "a">
+
+<!ENTITY annealmail.decryptverify.label    "Decrypt/Verify">
+<!ENTITY annealmail.importpublickey.label  "Import Public Key">
+<!ENTITY annealmail.importKey.label        "Import Key">
+
+<!ENTITY annealmail.autoDecrypt.label      "Automatically Decrypt/Verify Messages">
+<!ENTITY annealmail.clearPassphrase.label  "Clear Saved Passphrase">
+<!ENTITY annealmail.editRules.label        "Edit Per-Recipient Rules">
+
+<!ENTITY annealmail.decryptToFolder.label     "Decrypt to folder">
+<!ENTITY annealmail.decryptToFolder.accesskey "D">
+
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY annealmail.recent.label              "Recent">
+<!ENTITY annealmail.recent.accesskey          "R">
+
+<!ENTITY annealmail.prefs.label            "Preferences">
+
+<!ENTITY annealmail.debugMenu.label        "Debugging Options">
+<!ENTITY annealmail.viewconsole.label      "View Console">
+<!ENTITY annealmail.viewlog.label          "View Log">
+
+<!ENTITY annealmail.generateKey.label        "Generate key">
+<!ENTITY annealmail.help.label               "Help">
+<!ENTITY annealmail.about.title              "About AnnealMail">
+<!ENTITY annealmail.about.label              "About AnnealMail">
+<!ENTITY annealmail.reload.label             "Reload Message">
+<!ENTITY annealmail.browse.label             "Browse...">
+<!ENTITY annealmail.sendersKeyMenu.label     "Sender's Key">
+<!ENTITY annealmail.adminSmartCard.label     "Manage SmartCard ...">
+<!ENTITY annealmail.setupWiz.label           "Setup Wizard">
+
+<!ENTITY annealmail.decryptverify.accesskey   "D">
+<!ENTITY annealmail.importpublickey.accesskey "I">
+<!ENTITY annealmail.reload.accesskey          "E">
+<!ENTITY annealmail.adminSmartCard.accesskey  "M">
+
+<!ENTITY annealmail.autoDecrypt.accesskey     "A">
+<!ENTITY annealmail.debugMenu.accesskey       "g">
+
+<!ENTITY annealmail.clearPassphrase.accesskey "l">
+<!ENTITY annealmail.editRules.accesskey       "R">
+<!ENTITY annealmail.setupWiz.accesskey        "S">
+
+
+<!ENTITY annealmail.prefs.accesskey           "P">
+<!ENTITY annealmail.viewconsole.accesskey     "c">
+<!ENTITY annealmail.viewlog.accesskey         "g">
+
+<!ENTITY annealmail.help.accesskey            "H">
+<!ENTITY annealmail.about.accesskey           "b">
+<!ENTITY annealmail.sendersKeyMenu.accesskey  "K">
+
+<!ENTITY annealmail.composetoolbar.label        "AnnealMail Toolbar">
+<!ENTITY annealmail.composetoolbar.desc         "AnnealMail Encryption Info">
+
+<!ENTITY annealmail.signedsend.label            "Sign Message">
+<!ENTITY annealmail.encryptedsend.label         "Encrypt Message">
+
+<!ENTITY annealmail.pgpAccountSettings.label     "Signing/Encryption Options...">
+<!ENTITY annealmail.sendOptionsMenu.label        "Send Options...">
+<!ENTITY annealmail.defaultKeySelOpts.label      "Key Selection Options...">
+<!ENTITY annealmail.usePgpMime.label            "Protocol: PGP/MIME">
+<!ENTITY annealmail.useInline.label            "Protocol: Inline PGP">
+
+<!ENTITY annealmail.tempTrustAllKeys.label       "Trust the keys of all recipients">
+<!ENTITY annealmail.undoencryption.label         "Undo Encryption">
+<!ENTITY annealmail.attachkey.label              "Attach Public Key ...">
+<!ENTITY annealmail.attachmykey.label            "Attach My Public Key">
+<!ENTITY annealmail.protectHeaders.label         "Protect Subject">
+
+<!ENTITY annealmail.composemenu.accesskey        "n">
+
+<!ENTITY annealmail.signedsend.accesskey         "S">
+<!ENTITY annealmail.signedsend.key               "S">
+<!ENTITY annealmail.encryptedsend.accesskey      "E">
+<!ENTITY annealmail.encryptedsend.key            "E">
+
+<!ENTITY annealmail.sendOptionsMenu.accesskey    "S">
+<!ENTITY annealmail.defaultKeySelOpts.accesskey  "K">
+<!ENTITY annealmail.pgpAccountSettings.accesskey "E">
+<!ENTITY annealmail.usePgpMime.accesskey         "G">
+<!ENTITY annealmail.useInline.accesskey          "I">
+
+<!ENTITY annealmail.tempTrustAllKeys.accesskey   "T">
+<!ENTITY annealmail.undoencryption.accesskey     "U">
+<!ENTITY annealmail.attachkey.accesskey          "A">
+<!ENTITY annealmail.attachmykey.accesskey        "M">
+
+
+<!-- account specific options -->
+<!ENTITY annealmail.defaultSigning.label            "Sign messages by default">
+<!ENTITY annealmail.defaultEncryption.label         "Encrypt messages by default">
+<!ENTITY annealmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
+
+<!ENTITY annealmail.afterDefaultsAndRules.label     "After application of defaults and rules:">
+<!ENTITY annealmail.finallySignEncrypted.label      "sign encrypted messages">
+<!ENTITY annealmail.finallySignNotEncrypted.label   "sign non-encrypted messages">
+
+<!ENTITY annealmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
+
+<!ENTITY annealmail.advancedPrefsButton.label       "Advanced...">
+<!ENTITY annealmail.openpgpPrefsButton.label        "AnnealMail Preferences...">
+
+
+<!-- Sending Preferences -->
+
+<!ENTITY annealmail.SendingPrefs.label              "General Preferences for Sending">
+<!ENTITY annealmail.seeAccountSettings.label        "See also account specific AnnealMail settings (see Account Settings -> OpenPGP Security)">
+
+<!ENTITY annealmail.encryptionModelConvenient.label "Convenient encryption settings">
+<!ENTITY annealmail.encryptionModelManually.label   "Manual encryption settings">
+
+<!ENTITY annealmail.keepCryptoSettingsForReply.label   "Encrypt/sign replies to encrypted/signed messages">
+<!ENTITY annealmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
+
+<!ENTITY annealmail.autoSendEncryptedOption.label   "Automatically send encrypted">
+<!ENTITY annealmail.autoSendEncryptedNever.label    "Never">
+<!ENTITY annealmail.autoSendEncryptedNever.tooltip  "Don't automatically send encrypted except explicitly triggered by per-recipient rules">
+<!ENTITY annealmail.autoSendEncryptedIfKeys.label   "If possible">
+<!ENTITY annealmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one keys is known and accepted (see above) and no recipient rule forces not to encrypt.">
+
+<!ENTITY annealmail.acceptedKeysOption.label        "To send encrypted, accept">
+<!ENTITY annealmail.acceptedKeysTrusted.label       "Only trusted keys">
+<!ENTITY annealmail.acceptedKeysTrusted.tooltip     "Accept only keys that are signed by yourself or by other people you trust. Technically, you only accept keys 'valid' for encryption.">
+<!ENTITY annealmail.acceptedKeysAllUsable.label     "All usable keys">
+<!ENTITY annealmail.acceptedKeysAllUsable.tooltip   "Accept all keys that are neither disabled by you nor revoked/expired by the owner. Technically, this uses the CCR option '--trust-model always'.">
+
+<!ENTITY annealmail.confirmBeforeSendingOption.label           "Confirm before sending">
+<!ENTITY annealmail.confirmBeforeSendingNever.label            "Never">
+<!ENTITY annealmail.confirmBeforeSendingNever.tooltip          "Don't display information dialog about signing/encryption before sending a message">
+<!ENTITY annealmail.confirmBeforeSendingAlways.label           "Always">
+<!ENTITY annealmail.confirmBeforeSendingAlways.tooltip         "Always display information dialog about signing/encryption before sending a message">
+<!ENTITY annealmail.confirmBeforeSendingIfEncrypted.label      "If encrypted">
+<!ENTITY annealmail.confirmBeforeSendingIfEncrypted.tooltip    "Display information dialog about signing/encryption before sending an ENCRYPTED message">
+<!ENTITY annealmail.confirmBeforeSendingIfNotEncrypted.label   "If unencrypted">
+<!ENTITY annealmail.confirmBeforeSendingIfNotEncrypted.tooltip "Display information dialog about signing/encryption before sending an UNENCRYPTED message">
+<!ENTITY annealmail.confirmBeforeSendingIfRules.label          "If rules changed the default encryption setting">
+<!ENTITY annealmail.confirmBeforeSendingIfRules.tooltip        "Display information dialog about signing/encryption before sending, if your preference regarding encryption was changed by a per-recipient rule or auto encryption">
+
+
+<!-- keySel Preferences -->
+
+<!ENTITY annealmail.recipientsSelectionOption.label "How should we choose the keys?">
+<!ENTITY annealmail.assignKeysByRules.label             "By Per-Recipient Rules">
+<!ENTITY annealmail.assignKeysByRules.tooltip           "Assign keys according to per-recipient rules. Force to prompt for creating new rules if this is the only selected option.">
+<!ENTITY annealmail.assignKeysByEmailAddr.label         "By Email Addresses according to the key manager">
+<!ENTITY annealmail.assignKeysByEmailAddr.tooltip       "Assign keys according to keys associated with the email addresses in the key manager.">
+<!ENTITY annealmail.assignKeysManuallyIfMissing.label   "Manually if Keys are Missing">
+<!ENTITY annealmail.assignKeysManuallyIfMissing.tooltip "Open dialog to manually assign keys if keys are missing.">
+<!ENTITY annealmail.assignKeysManuallyAlways.label      "Always (also) Manually">
+<!ENTITY annealmail.assignKeysManuallyAlways.tooltip    "Always finally open the dialog to manually assign keys.">
+<!ENTITY annealmail.defineRules.label               "Edit Rules ...">
+
+
+<!ENTITY annealmail.wrapHtmlBeforeSend.label        "Re-wrap signed HTML text before sending">
+<!ENTITY annealmail.wrapHtmlBeforeSend.tooltip      "Rearrange the text to ensure that the signature will remain intact.">
+<!ENTITY annealmail.autoKeyRetrieve.label           "Automatically download keys for signature verification">
+<!ENTITY annealmail.autoKeyRetrieve2.label          "from the following keyserver:">
+<!ENTITY annealmail.resetRememberedValues.label     "Reset Warnings">
+<!ENTITY annealmail.resetRememberedValues.tooltip   "Re-display all warning dialogs and questions that you have hidden in the past.">
+
+<!ENTITY annealmail.keygen.desc "<a class='annealmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the 'randomness pool' and speed-up the process. You will be alerted when key generation is completed.">
+
+<!ENTITY annealmail.userSelectionList.label           "AnnealMail Key Selection">
+<!ENTITY annealmail.usersNotFound.label               "Recipients not valid, not trusted or not found">
+<!ENTITY annealmail.keyExpiry.label                   "Expiry">
+<!ENTITY annealmail.uidValidity.label                 "Validity">
+<!ENTITY annealmail.keySelection.label                "Selection">
+<!ENTITY annealmail.keyId.label                       "Key ID">
+<!ENTITY annealmail.userSelSendSigned.label           "Send signed">
+<!ENTITY annealmail.userSelSendSigned.accesskey       "S">
+<!ENTITY annealmail.userSelSendEncrypted.label        "Send encrypted">
+<!ENTITY annealmail.userSelSendEncrypted.accesskey    "E">
+<!ENTITY annealmail.displayNoLonger.label             "Do not display this dialog again if encryption is not possible">
+<!ENTITY annealmail.importMissingKeys.label           "Download missing keys">
+<!ENTITY annealmail.importMissingKeys.accesskey       "D">
+<!ENTITY annealmail.importMissingKeys.tooltip         "Try to import the missing keys from a key server">
+<!ENTITY annealmail.refreshKeys.label                 "Refresh Key List">
+<!ENTITY annealmail.refreshKeys.accesskey             "R">
+<!ENTITY annealmail.send.label                        "Send">
+<!ENTITY annealmail.perRecipientsOption.label         "Create per-recipient rule(s)">
+
+<!ENTITY annealmail.annealmailAttachDesc.label          "This message contains attachments. How would you like encrypt/sign them?">
+<!ENTITY annealmail.enigEncryptAttachNone.label           "Just encrypt/sign the message text, but not the attachments">
+<!ENTITY annealmail.enigAttachNoneSign.label              "Sign the message text, but not the attachments">
+<!ENTITY annealmail.enigAttachNoneEncrypt.label           "Encrypt the message text, but not the attachments">
+<!ENTITY annealmail.enigAttachNoneEncryptAndSign.label    "Encrypt and sign the message text, but not the attachments">
+<!ENTITY annealmail.enigEncryptAttachInline.label         "Encrypt/sign each attachment separately and send the message using inline PGP">
+<!ENTITY annealmail.enigAttachInlineSign.label            "Sign each attachment separately and send the message using inline PGP">
+<!ENTITY annealmail.enigAttachInlineEncrypt.label         "Encrypt each attachment separately and send the message using inline PGP">
+<!ENTITY annealmail.enigAttachInlineEncryptAndSign.label  "Encrypt and sign each attachment separately and send the message using inline PGP">
+<!ENTITY annealmail.enigEncryptAttachPgpMime.label        "Encrypt/sign the message as a whole and send it using PGP/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeSign.label           "Sign the message as a whole and send it using PGP/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeEncrypt.label        "Encrypt the message as a whole and send it using PGP/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeEncryptAndSign.label "Encrypt and sign the message as a whole and send it using PGP/MIME">
+<!ENTITY annealmail.enigEncryptAttachDontEncryptMsg.label        "Don't encrypt/sign the message at all">
+<!ENTITY annealmail.enigAttachDontEncryptMsgSign.label           "Don't sign the message at all">
+<!ENTITY annealmail.enigAttachDontEncryptMsgEncrypt.label        "Don't encrypt the message at all">
+<!ENTITY annealmail.enigAttachDontEncryptMsgEncryptAndSign.label "Don't encrypt and sign the message at all">
+<!ENTITY annealmail.encryptAttachSkipDlg.label        "Use the selected method for all future attachments">
+
+
+<!ENTITY annealmail.ctxDecryptOpen.label              "Decrypt and Open">
+<!ENTITY annealmail.ctxDecryptSave.label              "Decrypt and Save As...">
+<!ENTITY annealmail.ctxImportKey.label                "Import OpenPGP Key">
+<!ENTITY annealmail.ctxVerifyAtt.label                "Verify signature">
+<!ENTITY annealmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY annealmail.ctxDecryptSave.accesskey          "C">
+<!ENTITY annealmail.ctxImportKey.accesskey            "I">
+<!ENTITY annealmail.ctxVerifyAtt.accesskey            "V">
+<!ENTITY annealmail.detailsHdrButton.label            "Details">
+<!ENTITY annealmail.revealAttachmentsButton.label     "The names of the files attached are hidden. Press the 'Reveal' button to retrieve the original file names.">
+<!ENTITY annealmail.revealAttachments.button          "Reveal">
+
+<!ENTITY annealmail.exchangeGarbage.desc              "This is a broken PGP/MIME message from MS-Exchange. If you cannot access the attachments or have problems with replying or forwarding, press the 'Repair message' button to fix the message">
+<!ENTITY annealmail.exchangeGarbage.fixButton.label   "Repair message">
+<!ENTITY annealmail.exchangeGarbage.waitMessage       "Please wait ...">
+
+<!ENTITY annealmail.amPrefTitle.label                 "OpenPGP Options">
+<!ENTITY annealmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by AnnealMail. You need to have CodeCrypt (ccr) installed in order to use this feature.">
+<!ENTITY annealmail.amPrefEnablePgp.label             "Enable OpenPGP support (AnnealMail) for this identity">
+<!ENTITY annealmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
+<!ENTITY annealmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID (0x1234ABCD):">
+<!ENTITY annealmail.amPrefSelectKey.label             "Select Key ...">
+<!ENTITY annealmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
+<!ENTITY annealmail.encryptionDlg.label               "AnnealMail Encryption &amp; Signing Settings">
+<!ENTITY annealmail.encDlgEncrypt.label               "Encrypt Message">
+<!ENTITY annealmail.encDlgEncrypt.accesskey           "E">
+<!ENTITY annealmail.encDlgSign.label                  "Sign Message">
+<!ENTITY annealmail.encDlgSign.accesskey              "S">
+<!ENTITY annealmail.encDlgPgpMime.label               "Use PGP/MIME">
+<!ENTITY annealmail.encDlgPgpMime.accesskey           "P">
+<!ENTITY annealmail.encDlgInlinePgp.label             "Use Inline PGP">
+<!ENTITY annealmail.encDlgInlinePgp.accesskey         "I">
+<!ENTITY annealmail.encDlgReset.label                 "Reset to Defaults">
+<!ENTITY annealmail.encDlgReset.accesskey             "R">
+<!ENTITY annealmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
+<!ENTITY annealmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
+<!ENTITY annealmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
+
+<!ENTITY annealmail.progressText.label               "Progress:">
+
+<!ENTITY annealmail.openPgpSecurity.label            "OpenPGP Security">
+
+<!ENTITY annealmail.pgpSecurityInfo.label            "AnnealMail Security Info ...">
+<!ENTITY annealmail.copySecurityInfo.label           "Copy AnnealMail Security Info">
+<!ENTITY annealmail.showPhoto.label                  "View OpenPGP Photo ID">
+<!ENTITY annealmail.photoViewer.title                "OpenPGP Photo Viewer">
+<!ENTITY annealmail.displayKeyProperties.label       "View Key Properties">
+<!ENTITY annealmail.signSenderKey.label              "Sign Key ...">
+<!ENTITY annealmail.trustSenderKey.label             "Set Owner Trust ...">
+<!ENTITY annealmail.signSenderKeyPopup.label         "Sign Sender's Key ...">
+<!ENTITY annealmail.trustSenderKeyPopup.label        "Set Owner Trust of Sender's Key...">
+<!ENTITY annealmail.createRuleFromAddr.label         "Create AnnealMail Rule from Address...">
+<!ENTITY annealmail.keyManWindow.label               "Key Management">
+<!ENTITY annealmail.keyManWindow.accesskey           "y">
+
+<!ENTITY annealmail.singleRcptSettings.label          "AnnealMail - Recipient Settings">
+
+<!ENTITY annealmail.compose.excesslength.label        "You have very long lines in your mail. They should be handled differently to avoid bad signatures.">
+<!ENTITY annealmail.compose.excesslength_action.label "How do you want to proceed?">
+<!ENTITY annealmail.wrapSelectionList.label           "Select wrap">
+<!ENTITY annealmail.compose.wrap_radio.label          "Wrap automatically (good signature, but may not look good)">
+<!ENTITY annealmail.compose.sendasis_radio.label      "Send as is (and risk a bad signature)">
+<!ENTITY annealmail.compose.use_mime_radio.label      "Use PGP/MIME (good signature, but some receivers cannot decode it)">
+<!ENTITY annealmail.compose.editmanually.label        "Edit manually">
+
+<!ENTITY annealmail.selKeysButton.label               "Select Key(s)...">
+<!ENTITY annealmail.action.label                      "Action">
+<!ENTITY annealmail.nextRule.label                    "Continue with next rule for the matching address">
+<!ENTITY annealmail.nextAddress.label                 "Do not check further rules for the matching address">
+<!ENTITY annealmail.useKeys.label                     "Use the following OpenPGP keys:">
+<!ENTITY annealmail.selKeysButton.accesskey           "S">
+<!ENTITY annealmail.setDefaultsFor.label              "Defaults for ...">
+<!ENTITY annealmail.encryption.label                  "Encryption">
+<!ENTITY annealmail.signing.label                     "Signing">
+<!ENTITY annealmail.never.label                       "Never">
+<!ENTITY annealmail.always.label                      "Always">
+<!ENTITY annealmail.maybe.label                       "Yes, if selected in Message Composition">
+<!ENTITY annealmail.singleRcptSettings.desc           "(Note: in case of conflicts, 'Never' overrules 'Always')">
+<!ENTITY annealmail.ruleEmail.label                   "Set AnnealMail Rules for">
+<!ENTITY annealmail.ruleEmail.tooltip                 "Only fill in email addresses, do NOT set the names of the recipients\nE.g. 'Some Name &lt;some.name@address.net&gt;' is invalid">
+<!ENTITY annealmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
+<!ENTITY annealmail.matchDescStart.label              "Apply rule if recipient">
+<!ENTITY annealmail.matchDescEnd.label                "one of the above addresses">
+<!ENTITY annealmail.matchExact.label                  "Is exactly">
+<!ENTITY annealmail.matchContains.label               "Contains">
+<!ENTITY annealmail.matchBegin.label                  "Starts with">
+<!ENTITY annealmail.matchEnd.label                    "Ends with">
+<!ENTITY annealmail.not.label                         "Not">
+
+<!ENTITY annealmail.rulesEditor.label                 "AnnealMail - Per-Recipient Rules Editor">
+<!ENTITY annealmail.email.label                       "Email">
+<!ENTITY annealmail.pgpKeys.label                     "OpenPGP Key(s)">
+<!ENTITY annealmail.sign.label                        "Sign">
+<!ENTITY annealmail.encrypt.label                     "Encrypt">
+<!ENTITY annealmail.edit.label                        "Modify">
+<!ENTITY annealmail.edit.accesskey                    "M">
+<!ENTITY annealmail.add.label                         "Add">
+<!ENTITY annealmail.add.accesskey                     "A">
+<!ENTITY annealmail.delete.label                      "Delete">
+<!ENTITY annealmail.delete.accesskey                  "E">
+<!ENTITY annealmail.moveUp.label                      "Move Up">
+<!ENTITY annealmail.moveUp.accesskey                  "U">
+<!ENTITY annealmail.moveDown.label                    "Move Down">
+<!ENTITY annealmail.moveDown.accesskey                "D">
+<!ENTITY annealmail.searchRule.label                  "View rules with email addresses containing:">
+<!ENTITY annealmail.clearSearch.label                 "Clear">
+<!ENTITY annealmail.clearSearch.accesskey             "C">
+
+<!ENTITY annealmail.searchKeyDlg.label               "Download OpenPGP Keys">
+<!ENTITY annealmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
+<!ENTITY annealmail.searchKeyDlgSelAll.label         "Select/Deselect all">
+
+<!ENTITY annealmail.created.label                    "Created">
+
+<!ENTITY annealmail.progress.label                   "Progress">
+
+<!ENTITY annealmail.sKeyDlg.title                    "AnnealMail - Sign Key">
+<!ENTITY annealmail.sKeyDlg.signKey.label            "Key to be signed:">
+<!ENTITY annealmail.sKeyDlg.fingerprint.label        "Fingerprint:">
+<!ENTITY annealmail.sKeyDlg.signWithKey.label        "Key for signing:">
+<!ENTITY annealmail.sKeyDlg.ownKeyTrust.label        "Note: you have to set owner trust to ultimate for your own keys to be shown here.">
+<!ENTITY annealmail.sKeyDlg.checked.label            "How carefully have you verified that the key you are about to sign actually belongs to the person(s) named above?">
+<!ENTITY annealmail.sKeyDlg.noAnswer.label           "I will not answer">
+<!ENTITY annealmail.sKeyDlg.notChecked.label         "I have not checked at all">
+<!ENTITY annealmail.sKeyDlg.casualCheck.label        "I have done casual checking">
+<!ENTITY annealmail.sKeyDlg.carefulCheck.label       "I have done very careful checking">
+<!ENTITY annealmail.sKeyDlg.createLocal.label        "Local signature (cannot be exported)">
+
+<!ENTITY annealmail.addUidDlg.title                  "AnnealMail - Add User ID">
+<!ENTITY annealmail.addUidDlg.name.label             "Name">
+<!ENTITY annealmail.addUidDlg.email.label            "Email">
+
+<!ENTITY annealmail.keyTrust.title                   "AnnealMail - Set Owner Trust">
+<!ENTITY annealmail.keyTrust.trustKey.label          "Key To Trust:">
+<!ENTITY annealmail.keyTrust.trustLevel.label        "How much do you trust the owner of the key to sign other keys properly?">
+<!ENTITY annealmail.keyTrust.dontKnow.label          "I don't know">
+<!ENTITY annealmail.keyTrust.noTrust.label           "I do NOT trust">
+<!ENTITY annealmail.keyTrust.marginalTrust.label     "I trust marginally">
+<!ENTITY annealmail.keyTrust.fullTrust.label         "I trust fully">
+<!ENTITY annealmail.keyTrust.ultimateTrust.label     "I trust ultimately">
+
+<!ENTITY annealmail.keyExpiry.title                   "AnnealMail - Change Expiration Date">
+<!ENTITY annealmail.keyExpiry.expiryKey.label         "Keys to change expiration date:">
+
+<!ENTITY annealmail.keyMan.title                     "AnnealMail Key Management">
+<!ENTITY annealmail.keyMan.close.label               "Close Window">
+<!ENTITY annealmail.keyMan.generate.label            "New Key Pair">
+<!ENTITY annealmail.keyMan.sign.label                "Sign Key">
+<!ENTITY annealmail.keyMan.setTrust.label            "Set Owner Trust">
+<!ENTITY annealmail.keyMan.genRevoke.label           "Revocation Certificate">
+<!ENTITY annealmail.keyMan.ctxGenRevoke.label        "Generate &amp; Save Revocation Certificate">
+
+<!ENTITY annealmail.keyMan.fileMenu.label            "File">
+<!ENTITY annealmail.keyMan.editMenu.label            "Edit">
+<!ENTITY annealmail.keyMan.viewMenu.label            "View">
+<!ENTITY annealmail.keyMan.keyserverMenu.label       "Keyserver">
+<!ENTITY annealmail.keyMan.generateMenu.label        "Generate">
+
+<!ENTITY annealmail.keyMan.fileMenu.accesskey        "F">
+<!ENTITY annealmail.keyMan.editMenu.accesskey        "E">
+<!ENTITY annealmail.keyMan.viewMenu.accesskey        "V">
+<!ENTITY annealmail.keyMan.keyserverMenu.accesskey   "K">
+<!ENTITY annealmail.keyMan.generateMenu.accesskey    "G">
+
+<!ENTITY annealmail.keyMan.importFromFile.label      "Import Keys from File">
+<!ENTITY annealmail.keyMan.importFromServer.label    "Search for Keys">
+<!ENTITY annealmail.keyMan.importFromClipbrd.label   "Import Keys from Clipboard">
+<!ENTITY annealmail.keyMan.importFromUrl.label       "Import Keys from URL">
+<!ENTITY annealmail.keyMan.exportToFile.label        "Export Keys to File">
+<!ENTITY annealmail.keyMan.sendKeys.label            "Send Public Keys by Email">
+<!ENTITY annealmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
+<!ENTITY annealmail.keyMan.uploadToServer.label      "Upload Public Keys">
+<!ENTITY annealmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
+<!ENTITY annealmail.keyMan.ctxExportToFile.label     "Export Keys to File">
+<!ENTITY annealmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
+<!ENTITY annealmail.keyMan.ctxCopyToClipbrd.label    "Copy Public Keys to Clipboard">
+<!ENTITY annealmail.keyMan.refreshSelKeys.label      "Refresh Selected Public Keys">
+<!ENTITY annealmail.keyMan.refreshAllKeys.label      "Refresh All Public Keys">
+<!ENTITY annealmail.keyMan.downloadContactKeys.label "Find keys for all contacts">
+<!ENTITY annealmail.keyMan.ctxRefreshKey.label       "Refresh Public Keys From Keyserver">
+
+<!ENTITY annealmail.keyMan.reload.label              "Reload Key Cache">
+<!ENTITY annealmail.keyMan.addPhoto.label            "Add Photo">
+<!ENTITY annealmail.keyMan.manageUid.label           "Manage User IDs">
+<!ENTITY annealmail.keyMan.changeExpiry.label        "Change Expiration Date">
+<!ENTITY annealmail.keyMan.changePwd.label           "Change Passphrase">
+<!ENTITY annealmail.keyMan.delKey.label              "Delete Key">
+<!ENTITY annealmail.keyMan.revokeKey.label           "Revoke Key">
+<!ENTITY annealmail.keyMan.keyProps.label            "Key Properties">
+<!ENTITY annealmail.keyMan.showAllKeys.label         "Display All Keys by Default">
+<!ENTITY annealmail.keyMan.viewPhoto.label           "Photo ID">
+<!ENTITY annealmail.keyMan.ctxViewPhoto.label        "View Photo ID">
+<!ENTITY annealmail.keyMan.showInvalidKeys.label     "Display invalid keys">
+<!ENTITY annealmail.keyMan.showUntrustedKeys.label   "Display untrusted keys">
+<!ENTITY annealmail.keyMan.showOthersKeys.label      "Display keys from other people">
+<!ENTITY annealmail.keyMan.userId.label              "Name">
+<!ENTITY annealmail.keyMan.keyType.label             "Type">
+<!ENTITY annealmail.keyMan.calcTrust.label           "Key Validity">
+<!ENTITY annealmail.keyMan.ownerTrust.label          "Owner Trust">
+<!ENTITY annealmail.keyMan.stopTransfer.label        "Stop transfer">
+<!ENTITY annealmail.keyMan.fingerprint.label         "Fingerprint">
+<!ENTITY annealmail.keyMan.selectAll.label           "Select all Keys">
+<!ENTITY annealmail.keyMan.addToPRRule.label         "Add to Per-Recipient Rule">
+<!ENTITY annealmail.keyMan.emptyTree.tooltip         "Enter search terms in the box above">
+<!ENTITY annealmail.keyMan.nothingFound.tooltip      "No keys match your search terms">
+<!ENTITY annealmail.keyMan.pleaseWait.tooltip        "Please wait while keys are being loaded ...">
+
+<!ENTITY annealmail.keyMan.filter.label              "Search for:">
+
+<!ENTITY annealmail.keyMan.close.accesskey             "C">
+<!ENTITY annealmail.keyMan.generate.accesskey          "K">
+<!ENTITY annealmail.keyMan.sign.accesskey              "S">
+<!ENTITY annealmail.keyMan.setTrust.accesskey          "T">
+<!ENTITY annealmail.keyMan.genRevoke.accesskey         "R">
+<!ENTITY annealmail.keyMan.delKey.accesskey            "D">
+<!ENTITY annealmail.keyMan.revokeKey.accesskey         "R">
+<!ENTITY annealmail.keyMan.importFromFile.accesskey    "I">
+<!ENTITY annealmail.keyMan.exportToFile.accesskey      "E">
+<!ENTITY annealmail.keyMan.importFromServer.accesskey  "S">
+<!ENTITY annealmail.keyMan.uploadToServer.accesskey    "U">
+<!ENTITY annealmail.keyMan.reload.accesskey            "R">
+<!ENTITY annealmail.keyMan.addPhoto.accesskey          "P">
+<!ENTITY annealmail.keyMan.manageUid.accesskey         "M">
+<!ENTITY annealmail.keyMan.changeExpiry.accesskey      "E">
+<!ENTITY annealmail.keyMan.changePwd.accesskey         "P">
+<!ENTITY annealmail.keyMan.showInvalidKeys.accesskey   "D">
+<!ENTITY annealmail.keyMan.showUntrustedKeys.accesskey "U">
+<!ENTITY annealmail.keyMan.showOthersKeys.accesskey    "O">
+<!ENTITY annealmail.keyMan.showPhoto.accesskey         "P">
+<!ENTITY annealmail.keyMan.importFromClipbrd.accesskey "I">
+<!ENTITY annealmail.keyMan.importFromUrl.accesskey     "U">
+<!ENTITY annealmail.keyMan.copyToClipbrd.accesskey     "C">
+<!ENTITY annealmail.keyMan.keyDetails.accesskey        "K">
+<!ENTITY annealmail.keyMan.showAllKeys.accesskey       "D">
+<!ENTITY annealmail.keyMan.enableKey.accesskey         "B">
+<!ENTITY annealmail.keyMan.refreshSelKeys.accesskey    "R">
+<!ENTITY annealmail.keyMan.refreshAllKeys.accesskey    "A">
+<!ENTITY annealmail.keyMan.selectAll.accesskey         "A">
+<!ENTITY annealmail.keyMan.sendKeys.accesskey          "S">
+<!ENTITY annealmail.keyMan.createMail.accesskey        "C">
+<!ENTITY annealmail.keyMan.downloadContactKeys.accesskey "F">
+
+
+<!ENTITY annealmail.keyMan.selectAll.key               "A">
+<!ENTITY annealmail.keyMan.keyDetails.key              "I">
+<!ENTITY annealmail.keyMan.refreshKey.key              "R">
+
+<!ENTITY annealmail.keySearch.selectAll.key            "A">
+
+<!ENTITY annealmail.manageUidDlg.title                 "Change Primary User ID">
+<!ENTITY annealmail.manageUidDlg.affectedKey.label     "Key to change:">
+<!ENTITY annealmail.manageUidDlg.availableUid.label    "Available user IDs:">
+<!ENTITY annealmail.manageUidDlg.addUid.label          "Add">
+<!ENTITY annealmail.manageUidDlg.deleteUid.label       "Delete">
+<!ENTITY annealmail.manageUidDlg.revokeUid.label       "Revoke">
+<!ENTITY annealmail.manageUidDlg.setPrimary.label      "Set primary">
+
+<!ENTITY annealmail.keyDetails.title                   "Key Properties">
+<!ENTITY annealmail.keyDetails.signaturesTab           "Certifications">
+<!ENTITY annealmail.keyDetails.structureTab            "Structure">
+<!ENTITY annealmail.keyDetails.uidCertifiedCol         "User ID / Certified by">
+<!ENTITY annealmail.keyDetails.userId.label            "Primary User ID">
+<!ENTITY annealmail.keyDetails.ID.label                "ID">
+<!ENTITY annealmail.keyDetails.keyType.label           "Type">
+<!ENTITY annealmail.keyDetails.keyPart.label           "Key Part">
+<!ENTITY annealmail.keyDetails.algorithm.label         "Algorithm">
+<!ENTITY annealmail.keyDetails.size.label              "Size">
+<!ENTITY annealmail.keyDetails.created.label           "Created">
+<!ENTITY annealmail.keyDetails.expiry.label            "Expiry">
+<!ENTITY annealmail.keyDetails.usage.label             "Usage">
+<!ENTITY annealmail.keyDetails.fingerprint.label       "Fingerprint">
+<!ENTITY annealmail.keyDetails.selAction.label         "Select action ...">
+<!ENTITY annealmail.keyDetails.selAction.accesskey     "S">
+<!ENTITY annealmail.keyDetails.change.label            "Change">
+<!ENTITY annealmail.keyDetails.signKey.label           "Certify">
+<!ENTITY annealmail.keyDetails.trustStatus.label       "You rely on certifications">
+<!ENTITY annealmail.keyDetails.keyValidity.label       "Validity">
+<!ENTITY annealmail.keyDetails.alsoKnown.label         "Also known as">
+
+<!ENTITY annealmail.cardDetails.title                  "OpenPGP SmartCard Details">
+<!ENTITY annealmail.cardDetails.cardMenu.label         "SmartCard">
+<!ENTITY annealmail.cardDetails.adminPin.label         "Change PIN">
+<!ENTITY annealmail.cardDetails.genCardKey.label       "Generate Key">
+
+<!ENTITY annealmail.cardDetails.vendor.label           "Manufacturer">
+<!ENTITY annealmail.cardDetails.serial.label           "Serial Number">
+<!ENTITY annealmail.cardDetails.name.label             "Firstname, Name">
+<!ENTITY annealmail.cardDetails.lang.label             "Language">
+<!ENTITY annealmail.cardDetails.sex.label              "Sex">
+<!ENTITY annealmail.cardDetails.url.label              "URL of public key">
+<!ENTITY annealmail.cardDetails.login.label            "Login data">
+<!ENTITY annealmail.cardDetails.forcepin.label         "Force signature PIN">
+<!ENTITY annealmail.cardDetails.maxpinlen.label        "Max. PIN length">
+<!ENTITY annealmail.cardDetails.pinretry.label         "PIN retry counter">
+<!ENTITY annealmail.cardDetails.sigcount.label         "Signature counter">
+<!ENTITY annealmail.cardDetails.sigKey.label           "Signature key">
+<!ENTITY annealmail.cardDetails.keyCreated.label       "Created">
+<!ENTITY annealmail.cardDetails.encKey.label           "Encryption key">
+<!ENTITY annealmail.cardDetails.authKey.label          "Authentication key">
+<!ENTITY annealmail.cardDetails.yes.label              "Yes">
+<!ENTITY annealmail.cardDetails.no.label               "No">
+<!ENTITY annealmail.cardDetails.male.label             "Male">
+<!ENTITY annealmail.cardDetails.female.label           "Female">
+<!ENTITY annealmail.cardDetails.editData.label         "Edit Card Data">
+<!ENTITY annealmail.cardDetails.save.label             "Save">
+<!ENTITY annealmail.cardDetails.reset.label            "Reset">
+<!ENTITY annealmail.cardDetails.closeWindow.label      "Close">
+
+<!ENTITY annealmail.cardDetails.adminPin.accesskey     "P">
+<!ENTITY annealmail.cardDetails.genCardKey.accesskey   "G">
+<!ENTITY annealmail.cardDetails.cardMenu.accesskey     "S">
+<!ENTITY annealmail.cardDetails.editData.accesskey     "E">
+
+<!ENTITY annealmail.genCardKey.title                   "Generate OpenPGP Key">
+<!ENTITY annealmail.genCardKey.backupKey.label         "Save backup of key outside the card">
+<!ENTITY annealmail.genCardKey.desc                    "<a class='annealmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. You will be alerted when key generation is completed.">
+
+<!ENTITY annealmail.cardPin.title                      "Change SmartCard PIN">
+<!ENTITY annealmail.cardPin.action.label               "What do you want to do">
+<!ENTITY annealmail.cardPin.changePin.label            "Change PIN">
+<!ENTITY annealmail.cardPin.changeAdmPin.label         "Change Admin PIN">
+<!ENTITY annealmail.cardPin.unblockPin.label           "Unblock PIN">
+<!ENTITY annealmail.cardPin.currAdmPin.label           "Current ADMIN PIN">
+<!ENTITY annealmail.cardPin.newAdminPin.label          "New admin PIN">
+<!ENTITY annealmail.cardPin.adminPinRepeat.label       "Repeat new PIN">
+<!ENTITY annealmail.cardPin.currPin.label              "Current PIN">
+<!ENTITY annealmail.cardPin.newPin.label               "New PIN">
+<!ENTITY annealmail.cardPin.pinRepeat.label            "Repeat new PIN">
+
+<!-- wizard: welcome step -->
+<!ENTITY annealmail.setupWiz.title                     "AnnealMail Setup Wizard">
+<!ENTITY annealmail.setupWiz.pgIntro.title             "Welcome to the AnnealMail Setup Wizard">
+<!ENTITY annealmail.setupWiz.pgIntro.desc              "It looks like you started AnnealMail for the first time on this computer.
+                                                      In order to use AnnealMail, you need to first set it up properly.
+                                                      This assistant can guide you through the setup process.">
+<!ENTITY annealmail.setupWiz.pgIntro.desc2             "Do you want to set up AnnealMail now, or do you wish to do this later?">
+<!ENTITY annealmail.setupWiz.pgIntro.startNow          "Start setup now">
+<!ENTITY annealmail.setupWiz.pgIntro.startLater        "Configure AnnealMail later">
+
+<!ENTITY annealmail.setupWiz.pgWelcome.title           "How would you like to Configure AnnealMail?">
+<!ENTITY annealmail.setupWiz.pgWelcome.manualOrAuto    "Would you like to setup AnnealMail manually, or do you need assistance in the setup process?">
+<!ENTITY annealmail.setupWiz.pgWelcome.beginnersMode   "I prefer a standard configuration (recommended for beginners)">
+<!ENTITY annealmail.setupWiz.pgWelcome.advancedMode    "I prefer an extended configuration (recommended for advanced users)">
+<!ENTITY annealmail.setupWiz.pgWelcome.manualMode      "I prefer a manual configuration (recommended for experts)">
+<!ENTITY annealmail.setupWiz.pgWelcome.importSettings  "I want to import my settings from a previous installation">
+
+<!-- wizard: select account IDs step -->
+<!ENTITY annealmail.setupWiz.pgSelectId.title          "Select Identities">
+<!ENTITY annealmail.setupWiz.pgSelectId.subtitle       "Select the accounts or identities you want AnnealMail to work with">
+<!ENTITY annealmail.setupWiz.pgSelectId.desc2          "Would you like to set up AnnealMail for all your email accounts / identities?">
+<!ENTITY annealmail.setupWiz.pgSelectId.selectallIds   "I would like to enable AnnealMail for all my accounts / identities">
+<!ENTITY annealmail.setupWiz.pgSelectId.selectedIds    "I would like to enable AnnealMail only for the following identities:">
+<!ENTITY annealmail.setupWiz.pgSelectId.note           "<a class='annealmailStrong'>Note:</a> AnnealMail will always verify signatures
+                                                      on emails for every account or identity, regardless of whether it is enabled or not">
+
+<!-- wizard: install CodeCrypt step -->
+<!ENTITY annealmail.setupWiz.pgInstall.title           "CodeCrypt Required">
+<!ENTITY annealmail.setupWiz.pgInstall.desc            "AnnealMail requires CodeCrypt for doing the cryptographic work.
+                                                      The wizard tried to locate the CodeCrypt executable, but it could not be found.">
+<!ENTITY annealmail.setupWiz.pgInstall.installDesc1    "AnnealMail can download CodeCrypt and launch the installer for you.
+                                                      If you wish to do so, click on the 'Install CodeCrypt' button to download and install CodeCrypt.">
+
+<!ENTITY annealmail.setupWiz.pgInstall.installDesc2    "Alternatively, if you already installed CodeCrypt, use the 'Browse' button to specify the path to CodeCrypt manually.">
+<!ENTITY annealmail.setupWiz.pgInstall.locateDesc      "Please locate CodeCrypt using the Browse button.">
+<!ENTITY annealmail.setupWiz.pgInstall.installButton   "Install CodeCrypt ...">
+<!ENTITY annealmail.setupWiz.pgInstall.locateButton    "Browse ...">
+<!ENTITY annealmail.setupWiz.pgInstall.downloadLabel   "Downloading CodeCrypt ...">
+<!ENTITY annealmail.setupWiz.pgInstall.installLabel    "Starting the installer. Please follow the steps of the CodeCrypt installer wizard.">
+<!ENTITY annealmail.setupWiz.pgInstall.installDone     "Installation complete. Please proceed to the next page of the wizard to continue the setup process.">
+<!ENTITY annealmail.setupWiz.pgInstall.codecryptFound      "Valid CodeCrypt installation found.">
+
+
+<!-- wizard: key selection step -->
+
+<!ENTITY annealmail.setupWiz.pgKeySel.title            "Key Selection">
+<!ENTITY annealmail.setupWiz.pgKeySel.subtitle         "Create A Key To Sign And Encrypt Email">
+<!ENTITY annealmail.setupWiz.pgKeySel.desc2            "We have detected that you already have an OpenPGP key. You can either
+                                                      use one of your existing keys, or create a new key pair.">
+<!ENTITY annealmail.setupWiz.pgKeySel.newKey           "I want to create a new key pair for signing and encrypting my email">
+<!ENTITY annealmail.setupWiz.pgKeySel.useExistingKey   "I want to select one of the keys below for signing and encrypting my email:">
+
+
+<!-- wizard: key creation - password step -->
+<!ENTITY annealmail.setupWiz.pgKeyCreate.title         "Create Key">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.subtitle      "Create a new Key Pair">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of two keys:">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.descPub       "Your <html:b>public key</html:b> is <html:b>for others</html:b> to send you encrypted emails. You can distribute it to everybody.">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>private key</html:b> is <html:b>for yourself</html:b> to decrypt these emails and to send signed emails.
+                                                      You should give it to nobody.">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.descSec2      "Your <html:b>private key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
+                                                      You should give it to nobody.
+                                                      To secure your private key, you will be prompted for a passphrase in the following two dialogs.">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is a password to protect your private key. It prevents misuse of your private key.">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.passContain   "The passphrase should be a phrase containing at least 8 characters, digits and punctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are <html:b>not</html:b> recommended.">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
+<!ENTITY annealmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
+
+<!-- wizard: no key found step -->
+<!ENTITY annealmail.setupWiz.pgNoKeyFound.title2       "Create or Import OpenPGP Keys">
+<!ENTITY annealmail.setupWiz.pgNoKeyFound.desc2        "You don't seem to have any OpenPGP keys yet. Would you like to create a new key, or
+                                                      do you want to import keys from a file?">
+<!ENTITY annealmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
+
+<!-- wizard: import key page -->
+<!ENTITY annealmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
+<!ENTITY annealmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
+<!ENTITY annealmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the private keys to
+                                                      import. The entry for private keys can be left empty if the first file
+                                                      contains both private and public keys.">
+<!ENTITY annealmail.setupWiz.pgKeyImport.pubkeyFile    "Public key file">
+<!ENTITY annealmail.setupWiz.pgKeyImport.seckeyFile    "Private key file">
+
+<!-- wizard: key creation - key generation step -->
+
+<!ENTITY annealmail.setupWiz.pgKeygen.title            "Key Creation">
+<!ENTITY annealmail.setupWiz.pgKeygen.subtitle         "Your key is now being generated">
+<!ENTITY annealmail.setupWiz.pgKeygen.keyGenComplete   "Your Key is Generated">
+<!ENTITY annealmail.setupWiz.pgKeygen.revokeCertDesc    "In case your private key gets lost or compromised, you might need to revoke your public key
+                                                      such that others don't continue to use your old key.
+                                                      For this purpose, you need a revocation certificate.
+                                                      <html:br/>You will be prompted to enter your password for this.">
+<!ENTITY annealmail.setupWiz.pgKeygen.revCertButton    "Create Revocation Certificate">
+
+<!-- wizard: import settings from previous installation -->
+<!ENTITY annealmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
+<!ENTITY annealmail.setupWiz.pgImportSettings.desc     "AnnealMail allows to transfer all its settings including your OpenPGP
+                                                      keys to a new computer. This is done in two steps:
+                                                      <html:ol>
+                                                        <html:li>export your data from your old computer using the backup wizard from the AnnealMail Preferences</html:li>
+                                                        <html:li>import the data to your new computer using this wizard.</html:li>
+                                                      </html:ol>">
+<!ENTITY annealmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
+<!ENTITY annealmail.setupWiz.pgImportSettings.importing "Importing keys and applying settings">
+<!ENTITY annealmail.setupWiz.pgImportSettings.error    "An error occurred during importing. Your settings could not be applied.">
+
+<!-- wizard: final page -->
+<!ENTITY annealmail.setupWiz.pgComplete.title          "Thank you">
+<!ENTITY annealmail.setupWiz.pgComplete.desc           "AnnealMail is now ready to use.<html:br/><html:br/>Thank you for using AnnealMail.">
+
+<!-- wizard: manual setup page -->
+<!ENTITY annealmail.setupWiz.pgExpert.title            "Manual Configuration of AnnealMail">
+<!ENTITY annealmail.setupWiz.pgExpert.desc             "You have chosen not to use the Wizard to configure AnnealMail.">
+<!ENTITY annealmail.setupWiz.pgExpert.keyManager       "The AnnealMail key manager is available from here">
+<!ENTITY annealmail.setupWiz.pgExpert.expertSettings   "The expert Settings are available from here">
+
+
+
+<!ENTITY annealmail.advancedIdentityDlg.title          "Advanced AnnealMail Identity Settings">
+<!ENTITY annealmail.amPrefPgp.sendKeyWithMsg.label     "Attach my public key to messages">
+
+<!ENTITY annealmail.addPhoto.question.label            "Do you want to add the following picture to the following key?">
+<!ENTITY annealmail.addPhoto.title                     "Add Photo to Key">
+<!ENTITY annealmail.msgViewColumn.label                "OpenPGP">
+<!ENTITY annealmail.msgViewColumn.tooltip              "Sort by the OpenPGP status">
+<!ENTITY annealmail.addToRule.title                    "Add Key to Per-Recipient Rule">
+<!ENTITY annealmail.addToRule.useRuleButton.label      "Add Key to Selected Rule">
+<!ENTITY annealmail.addToRule.useRuleButton.accesskey  "A">
+<!ENTITY annealmail.addToRule.newRuleButton.label      "Create New Rule">
+<!ENTITY annealmail.addToRule.newRuleButton.accesskey  "N">
+
+<!ENTITY annealmail.savelogfile.label                   "Save Log to File ...">
+
+<!ENTITY annealmail.filterEditor.moveError.label       "Actions that follow the 'Decrypt Permanently' action are not supported.">
+
+<!-- Export wizard -->
+<!ENTITY annealmail.exportWiz.title                    "Export your AnnealMail Settings">
+<!ENTITY annealmail.exportWiz.pgIntro.title            "Welcome to the Export Settings Wizard">
+<!ENTITY annealmail.exportWiz.pgIntro.desc1            "AnnealMail allows to transfer all its settings including your OpenPGP
+                                                      keys to a new computer. This is done in two steps:
+                                                      <html:ol>
+                                                        <html:li>export your data from your old computer using this wizard</html:li>
+                                                        <html:li>import the data to your new computer using the Setup Wizard.</html:li>
+                                                      </html:ol>">
+<!ENTITY annealmail.exportWiz.pgIntro.specifyFile      "Please specify the export file:">
+<!ENTITY annealmail.exportWiz.pgExport.title           "Exporting AnnealMail Settings">
+<!ENTITY annealmail.exportWiz.pgExport.exporting       "Saving in progress. You might be asked for the passphrase(s) of your key(s).">
+<!ENTITY annealmail.exportWiz.pgExport.done            "Your OpenPGP keys and your AnnealMail settings are now saved.
+                                                      Please transfer the generated file to your new computer, launch
+                                                      Thunderbird and start the Setup Wizard from the AnnealMail menu.">
+<!ENTITY annealmail.exportWiz.pgExport.failed          "An error occurred during the export. The settings could not be exported.">

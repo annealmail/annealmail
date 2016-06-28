@@ -31,11 +31,11 @@ var EXPORTED_SYMBOLS = ["InstallGnuPG"];
 var Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://annealmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/os.jsm"); /*global AnnealMailOS: false */
+Cu.import("resource://annealmail/app.jsm"); /*global AnnealMailApp: false */
+Cu.import("resource://annealmail/promise.jsm"); /*global Promise: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -49,7 +49,7 @@ const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.enigmail.net/service/getGnupdDownload.svc";
+const queryUrl = "https://www.annealmail.net/service/getGnupdDownload.svc";
 
 function getTempDir() {
   let ds = Cc[DIR_SERV_CONTRACTID].getService();
@@ -194,7 +194,7 @@ function Installer(progressListener) {
 Installer.prototype = {
 
   installMacOs: function(deferred) {
-    EnigmailLog.DEBUG("installGnuPG.jsm: installMacOs\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: installMacOs\n");
 
     var exitCode = -1;
     var mountPath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
@@ -213,7 +213,7 @@ Installer.prototype = {
     }
 
     this.mountPath = mountPath;
-    EnigmailLog.DEBUG("installGnuPG.jsm: installMacOs - mount Package\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: installMacOs - mount Package\n");
 
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     cmd.initWithPath("/usr/bin/open");
@@ -234,11 +234,11 @@ Installer.prototype = {
       if (exitCode) throw "Installer failed with exit code " + exitCode;
     }
     catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
 
-    EnigmailLog.DEBUG("installGnuPG.jsm: installMacOs - run installer\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: installMacOs - run installer\n");
 
     args = ["-W", this.mountPath.path + "/" + this.command];
 
@@ -259,13 +259,13 @@ Installer.prototype = {
       subprocess.call(proc);
     }
     catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.ERROR("installGnuPG.jsm: installMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
   },
 
   cleanupMacOs: function() {
-    EnigmailLog.DEBUG("installGnuPG.jsm.cleanupMacOs: unmount package\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm.cleanupMacOs: unmount package\n");
 
     var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
     cmd.initWithPath("/usr/sbin/diskutil");
@@ -275,7 +275,7 @@ Installer.prototype = {
       arguments: args,
       charset: null,
       done: function(result) {
-        if (result.exitCode) EnigmailLog.ERROR("Installer failed with exit code " + result.exitCode);
+        if (result.exitCode) AnnealMailLog.ERROR("Installer failed with exit code " + result.exitCode);
       }
     };
 
@@ -283,15 +283,15 @@ Installer.prototype = {
       subprocess.call(proc).wait();
     }
     catch (ex) {
-      EnigmailLog.ERROR("installGnuPG.jsm.cleanupMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.ERROR("installGnuPG.jsm.cleanupMacOs: subprocess.call failed with '" + ex.toString() + "'\n");
     }
 
-    EnigmailLog.DEBUG("installGnuPG.jsm: cleanupMacOs - remove package\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: cleanupMacOs - remove package\n");
     this.installerFile.remove(false);
   },
 
   installWindows: function(deferred) {
-    EnigmailLog.DEBUG("installGnuPG.jsm: installWindows\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: installWindows\n");
 
     try {
       // use runwAsync in order to get UAC approval on Windows 7 / 8 if required
@@ -300,10 +300,10 @@ Installer.prototype = {
         QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver, Ci.nsISupports]),
 
         observe: function(proc, aTopic, aData) {
-          EnigmailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='" + aTopic + "' \n");
+          AnnealMailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='" + aTopic + "' \n");
 
           if (aTopic == "process-finished") {
-            EnigmailLog.DEBUG("installGnuPG.jsm: installWindows finished\n");
+            AnnealMailLog.DEBUG("installGnuPG.jsm: installWindows finished\n");
             deferred.resolve();
           }
           else if (aTopic == "process-failed") {
@@ -323,14 +323,14 @@ Installer.prototype = {
   },
 
   cleanupWindows: function() {
-    EnigmailLog.DEBUG("installGnuPG.jsm: cleanupWindows - remove package\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: cleanupWindows - remove package\n");
     this.installerFile.remove(false);
   },
 
   installUnix: function() {},
 
   checkHashSum: function() {
-    EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: checkHashSum\n");
     var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
       .createInstance(Components.interfaces.nsIFileInputStream);
     // open for reading
@@ -351,10 +351,10 @@ Installer.prototype = {
     }
 
     if (this.hash != hashStr) {
-      EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sums don't match: " + hashStr + "\n");
+      AnnealMailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sums don't match: " + hashStr + "\n");
     }
     else
-      EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sum OK\n");
+      AnnealMailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sum OK\n");
 
     return this.hash == hashStr;
   },
@@ -365,7 +365,7 @@ Installer.prototype = {
 
     function reqListener() {
       if (typeof(on.responseXML) == "object") {
-        EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + on.responseText + "\n");
+        AnnealMailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + on.responseText + "\n");
         if (!on.responseXML) {
           onError({
             type: "Network"
@@ -391,14 +391,14 @@ Installer.prototype = {
     }
 
 
-    EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl: start request\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: getDownloadUrl: start request\n");
 
     var self = this;
 
     try {
       var xulRuntime = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime);
       var platform = xulRuntime.XPCOMABI.toLowerCase();
-      var os = EnigmailOS.getOS().toLowerCase();
+      var os = AnnealMailOS.getOS().toLowerCase();
 
       // create a  XMLHttpRequest object
       var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
@@ -410,13 +410,13 @@ Installer.prototype = {
         },
         false);
 
-      oReq.open("get", queryUrl + "?vEnigmail=" + escape(EnigmailApp.getVersion()) + "&os=" + escape(os) + "&platform=" +
+      oReq.open("get", queryUrl + "?vAnnealMail=" + escape(AnnealMailApp.getVersion()) + "&os=" + escape(os) + "&platform=" +
         escape(platform), true);
       oReq.send();
     }
     catch (ex) {
       deferred.reject(ex);
-      EnigmailLog.writeException("installGnuPG.jsm", ex);
+      AnnealMailLog.writeException("installGnuPG.jsm", ex);
 
       if (self.progressListener)
         self.progressListener.onError("installGnuPG.downloadFailed");
@@ -426,7 +426,7 @@ Installer.prototype = {
   },
 
   performDownload: function() {
-    EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: " + this.url + "\n");
+    AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: " + this.url + "\n");
 
     var self = this;
     var deferred = Promise.defer();
@@ -435,10 +435,10 @@ Installer.prototype = {
 
       if (event.lengthComputable) {
         var percentComplete = event.loaded / event.total;
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: " + percentComplete * 100 + "% loaded\n");
+        AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: " + percentComplete * 100 + "% loaded\n");
       }
       else {
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: got " + event.loaded + "bytes\n");
+        AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: got " + event.loaded + "bytes\n");
       }
 
       if (self.progressListener)
@@ -452,7 +452,7 @@ Installer.prototype = {
     }
 
     function onLoaded(event) {
-      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: downloaded " + event.loaded + "bytes\n");
+      AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: downloaded " + event.loaded + "bytes\n");
 
       if (self.progressListener)
         self.progressListener.onDownloaded();
@@ -466,7 +466,7 @@ Installer.prototype = {
         });
       }
       catch (ex) {
-        EnigmailLog.writeException("installGnuPG.jsm", ex);
+        AnnealMailLog.writeException("installGnuPG.jsm", ex);
 
         if (self.progressListener)
           self.progressListener.onError("installGnuPG.installFailed");
@@ -475,14 +475,14 @@ Installer.prototype = {
 
     function performInstall(response) {
       var arraybuffer = response; // not responseText
-      EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: bytes " + arraybuffer.byteLength + "\n");
+      AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: bytes " + arraybuffer.byteLength + "\n");
 
       try {
         var flags = 0x02 | 0x08 | 0x20;
         var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
         self.installerFile = getTempDir();
 
-        switch (EnigmailOS.getOS()) {
+        switch (AnnealMailOS.getOS()) {
           case "Darwin":
             self.installerFile.append("gpgtools.dmg");
             self.performCleanup = self.cleanupMacOs;
@@ -498,7 +498,7 @@ Installer.prototype = {
 
         self.installerFile.createUnique(self.installerFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
 
-        EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: writing file to " + self.installerFile.path + "\n");
+        AnnealMailLog.DEBUG("installGnuPG.jsm: performDownload: writing file to " + self.installerFile.path + "\n");
 
         fileOutStream.init(self.installerFile, flags, EXEC_FILE_PERMS, 0);
 
@@ -525,7 +525,7 @@ Installer.prototype = {
 
         }
 
-        switch (EnigmailOS.getOS()) {
+        switch (AnnealMailOS.getOS()) {
           case "Darwin":
             self.installMacOs(deferred);
             break;
@@ -539,7 +539,7 @@ Installer.prototype = {
       }
       catch (ex) {
         deferred.reject(ex);
-        EnigmailLog.writeException("installGnuPG.jsm", ex);
+        AnnealMailLog.writeException("installGnuPG.jsm", ex);
 
         if (self.progressListener)
           self.progressListener.onError("installGnuPG.installFailed");
@@ -549,14 +549,14 @@ Installer.prototype = {
     }
 
     function performCleanup() {
-      EnigmailLog.DEBUG("installGnuPG.jsm: performCleanup:\n");
+      AnnealMailLog.DEBUG("installGnuPG.jsm: performCleanup:\n");
       try {
         if (self.performCleanup) self.performCleanup();
       }
       catch (ex) {}
 
       if (self.progressListener) {
-        EnigmailLog.DEBUG("installGnuPG.jsm: performCleanup - onLoaded()\n");
+        AnnealMailLog.DEBUG("installGnuPG.jsm: performCleanup - onLoaded()\n");
         self.progressListener.onLoaded();
       }
     }
@@ -586,7 +586,7 @@ Installer.prototype = {
     }
     catch (ex) {
       deferred.reject(ex);
-      EnigmailLog.writeException("installGnuPG.jsm", ex);
+      AnnealMailLog.writeException("installGnuPG.jsm", ex);
 
       if (self.progressListener)
         self.progressListener.onError("installGnuPG.downloadFailed");
@@ -601,7 +601,7 @@ var InstallGnuPG = {
   // check if there is a downloadable item for the given platform
   // returns true if item available
   checkAvailability: function() {
-    switch (EnigmailOS.getOS()) {
+    switch (AnnealMailOS.getOS()) {
       case "Darwin":
       case "WINNT":
         return true;

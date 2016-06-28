@@ -15,7 +15,7 @@ const Ci = Components.interfaces;
 
 // components defined in this file
 const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID =
-  "@mozdev.org/enigmail/composefields;1";
+  "@mozdev.org/annealmail/composefields;1";
 const ENIG_ENIGMSGCOMPFIELDS_CID =
   Components.ID("{847b3a30-7ab1-11d4-8f02-006008948af5}");
 
@@ -23,7 +23,7 @@ function EnigMsgCompFields() {}
 
 EnigMsgCompFields.prototype = {
 
-  classDescription: "Enigmail Msg Compose Fields",
+  classDescription: "AnnealMail Msg Compose Fields",
   classID: ENIG_ENIGMSGCOMPFIELDS_CID,
   contractID: ENIG_ENIGMSGCOMPFIELDS_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([

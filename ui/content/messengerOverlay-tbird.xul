@@ -6,10 +6,10 @@
 -->
 
 <!--
-  This adds the Enigmail header box to the mail reading window on Thunderbird
+  This adds the AnnealMail header box to the mail reading window on Thunderbird
 
   Please not that is is only a placeholder to reference the location in
-  enigmailMessengerOverlay.xul properly
+  annealmailMessengerOverlay.xul properly
 -->
 
 <overlay id="messengerOverlay-tbird"
@@ -17,7 +17,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <notificationbox id="msgNotificationBar">
-    <vbox id="enigmailHdrBox"/>
+    <vbox id="annealmailHdrBox"/>
   </notificationbox>
 
 

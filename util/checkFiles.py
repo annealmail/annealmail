@@ -15,19 +15,19 @@ if len(sys.argv) > 1:
 #################################################################
 
 # read in dtd labels and check for duplicates:
-dtdFilename = os.path.join(root,"ui","locale","en-US","enigmail.dtd")
-dtdLabels = re.findall(r'ENTITY[ \t]*(enigmail[^ \t"]*)[ \t]*"', open(dtdFilename).read())
+dtdFilename = os.path.join(root,"ui","locale","en-US","annealmail.dtd")
+dtdLabels = re.findall(r'ENTITY[ \t]*(annealmail[^ \t"]*)[ \t]*"', open(dtdFilename).read())
 #print dtdLabels
 #print len(dtdLabels)
 dtdLabels.sort()
 prev=None
 for label in dtdLabels:
   if label == prev:
-    print "DUPLICATE label in enigmail.dtd file:", label
+    print "DUPLICATE label in annealmail.dtd file:", label
     sys.exit(1)
 
 # read in property labels and check for duplicates:
-propFilename = os.path.join(root,"ui","locale","en-US","enigmail.properties")
+propFilename = os.path.join(root,"ui","locale","en-US","annealmail.properties")
 propLabels = []
 for line in open(propFilename, 'r'):
   if re.match('[ \t]*#.*', line):
@@ -43,7 +43,7 @@ propLabels.sort()
 prev=None
 for label in propLabels:
   if label == prev:
-    print "DUPLICATE property in enigmail.properties file:", label
+    print "DUPLICATE property in annealmail.properties file:", label
     sys.exit(1)
 
 
@@ -352,7 +352,7 @@ def checkCSS (filename):
   for line in open(filename, 'r'):
     # grep status-bar and list-style-image rows
     # extract and check labels:
-    match = re.search('#enigmail-status-bar.*{', line)
+    match = re.search('#annealmail-status-bar.*{', line)
     if match:
       row = match.group()
       #print "  " + row
@@ -365,19 +365,19 @@ def checkCSS (filename):
   return response
 
 def checkAllCSSFiles ():
-  # reference is classic/enigmail.css:
-  classicCSS = os.path.join(root,"ui","skin","classic","enigmail.css")
+  # reference is classic/annealmail.css:
+  classicCSS = os.path.join(root,"ui","skin","classic","annealmail.css")
   rows = checkCSS (classicCSS)
   #print "-----------"
   #print rows
   #print "-----------"
   # other CSS files:
   otherFiles = [
-      os.path.join(root,"ui","skin","classic-seamonkey","enigmail.css"),
-      os.path.join(root,"ui","skin","classic","enigmail-aero.css"),
-      os.path.join(root,"ui","skin","modern","enigmail.css"),
-      os.path.join(root,"ui","skin","tb-linux","enigmail.css"),
-      os.path.join(root,"ui","skin","tb-mac","enigmail.css"),
+      os.path.join(root,"ui","skin","classic-seamonkey","annealmail.css"),
+      os.path.join(root,"ui","skin","classic","annealmail-aero.css"),
+      os.path.join(root,"ui","skin","modern","annealmail.css"),
+      os.path.join(root,"ui","skin","tb-linux","annealmail.css"),
+      os.path.join(root,"ui","skin","tb-mac","annealmail.css"),
   ];
 
   # find critical differences between CSS files:
@@ -402,7 +402,7 @@ def checkAllCSSFiles ():
         if rows[i] != otherRows[i]:
           diffs += 1
           # this difference is OK:
-          if rows[i].find("enigmail-settings.png") and otherRows[i].find("enigmail-send.png"):
+          if rows[i].find("annealmail-settings.png") and otherRows[i].find("annealmail-send.png"):
             continue
           print rows[i]
           print otherRows[i]

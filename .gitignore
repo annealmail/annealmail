@@ -30,3 +30,4 @@ provisioning/.vagrant
 
 # other local configuration files:
 .ackrc
+.DS_Store

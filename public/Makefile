@@ -8,7 +8,7 @@ DEPTH = ..
 include $(DEPTH)/config/autoconf.mk
 
 XPIDLSRCS     = \
-                nsIEnigmail.idl  \
+                nsIAnnealMail.idl  \
                 nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
                 nsIEnigMimeHeaderSink.idl \
@@ -20,4 +20,4 @@ all:
 
 clean:
 	rm -rf _xpidlgen 
-	rm -f $(DEPTH)/build/components/enigmail.xpt
+	rm -f $(DEPTH)/build/components/annealmail.xpt

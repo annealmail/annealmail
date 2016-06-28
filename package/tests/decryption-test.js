@@ -8,17 +8,17 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withAnnealMail: false, withTestCcrHome: false */
 
-testing("decryption.jsm"); /*global EnigmailDecryption: false, nsIEnigmail: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: fales */
-component("enigmail/armor.jsm"); /*global EnigmailArmor: fales */
+testing("decryption.jsm"); /*global AnnealMailDecryption: false, nsIAnnealMail: false */
+component("annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: fales */
+component("annealmail/armor.jsm"); /*global AnnealMailArmor: fales */
 
-test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
+test(withTestCcrHome(withAnnealMail(function shouldDecryptMessage() {
   let secretKeyFile = do_get_file("resources", false);
   secretKeyFile.append("dev-strike.sec");
   const importedKeysObj = {};
-  let r = EnigmailKeyRing.importKeyFromFile(secretKeyFile, {}, importedKeysObj);
+  let r = AnnealMailKeyRing.importKeyFromFile(secretKeyFile, {}, importedKeysObj);
   Assert.equal(0, r);
   var encryptResult = "-----BEGIN PGP MESSAGE-----\n" +
     "Version: GnuPG v2.0.22 (GNU/Linux)\n" +
@@ -43,8 +43,8 @@ test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
   const exitCodeObj = {};
   const statusFlagObj = {};
   const errorMsgObj = {};
-  const decryptResult = EnigmailDecryption.decryptMessage(parentWindow,
-    nsIEnigmail.UI_TEST,
+  const decryptResult = AnnealMailDecryption.decryptMessage(parentWindow,
+    nsIAnnealMail.UI_TEST,
     encryptResult, {},
     exitCodeObj,
     statusFlagObj, {}, {}, {},
@@ -54,7 +54,7 @@ test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
   Assert.equal(0, exitCodeObj.value);
   Assert.equal(0, errorMsgObj.value);
   Assert.equal("Hello there!", decryptResult);
-  Assert.equal(true, (statusFlagObj.value & (nsIEnigmail.DISPLAY_MESSAGE | nsIEnigmail.DECRYPTION_OKAY)) !== 0);
-  const blockType = EnigmailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
+  Assert.equal(true, (statusFlagObj.value & (nsIAnnealMail.DISPLAY_MESSAGE | nsIAnnealMail.DECRYPTION_OKAY)) !== 0);
+  const blockType = AnnealMailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
   Assert.equal("MESSAGE", blockType);
 })));

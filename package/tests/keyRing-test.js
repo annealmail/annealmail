@@ -10,29 +10,29 @@
 /* eslint no-useless-concat: 0*/
 "use strict";
 
-/* global EnigmailFiles: false */
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
-Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+/* global AnnealMailFiles: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withAnnealMail: false, withTestCcrHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
+Components.utils.import("resource://annealmail/trust.jsm"); /*global AnnealMailTrust: false */
+component("annealmail/locale.jsm"); /*global AnnealMailLocale: false */
 
 /* global getUserIdList: false, createAndSortKeyList: false, Number: false */
 
-testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
+testing("keyRing.jsm"); /*global AnnealMailKeyRing: false */
 
-test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails() {
+test(withTestCcrHome(withAnnealMail(function shouldImportFromFileAndGetKeyDetails() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
-  const importResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  const importResult = AnnealMailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
   Assert.assertContains(importedKeysObj.value, "65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(importResult, 0, errorMsgObj);
-  const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
+  const keyDetails = AnnealMailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
+test(withTestCcrHome(withAnnealMail(function shouldGetKeyListEntryOfKey() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
-  const importResult = EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  const importResult = AnnealMailKeyRing.importKeyFromFile(publicKey, {}, {});
   const keyDetails = getKeyListEntryOfKey("0xD535623BB60E9E71");
 
 
@@ -54,26 +54,26 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
 })));
 
 
-test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
+test(withTestCcrHome(withAnnealMail(function shouldGetKeyFunctions() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
+  AnnealMailKeyRing.importKeyFromFile(publicKey, {}, {});
+  AnnealMailKeyRing.importKeyFromFile(secretKey, {}, {});
 
   // search for key ID
-  let k = EnigmailKeyRing.getKeyById("0x9CE311C4");
+  let k = AnnealMailKeyRing.getKeyById("0x9CE311C4");
   Assert.equal(k.subKeys[0].keyId, "D535623BB60E9E71");
 
   // search for subkey ID
-  k = EnigmailKeyRing.getKeyById("0xD535623BB60E9E71");
+  k = AnnealMailKeyRing.getKeyById("0xD535623BB60E9E71");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
   Assert.equal(gKeyListObj.keySortList.length, 1);
-  EnigmailKeyRing.clearCache();
+  AnnealMailKeyRing.clearCache();
   Assert.equal(gKeyListObj.keySortList.length, 0);
 
   // search for fingerprint
-  k = EnigmailKeyRing.getKeyById("65537E212DC19025AD38EDB2781617319CE311C4");
+  k = AnnealMailKeyRing.getKeyById("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
   let s = k.signatures;
@@ -84,21 +84,21 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
     Assert.equal(s[fpr].sigList[0].signerKeyId, "781617319CE311C4");
   }
 
-  let ka = EnigmailKeyRing.getKeysByUserId("devtest@gmail.com>$");
+  let ka = AnnealMailKeyRing.getKeysByUserId("devtest@gmail.com>$");
   Assert.equal(ka.length, 1);
 
-  ka = EnigmailKeyRing.getAllSecretKeys();
+  ka = AnnealMailKeyRing.getAllSecretKeys();
   Assert.equal(ka.length, 1);
 
-  ka = EnigmailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71"); // the space is on purpose(!)
+  ka = AnnealMailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71"); // the space is on purpose(!)
   Assert.equal(ka.length, 2);
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
+test(withTestCcrHome(withAnnealMail(function shouldGetUserIdList() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
+  AnnealMailKeyRing.importKeyFromFile(publicKey, {}, {});
+  AnnealMailKeyRing.importKeyFromFile(secretKey, {}, {});
   let l = null;
   l = getUserIdList(false, {}, {}, {});
   Assert.notEqual(l, null);
@@ -106,19 +106,19 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   Assert.notEqual(l, null);
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {
+test(withTestCcrHome(withAnnealMail(function shouldCleanupClearCache() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  EnigmailKeyRing.getAllKeys();
+  AnnealMailKeyRing.importKeyFromFile(publicKey, {}, {});
+  AnnealMailKeyRing.importKeyFromFile(secretKey, {}, {});
+  AnnealMailKeyRing.getAllKeys();
   Assert.notEqual(gKeyListObj.keyList.length, 0);
-  EnigmailKeyRing.clearCache();
+  AnnealMailKeyRing.clearCache();
   Assert.equal(gKeyListObj.keyList.length, 0);
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails() {
-  EnigmailKeyRing.importKey(
+test(withTestCcrHome(withAnnealMail(function shouldImportFromTextAndGetKeyDetails() {
+  AnnealMailKeyRing.importKey(
     JSUnit.createStubWindow(),
     false,
     "-----BEGIN PGP PUBLIC KEY BLOCK-----" +
@@ -281,9 +281,9 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     "\n" + "=h0dN" +
     "\n" + "-----END PGP PRIVATE KEY BLOCK-----",
     null, {});
-  const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
+  const keyDetails = AnnealMailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
-  EnigmailKeyRing.getAllKeys();
+  AnnealMailKeyRing.getAllKeys();
   Assert.notEqual(gKeyListObj.keyList.length, 0);
 })));
 
@@ -294,8 +294,8 @@ test(function shouldCreateKeyListObject() {
     "tru::1:1443339321:1451577200:3:1:5",
     "pub:o:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::scaESCA:",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:o::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
-    "uid:o::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
+    "uid:o::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@annealmail-test.de>:",
+    "uid:o::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@annealmail-test.com>:",
     "sub:o:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
   ];
 
@@ -303,8 +303,8 @@ test(function shouldCreateKeyListObject() {
   let secKeyInfo = [
     "sec::4096:1:DEF9FC808A3FF001:1388513885:1546188604:::::::::",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
-    "uid:::::::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
+    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@annealmail-test.de>:",
+    "uid:::::::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@annealmail-test.com>:",
     "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
   ];
 
@@ -317,21 +317,21 @@ test(function shouldCreateKeyListObject() {
   Assert.notEqual(keyListObj.keySortList, null);
   Assert.notEqual(keyListObj.keySortList.length, null);
   Assert.equal(keyListObj.keySortList.length, 1);
-  Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@enigmail-test.de>");
+  Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@annealmail-test.de>");
   Assert.equal(keyListObj.keySortList[0].keyId, "DEF9FC808A3FF001");
   Assert.notEqual(keyListObj.keyList, null);
-  Assert.equal(keyListObj.keyList[keyListObj.keySortList[0].keyNum].userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
+  Assert.equal(keyListObj.keyList[keyListObj.keySortList[0].keyNum].userId, "A User ID with CAPITAL letters <user1@annealmail-test.de>");
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
   let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   let details = {};
-  let key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
+  let key = AnnealMailKeyRing.getValidKeyForRecipient("user1@annealmail-test.de", minTrustLevelIndex, details);
   Assert.notEqual(key, null);
   Assert.equal(key, "DEF9FC808A3FF001");
 
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("user1@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.notEqual(details.msg, null);
 });
@@ -340,7 +340,7 @@ test(function shouldCreateKeyListObject() {
 const KeyRingHelper = {
   loadTestKeyList: function() {
     const pkFile = do_get_file("resources/pub-keys.asc", false);
-    let publicKeys = EnigmailFiles.readFile(pkFile);
+    let publicKeys = AnnealMailFiles.readFile(pkFile);
     let rows = publicKeys.split("\n");
     let testKeyList = [];
     for (let i = 0; i < rows.length; ++i) {
@@ -363,7 +363,7 @@ const KeyRingHelper = {
 test(function testGetValidKeyForOneRecipient() {
   KeyRingHelper.loadTestKeyList();
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
   let minTrustLevelIndex = null;
   let details = null;
   let key = null;
@@ -371,7 +371,7 @@ test(function testGetValidKeyForOneRecipient() {
   // unknown key:
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("unknown@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("unknown@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
   //Assert.equal(details.msg, "undefined");
@@ -379,12 +379,12 @@ test(function testGetValidKeyForOneRecipient() {
   // ordinary full trusted key:
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("full@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0003AAAA00010001");
   Assert.equal(details.msg, null);
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("full@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("full@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0003AAAA00010001");
   Assert.equal(details.msg, null);
 
@@ -392,7 +392,7 @@ test(function testGetValidKeyForOneRecipient() {
   // - no details because it would take time to check details of such a key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("no-encrypt@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("no-encrypt@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
 
@@ -402,33 +402,33 @@ test(function testGetValidKeyForOneRecipient() {
   details = {
     all: ""
   };
-  key = EnigmailKeyRing.getValidKeyForRecipient("disabled@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("disabled@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and one full trusted keys
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onefull@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("multiple-onefull@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0030AAAA00020001");
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and two full trusted keys (first taken)
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-twofull@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("multiple-twofull@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0034AAAA00020001");
   Assert.equal(details.msg, null);
 
   // multiple non-trusted and one marginal trusted keys
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("multiple-onemarginal@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, "ProblemNoKey");
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-onemarginal@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("multiple-onemarginal@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0031AAAA00020001");
   Assert.equal(details.msg, null);
 
@@ -436,7 +436,7 @@ test(function testGetValidKeyForOneRecipient() {
   // (faked keys case if no special trust given)
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("multiple-nofull@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("multiple-nofull@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, "ProblemMultipleKeys");
 
@@ -444,11 +444,11 @@ test(function testGetValidKeyForOneRecipient() {
   // we return first main key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid1@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("withsubkey-uid1@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0040EEEE00010001");
   Assert.equal(details.msg, null);
   details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("withsubkey-uid2@enigmail-test.de", minTrustLevelIndex, details);
+  key = AnnealMailKeyRing.getValidKeyForRecipient("withsubkey-uid2@annealmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, "0040EEEE00010001");
   Assert.equal(details.msg, null);
 });
@@ -456,7 +456,7 @@ test(function testGetValidKeyForOneRecipient() {
 test(function testGetValidKeysForMultipleRecipients() {
   KeyRingHelper.loadTestKeyList();
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
   let minTrustLevel = null;
   let details = null;
   let addrs = null;
@@ -465,16 +465,16 @@ test(function testGetValidKeysForMultipleRecipients() {
 
   // some matching keys:
   minTrustLevel = "?";
-  addrs = ["full@enigmail-test.de",
-    "multiple-onefull@enigmail-test.de",
-    "multiple-twofull@enigmail-test.de",
-    "multiple-onemarginal@enigmail-test.de",
-    "withsubkey-uid1@enigmail-test.de",
-    "withsubkey-uid2@enigmail-test.de",
+  addrs = ["full@annealmail-test.de",
+    "multiple-onefull@annealmail-test.de",
+    "multiple-twofull@annealmail-test.de",
+    "multiple-onemarginal@annealmail-test.de",
+    "withsubkey-uid1@annealmail-test.de",
+    "withsubkey-uid2@annealmail-test.de",
   ];
   details = {};
   keys = [];
-  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  keyMissing = AnnealMailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
   Assert.equal(keys.length, 6);
@@ -488,13 +488,13 @@ test(function testGetValidKeysForMultipleRecipients() {
 
   // some non-matching keys:
   minTrustLevel = "?";
-  addrs = ["no-encrypt@enigmail-test.de",
-    "disabled@enigmail-test.de",
-    "multiple-nofull@enigmail-test.de",
+  addrs = ["no-encrypt@annealmail-test.de",
+    "disabled@annealmail-test.de",
+    "multiple-nofull@annealmail-test.de",
   ];
   details = {};
   keys = [];
-  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  keyMissing = AnnealMailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, true);
   Assert.equal(keys.length, 0);
   Assert.notEqual(details, null);
@@ -511,7 +511,7 @@ test(function testGetValidKeysForMultipleRecipients() {
   ];
   details = {};
   keys = [];
-  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  keyMissing = AnnealMailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
   Assert.equal(keys.length, 3);
@@ -526,7 +526,7 @@ test(function testGetValidKeysForMultipleRecipients() {
   addrs = ["0005AAAA00010001", ];
   details = {};
   keys = [];
-  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  keyMissing = AnnealMailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
   Assert.equal(keys.length, 1);
@@ -541,13 +541,13 @@ test(function shouldGetKeyValidityErrors() {
     "tru::1:1443339321:1451577200:3:1:5",
     "pub:r:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::sca:",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:r::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@enigmail-test.net>:",
+    "uid:r::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@annealmail-test.net>:",
     "sub:r:4096:1:E2DEDFFB80C14584:1388513885:1546188603:::::e:",
 
     // Key 2: valid public key, usable for signing, with expired subkeys for encryption
     "pub:u:1024:17:F05B29A5CEFE4B70:1136219252:::u:::scaSCA:::::::",
     "fpr:::::::::6D67E7817D588BEA263F41B9F05B29A5CEFE4B70:",
-    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@enigmail-test.net>:::::::::",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@annealmail-test.net>:::::::::",
     "sub:e:2048:1:B2417304FFC57041:1136219469:1199291469:::::e::::::",
     "sub:e:2048:1:770EA47A1DB0E8B0:1136221524:1293901524:::::s::::::",
     "sub:e:2048:1:805B29A5CEFB2B70:1199298291:1262370291:::::e::::::",
@@ -556,7 +556,7 @@ test(function shouldGetKeyValidityErrors() {
     // Key 3: valid public key, usable subkey for encryption, no secret key
     "pub:u:1024:17:86345DFA372ADB32:1136219252:::u:::scESC:::::::",
     "fpr:::::::::9876E7817D588BEA263F41B986345DFA372ADB32:",
-    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 3 <user3@enigmail-test.net>:::::::::",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 3 <user3@annealmail-test.net>:::::::::",
     "sub:u:2048:1:B2417304FFC57041:1136219469::::::s::::::",
     "sub:u:2048:1:770EA47A1DB0E8B0:1136221524::::::e::::::",
   ];
@@ -566,12 +566,12 @@ test(function shouldGetKeyValidityErrors() {
     // Key 1
     "sec::4096:1:DEF9FC808A3FF001:1388513885:1546188604:::::::::",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@enigmail-test.net>:",
+    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@annealmail-test.net>:",
     "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
     // Key 2
     "sec:u:1024:17:F05B29A5CEFE4B70:1136219252:1507997328::u:::scaSCA:::::::",
     "fpr:::::::::6D67E7817D588BEA263F41B9F05B29A5CEFE4B70:",
-    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@enigmail-test.net>:::::::::",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@annealmail-test.net>:::::::::",
     "ssb:e:2048:1:B2417304FFC57041:1136219469:1199291469:::::e::::::",
     "ssb:e:2048:1:770EA47A1DB0E8B0:1136221524:1293901524:::::s::::::",
     "ssb:e:2048:1:805B29A5CEFB2B70:1199298291:1262370291:::::e::::::",
@@ -583,22 +583,22 @@ test(function shouldGetKeyValidityErrors() {
     "validity", // sorted acc. to key validity
     -1); // descending
 
-  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+  let key = AnnealMailKeyRing.getKeyById("DEF9FC808A3FF001");
   let result = key.getSigningValidity();
-  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.pubKeyRevoked", [key.userId, "0x" + key.keyId]));
+  Assert.equal(result.reason, AnnealMailLocale.getString("keyRing.pubKeyRevoked", [key.userId, "0x" + key.keyId]));
 
-  key = EnigmailKeyRing.getKeyById("F05B29A5CEFE4B70");
+  key = AnnealMailKeyRing.getKeyById("F05B29A5CEFE4B70");
   result = key.getEncryptionValidity();
   Assert.equal(result.keyValid, false);
-  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.encSubKeysExpired", [key.userId, "0x" + key.keyId]));
+  Assert.equal(result.reason, AnnealMailLocale.getString("keyRing.encSubKeysExpired", [key.userId, "0x" + key.keyId]));
 
   result = key.getSigningValidity();
   Assert.equal(result.keyValid, true);
 
-  key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
+  key = AnnealMailKeyRing.getKeyById("86345DFA372ADB32");
   result = key.getSigningValidity();
   Assert.equal(result.keyValid, false);
-  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.noSecretKey", [key.userId, "0x" + key.keyId]));
+  Assert.equal(result.reason, AnnealMailLocale.getString("keyRing.noSecretKey", [key.userId, "0x" + key.keyId]));
 
   result = key.getEncryptionValidity();
   Assert.equal(result.keyValid, true);
@@ -606,19 +606,19 @@ test(function shouldGetKeyValidityErrors() {
 
 test(function shouldGetKeyExpiry() {
   // uses the key listing from shouldGetKeyValidityErrors
-  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+  let key = AnnealMailKeyRing.getKeyById("DEF9FC808A3FF001");
   Assert.equal(key.getKeyExpiry(), 1546188603);
 
-  key = EnigmailKeyRing.getKeyById("F05B29A5CEFE4B70");
+  key = AnnealMailKeyRing.getKeyById("F05B29A5CEFE4B70");
   Assert.equal(key.getKeyExpiry(), 1325437132);
 
-  key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
+  key = AnnealMailKeyRing.getKeyById("86345DFA372ADB32");
   Assert.equal(key.getKeyExpiry(), Number.MAX_VALUE);
 });
 
 test(function shouldClone() {
   // uses the key listing from shouldGetKeyValidityErrors
-  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+  let key = AnnealMailKeyRing.getKeyById("DEF9FC808A3FF001");
 
   let cp = key.clone();
 

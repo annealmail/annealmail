@@ -8,21 +8,21 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailApp"];
+var EXPORTED_SYMBOLS = ["AnnealMailApp"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 const SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const EnigmailApp = {
+const AnnealMailApp = {
   /**
    * Platform application name (e.g. Thunderbird)
    */
@@ -44,31 +44,31 @@ const EnigmailApp = {
   },
 
   getVersion: function() {
-    EnigmailLog.DEBUG("app.jsm: getVersion\n");
-    EnigmailLog.DEBUG("app.jsm: installed version: " + EnigmailApp.version + "\n");
-    return EnigmailApp.version;
+    AnnealMailLog.DEBUG("app.jsm: getVersion\n");
+    AnnealMailLog.DEBUG("app.jsm: installed version: " + AnnealMailApp.version + "\n");
+    return AnnealMailApp.version;
   },
 
   getInstallLocation: function() {
-    return EnigmailApp.installLocation;
+    return AnnealMailApp.installLocation;
   },
 
   setVersion: function(version) {
-    EnigmailApp.version = version;
+    AnnealMailApp.version = version;
   },
 
   setInstallLocation: function(location) {
-    EnigmailApp.installLocation = location;
+    AnnealMailApp.installLocation = location;
   },
 
   registerAddon: function(addon) {
-    EnigmailApp.setVersion(addon.version);
-    EnigmailApp.setInstallLocation(addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file);
+    AnnealMailApp.setVersion(addon.version);
+    AnnealMailApp.setInstallLocation(addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file);
   },
 
   initAddon: function() {
-    AddonManager.getAddonByID(ENIG_EXTENSION_GUID, EnigmailApp.registerAddon);
+    AddonManager.getAddonByID(ENIG_EXTENSION_GUID, AnnealMailApp.registerAddon);
   }
 };
 
-EnigmailApp.initAddon();
+AnnealMailApp.initAddon();

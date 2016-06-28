@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailData: false, EnigmailFiles: false, EnigmailLog: false, subprocess: false, EnigmailErrorHandling: false, EnigmailCore: false */
+/*global Components: false, AnnealMailData: false, AnnealMailFiles: false, AnnealMailLog: false, subprocess: false, AnnealMailErrorHandling: false, AnnealMailCore: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,24 +9,24 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailExecution"];
+var EXPORTED_SYMBOLS = ["AnnealMailExecution"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/files.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/subprocess.jsm");
-Cu.import("resource://enigmail/errorHandling.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
+Cu.import("resource://annealmail/data.jsm");
+Cu.import("resource://annealmail/files.jsm");
+Cu.import("resource://annealmail/log.jsm");
+Cu.import("resource://annealmail/subprocess.jsm");
+Cu.import("resource://annealmail/errorHandling.jsm");
+Cu.import("resource://annealmail/core.jsm");
+Cu.import("resource://annealmail/os.jsm"); /*global AnnealMailOS: false */
+Cu.import("resource://annealmail/system.jsm"); /*global AnnealMailSystem: false */
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
-const EnigmailExecution = {
+const AnnealMailExecution = {
   agentType: "",
 
   /**
@@ -41,14 +41,14 @@ const EnigmailExecution = {
    */
 
   /**
-   *  start a subprocess (usually gpg) that gets and/or receives data via stdin/stdout/stderr.
+   *  start a subprocess (usually ccr) that gets and/or receives data via stdin/stdout/stderr.
    *
    * @command:        either: String - full path to executable
    *                  or:     nsIFile object referencing executable
    * @args:           Array of Strings: command line parameters for executable
    * @needPassphrase: Boolean - is a passphrase required for the action?
    *                    if true, the password may be promted using a dialog
-   *                    (unless alreday cached or gpg-agent is used)
+   *                    (unless already cached or ccr-agent is used)
    * @domWindow:      nsIWindow - window on top of which password dialog is shown
    * @listener:       Object - Listener to interact with subprocess; see spec. above
    * @statusflagsObj: Object - .value will hold status Flags
@@ -56,8 +56,8 @@ const EnigmailExecution = {
    * @return:         handle to suprocess
    */
   execStart: function(command, args, needPassphrase, domWindow, listener, statusFlagsObj) {
-    EnigmailLog.WRITE("execution.jsm: execStart: " +
-      "command = " + EnigmailFiles.formatCmdLine(command, args) +
+    AnnealMailLog.WRITE("execution.jsm: execStart: " +
+      "command = " + AnnealMailFiles.formatCmdLine(command, args) +
       ", needPassphrase=" + needPassphrase +
       ", domWindow=" + domWindow +
       ", listener=" + listener + "\n");
@@ -70,13 +70,13 @@ const EnigmailExecution = {
 
     listener.command = command;
 
-    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+    AnnealMailLog.CONSOLE("annealmail> " + AnnealMailFiles.formatCmdLine(command, args) + "\n");
 
     try {
       proc = subprocess.call({
         command: command,
         arguments: args,
-        environment: EnigmailCore.getEnvList(),
+        environment: AnnealMailCore.getEnvList(),
         charset: null,
         bufferedOutput: true,
         stdin: function(pipe) {
@@ -93,18 +93,18 @@ const EnigmailExecution = {
             listener.done(result.exitCode);
           }
           catch (ex) {
-            EnigmailLog.writeException("execution.jsm", ex);
+            AnnealMailLog.writeException("execution.jsm", ex);
           }
         },
         mergeStderr: false
       });
     }
     catch (ex) {
-      EnigmailLog.ERROR("execution.jsm: execStart: subprocess.call failed with '" + ex.toString() + "'\n");
-      EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
+      AnnealMailLog.ERROR("execution.jsm: execStart: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.DEBUG("  annealmail> DONE with FAILURE\n");
       return null;
     }
-    EnigmailLog.DEBUG("  enigmail> DONE\n");
+    AnnealMailLog.DEBUG("  annealmail> DONE\n");
 
     return proc;
   },
@@ -115,31 +115,31 @@ const EnigmailExecution = {
    stderrData
    */
   execEnd: function(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj, blockSeparationObj) {
-    EnigmailLog.DEBUG("execution.jsm: execEnd:\n");
+    AnnealMailLog.DEBUG("execution.jsm: execEnd:\n");
 
     cmdLineObj.value = listener.command;
 
     var exitCode = listener.exitCode;
     var errOutput = listener.stderrData;
 
-    EnigmailLog.DEBUG("execution.jsm: execEnd: exitCode = " + exitCode + "\n");
-    EnigmailLog.DEBUG("execution.jsm: execEnd: errOutput = " + errOutput + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: execEnd: exitCode = " + exitCode + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: execEnd: errOutput = " + errOutput + "\n");
 
     var retObj = {};
-    errorMsgObj.value = EnigmailErrorHandling.parseErrorOutput(errOutput, retObj);
+    errorMsgObj.value = AnnealMailErrorHandling.parseErrorOutput(errOutput, retObj);
     statusFlagsObj.value = retObj.statusFlags;
     statusMsgObj.value = retObj.statusMsg;
     if (!blockSeparationObj) blockSeparationObj = {};
     blockSeparationObj.value = retObj.blockSeparation;
 
     if (errOutput.search(/jpeg image of size \d+/) > -1) {
-      statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
+      statusFlagsObj.value |= nsIAnnealMail.PHOTO_AVAILABLE;
     }
     if (blockSeparationObj && blockSeparationObj.value.indexOf(" ") > 0) {
       exitCode = 2;
     }
 
-    EnigmailLog.CONSOLE(EnigmailData.convertFromUnicode(errorMsgObj.value) + "\n");
+    AnnealMailLog.CONSOLE(AnnealMailData.convertFromUnicode(errorMsgObj.value) + "\n");
 
     return exitCode;
   },
@@ -149,19 +149,19 @@ const EnigmailExecution = {
    * No input and no statusFlags are returned.
    */
   simpleExecCmd: function(command, args, exitCodeObj, errorMsgObj) {
-    EnigmailLog.WRITE("execution.jsm: EnigmailExecution.simpleExecCmd: command = " + command + " " + args.join(" ") + "\n");
+    AnnealMailLog.WRITE("execution.jsm: AnnealMailExecution.simpleExecCmd: command = " + command + " " + args.join(" ") + "\n");
 
     var outputData = "";
     var errOutput = "";
 
-    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+    AnnealMailLog.CONSOLE("annealmail> " + AnnealMailFiles.formatCmdLine(command, args) + "\n");
 
     try {
       subprocess.call({
         command: command,
         arguments: args,
         charset: null,
-        environment: EnigmailCore.getEnvList(),
+        environment: AnnealMailCore.getEnvList(),
         done: function(result) {
           exitCodeObj.value = result.exitCode;
           outputData = result.stdout;
@@ -171,18 +171,18 @@ const EnigmailExecution = {
       }).wait();
     }
     catch (ex) {
-      EnigmailLog.ERROR("execution.jsm: EnigmailExecution.simpleExecCmd: " + command.path + " failed\n");
-      EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
+      AnnealMailLog.ERROR("execution.jsm: AnnealMailExecution.simpleExecCmd: " + command.path + " failed\n");
+      AnnealMailLog.DEBUG("  annealmail> DONE with FAILURE\n");
       exitCodeObj.value = -1;
     }
-    EnigmailLog.DEBUG("  enigmail> DONE\n");
+    AnnealMailLog.DEBUG("  annealmail> DONE\n");
 
     if (errOutput) {
       errorMsgObj.value = errOutput;
     }
 
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.simpleExecCmd: exitCode = " + exitCodeObj.value + "\n");
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.simpleExecCmd: errOutput = " + errOutput + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: AnnealMailExecution.simpleExecCmd: exitCode = " + exitCodeObj.value + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: AnnealMailExecution.simpleExecCmd: errOutput = " + errOutput + "\n");
 
     return outputData;
   },
@@ -193,18 +193,18 @@ const EnigmailExecution = {
    */
   execCmd: function(command, args, input, exitCodeObj, statusFlagsObj, statusMsgObj,
     errorMsgObj, retStatusObj) {
-    EnigmailLog.WRITE("execution.jsm: EnigmailExecution.execCmd: subprocess = '" + command.path + "'\n");
+    AnnealMailLog.WRITE("execution.jsm: AnnealMailExecution.execCmd: subprocess = '" + command.path + "'\n");
 
     if ((typeof input) != "string") input = "";
 
     var preInput = "";
     var outputData = "";
     var errOutput = "";
-    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
-    var procBuilder = new EnigmailExecution.processBuilder();
+    AnnealMailLog.CONSOLE("annealmail> " + AnnealMailFiles.formatCmdLine(command, args) + "\n");
+    var procBuilder = new AnnealMailExecution.processBuilder();
     procBuilder.setCommand(command);
     procBuilder.setArguments(args);
-    procBuilder.setEnvironment(EnigmailCore.getEnvList());
+    procBuilder.setEnvironment(AnnealMailCore.getEnvList());
     procBuilder.setStdin(
       function(pipe) {
         if (input.length > 0 || preInput.length > 0) {
@@ -226,36 +226,36 @@ const EnigmailExecution = {
       subprocess.call(proc).wait();
     }
     catch (ex) {
-      EnigmailLog.ERROR("execution.jsm: EnigmailExecution.execCmd: subprocess.call failed with '" + ex.toString() + "'\n");
-      EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
+      AnnealMailLog.ERROR("execution.jsm: AnnealMailExecution.execCmd: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.DEBUG("  annealmail> DONE with FAILURE\n");
       exitCodeObj.value = -1;
     }
-    EnigmailLog.DEBUG("  enigmail> DONE\n");
+    AnnealMailLog.DEBUG("  annealmail> DONE\n");
 
     if (proc.resultData) outputData = proc.resultData;
     if (proc.errorData) errOutput = proc.errorData;
 
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.execCmd: exitCode = " + exitCodeObj.value + "\n");
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.execCmd: errOutput = " + errOutput + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: AnnealMailExecution.execCmd: exitCode = " + exitCodeObj.value + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: AnnealMailExecution.execCmd: errOutput = " + errOutput + "\n");
 
 
     if (!retStatusObj) {
       retStatusObj = {};
     }
 
-    errorMsgObj.value = EnigmailErrorHandling.parseErrorOutput(errOutput, retStatusObj);
+    errorMsgObj.value = AnnealMailErrorHandling.parseErrorOutput(errOutput, retStatusObj);
 
     statusFlagsObj.value = retStatusObj.statusFlags;
     statusMsgObj.value = retStatusObj.statusMsg;
     var blockSeparation = retStatusObj.blockSeparation;
 
-    exitCodeObj.value = EnigmailExecution.fixExitCode(exitCodeObj.value, statusFlagsObj);
+    exitCodeObj.value = AnnealMailExecution.fixExitCode(exitCodeObj.value, statusFlagsObj);
 
     if (blockSeparation.indexOf(" ") > 0) {
       exitCodeObj.value = 2;
     }
 
-    EnigmailLog.CONSOLE(errorMsgObj.value + "\n");
+    AnnealMailLog.CONSOLE(errorMsgObj.value + "\n");
 
     return outputData;
   },
@@ -269,31 +269,31 @@ const EnigmailExecution = {
    * @return: Number - fixed exit code
    */
   fixExitCode: function(exitCode, statusFlagsObj) {
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.fixExitCode: agentType: " + EnigmailExecution.agentType + " exitCode: " + exitCode + " statusFlags " + statusFlagsObj.statusFlags + "\n");
+    AnnealMailLog.DEBUG("execution.jsm: AnnealMailExecution.fixExitCode: agentType: " + AnnealMailExecution.agentType + " exitCode: " + exitCode + " statusFlags " + statusFlagsObj.statusFlags + "\n");
 
     let statusFlags = statusFlagsObj.statusFlags;
 
     if (exitCode !== 0) {
-      if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
-        (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
-        EnigmailLog.DEBUG("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode for decrypted msg " + exitCode + "->0\n");
+      if ((statusFlags & (nsIAnnealMail.BAD_PASSPHRASE | nsIAnnealMail.UNVERIFIED_SIGNATURE)) &&
+        (statusFlags & nsIAnnealMail.DECRYPTION_OKAY)) {
+        AnnealMailLog.DEBUG("annealmailCommon.jsm: AnnealMail.fixExitCode: Changing exitCode for decrypted msg " + exitCode + "->0\n");
         exitCode = 0;
       }
-      if ((EnigmailExecution.agentType === "gpg") && (exitCode == 256) && (EnigmailOS.getOS() == "WINNT")) {
-        EnigmailLog.WARNING("enigmailCommon.jsm: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
-        if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
-          EnigmailLog.WARNING("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode 256->2\n");
+      if ((AnnealMailExecution.agentType === "ccr") && (exitCode == 256) && (AnnealMailOS.getOS() == "WINNT")) {
+        AnnealMailLog.WARNING("annealmailCommon.jsm: AnnealMail.fixExitCode: Using ccr and exit code is 256. You seem to use cygwin, activating countermeasures.\n");
+        if (statusFlags & (nsIAnnealMail.BAD_PASSPHRASE | nsIAnnealMail.UNVERIFIED_SIGNATURE)) {
+          AnnealMailLog.WARNING("annealmailCommon.jsm: AnnealMail.fixExitCode: Changing exitCode 256->2\n");
           exitCode = 2;
         }
         else {
-          EnigmailLog.WARNING("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode 256->0\n");
+          AnnealMailLog.WARNING("annealmailCommon.jsm: AnnealMail.fixExitCode: Changing exitCode 256->0\n");
           exitCode = 0;
         }
       }
     }
     else {
-      if (statusFlags & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_ARMOR |
-          nsIEnigmail.MISSING_PASSPHRASE | nsIEnigmail.BAD_PASSPHRASE)) {
+      if (statusFlags & (nsIAnnealMail.INVALID_RECIPIENT | nsIAnnealMail.DECRYPTION_FAILED | nsIAnnealMail.BAD_ARMOR |
+          nsIAnnealMail.MISSING_PASSPHRASE | nsIAnnealMail.BAD_PASSPHRASE)) {
         exitCode = 1;
       }
       else if (typeof(statusFlagsObj.extendedStatus) === "string" && statusFlagsObj.extendedStatus.search(/\bdisp:/) >= 0) {
@@ -336,10 +336,10 @@ const EnigmailExecution = {
   },
 
   execCmd2: function(command, args, stdinFunc, stdoutFunc, doneFunc) {
-    var procBuilder = new EnigmailExecution.processBuilder();
+    var procBuilder = new AnnealMailExecution.processBuilder();
     procBuilder.setCommand(command);
     procBuilder.setArguments(args);
-    procBuilder.setEnvironment(EnigmailCore.getEnvList());
+    procBuilder.setEnvironment(AnnealMailCore.getEnvList());
     procBuilder.setStdin(stdinFunc);
     procBuilder.setStdout(stdoutFunc);
     procBuilder.setDone(doneFunc);

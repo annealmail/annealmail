@@ -8,12 +8,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailTrust"];
+var EXPORTED_SYMBOLS = ["AnnealMailTrust"];
 
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
 
-// trust flags according to GPG documentation:
-// - http://www.gnupg.org/documentation/manuals/gnupg.pdf
+// trust flags according to CCR documentation:
 // - sources: doc/DETAILS
 // In the order of trustworthy:
 //  ---------------------------------------------------------
@@ -25,7 +24,7 @@ Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLoca
 //  g = group (???)
 //  ---------------------------------------------------------
 //  ? = INTERNAL VALUE to separate invalid from unknown keys
-//      see validKeysForAllRecipients() in enigmailMsgComposeHelper.js
+//      see validKeysForAllRecipients() in annealmailMsgComposeHelper.js
 //  ---------------------------------------------------------
 //  o = Unknown (this key is new to the system)
 //  - = Unknown validity (i.e. no value assigned)
@@ -40,7 +39,7 @@ Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLoca
 const TRUSTLEVELS_SORTED = "indDreg?o-qmfu";
 const TRUSTLEVELS_SORTED_IDX_UNKNOWN = 7; // index of '?'
 
-const EnigmailTrust = {
+const AnnealMailTrust = {
   /**
    * @return - |string| containing the order of trust/validity values
    */
@@ -75,35 +74,35 @@ const EnigmailTrust = {
     let keyTrust;
     switch (trustCode) {
       case 'q':
-        keyTrust = EnigmailLocale.getString("keyValid.unknown");
+        keyTrust = AnnealMailLocale.getString("keyValid.unknown");
         break;
       case 'i':
-        keyTrust = EnigmailLocale.getString("keyValid.invalid");
+        keyTrust = AnnealMailLocale.getString("keyValid.invalid");
         break;
       case 'd':
       case 'D':
-        keyTrust = EnigmailLocale.getString("keyValid.disabled");
+        keyTrust = AnnealMailLocale.getString("keyValid.disabled");
         break;
       case 'r':
-        keyTrust = EnigmailLocale.getString("keyValid.revoked");
+        keyTrust = AnnealMailLocale.getString("keyValid.revoked");
         break;
       case 'e':
-        keyTrust = EnigmailLocale.getString("keyValid.expired");
+        keyTrust = AnnealMailLocale.getString("keyValid.expired");
         break;
       case 'n':
-        keyTrust = EnigmailLocale.getString("keyTrust.untrusted");
+        keyTrust = AnnealMailLocale.getString("keyTrust.untrusted");
         break;
       case 'm':
-        keyTrust = EnigmailLocale.getString("keyTrust.marginal");
+        keyTrust = AnnealMailLocale.getString("keyTrust.marginal");
         break;
       case 'f':
-        keyTrust = EnigmailLocale.getString("keyTrust.full");
+        keyTrust = AnnealMailLocale.getString("keyTrust.full");
         break;
       case 'u':
-        keyTrust = EnigmailLocale.getString("keyTrust.ultimate");
+        keyTrust = AnnealMailLocale.getString("keyTrust.ultimate");
         break;
       case 'g':
-        keyTrust = EnigmailLocale.getString("keyTrust.group");
+        keyTrust = AnnealMailLocale.getString("keyTrust.group");
         break;
       case '-':
         keyTrust = "-";

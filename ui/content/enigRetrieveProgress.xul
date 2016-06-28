@@ -7,11 +7,11 @@
 
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/skin/dialogs.css" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
 
 <?xul-overlay href="chrome://global/content/dialogOverlay.xul"?>
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd">
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="dialog"
@@ -22,8 +22,8 @@
         onunload="onUnload()"
         oncancel="return onCancel()">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigRetrieveProgress.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/enigRetrieveProgress.js"/>
 
     <grid flex="1">
       <columns>
@@ -40,7 +40,7 @@
         </row>
         <row class="thin-separator">
           <hbox pack="end">
-            <label value="&enigmail.progressText.label;" control="dialog.progress"/>
+            <label value="&annealmail.progressText.label;" control="dialog.progress"/>
           </hbox>
           <progressmeter id="dialog.progress" mode="normal" value="0"/>
           <hbox pack="end">
@@ -60,7 +60,7 @@
     </grid>
     <separator/>
     <hbox id="CancelButton" pack="center">
-      <button id="cancel" label="&enigmail.cancelKey.label;" oncommand="return onCancel();"/>
+      <button id="cancel" label="&annealmail.cancelKey.label;" oncommand="return onCancel();"/>
     </hbox>
 
 </window>

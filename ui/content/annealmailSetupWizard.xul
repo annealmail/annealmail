@@ -1,0 +1,470 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<wizard id="annealmailSetupWizard"
+        title="&annealmail.setupWiz.title;"
+        onwizardnext="return onNext();"
+        onwizardback="return onBack();"
+        onload="onLoad();"
+        onwizardcancel="return onCancel();"
+        minheight="500px"
+        minwidth="700px"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailKeygen.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailSetupWizard.js"/>
+
+  <broadcasterset>
+    <broadcaster id="bcKeyEnabled" properties=""/>
+  </broadcasterset>
+
+
+  <!-- Introduction Page -->
+  <wizardpage id="pgIntro" pageid="pgIntro"
+              next="pgWelcome"
+              label="&annealmail.setupWiz.pgIntro.title;">
+    <description>
+      &annealmail.setupWiz.pgIntro.desc;
+    </description>
+    <separator/>
+
+    <description control="startNow">
+      &annealmail.setupWiz.pgIntro.desc2;
+    </description>
+    <separator/>
+
+    <radiogroup id="startNow" value="1">
+      <radio id="startNow_yes"
+             label="&annealmail.setupWiz.pgIntro.startNow;"
+             oncommand="onSetStartNow(1)"
+             selected="true"
+             value="1"/>
+       <radio id="startNow_no"
+             label="&annealmail.setupWiz.pgIntro.startLater;"
+             oncommand="onSetStartNow(0)"
+             value="0"/>
+    </radiogroup>
+  </wizardpage>
+
+  <!-- Welcome Page -->
+  <wizardpage id="pgWelcome" pageid="pgWelcome"
+              next="pgInstallGnuPG"
+              label="&annealmail.setupWiz.pgWelcome.title;"
+              onpageshow="onPageShow(); wizardSetFocus()">
+    <description control="selectMode">
+      &annealmail.setupWiz.pgWelcome.manualOrAuto;
+    </description>
+    <separator/>
+
+    <radiogroup id="selectMode" value="1">
+      <radio id="selectMode_beginner"
+             label="&annealmail.setupWiz.pgWelcome.beginnersMode;"
+             selected="true"
+             oncommand="onSetSelectMode('beginner')"
+             value="1"/>
+       <radio id="selectMode_advanced"
+             label="&annealmail.setupWiz.pgWelcome.advancedMode;"
+             oncommand="onSetSelectMode('advanced')"
+             value="2"/>
+      <radio id="selectMode_expert"
+             label="&annealmail.setupWiz.pgWelcome.manualMode;"
+             oncommand="onSetSelectMode('expert')"
+             value="3"/>
+      <separator/>
+      <radio id="selectMode_import"
+             label="&annealmail.setupWiz.pgWelcome.importSettings;"
+             oncommand="onSetSelectMode('import')"
+             value="4"/>
+    </radiogroup>
+  </wizardpage>
+
+
+  <!-- Optional Install GnuPG Page -->
+  <wizardpage id="pgInstallGnuPG" pageid="pgInstallGnuPG"
+              next="pgSelectId"
+              label="&annealmail.setupWiz.pgInstall.title;"
+              description="&annealmail.setupWiz.pgInstall.title;"
+              onpageshow="onPageShow(); onShowPgInstallGnuPG()">
+
+    <description>
+      &annealmail.setupWiz.pgInstall.desc;
+    </description>
+
+    <vbox id="installBox" collapsed="true">
+      <description>
+        &annealmail.setupWiz.pgInstall.installDesc1;
+      </description>
+      <hbox>
+        <button id="btnInstallGnupg" label="&annealmail.setupWiz.pgInstall.installButton;" oncommand="installGnuPG()"/>
+      </hbox>
+      <separator/>
+      <description>
+        &annealmail.setupWiz.pgInstall.installDesc2;
+      </description>
+      <hbox>
+        <button id="btnLocateGnuPG" label="&annealmail.setupWiz.pgInstall.locateButton;" oncommand="wizardLocateCcr()"/>
+      </hbox>
+
+    </vbox>
+
+    <vbox id="findCcrBox" collapsed="true">
+      <description>
+        &annealmail.setupWiz.pgInstall.locateDesc;
+      </description>
+      <hbox>
+        <button label="&annealmail.setupWiz.pgInstall.locateButton;" oncommand="wizardLocateCcr()"/>
+      </hbox>
+    </vbox>
+
+    <vbox id="progressBox" collapsed="true">
+      <label id="downloadLabel" value="&annealmail.setupWiz.pgInstall.downloadLabel;" control="progressBar"/>
+      <progressmeter id="downloadProgress" mode="determined" value="0"/>
+      <label value=""/>
+      <label id="installLabel" value="&annealmail.setupWiz.pgInstall.installLabel;" collapsed="true"/>
+      <progressmeter id="installProgress" mode="undetermined" collapsed="true"/>
+      <label value=""/>
+      <label id="installComplete" value="&annealmail.setupWiz.pgInstall.installDone;" collapsed="true"/>
+    </vbox>
+
+    <vbox id="ccrFoundBox" collapsed="true">
+      <label value="&annealmail.setupWiz.pgInstall.gnupgFound;"/>
+    </vbox>
+  </wizardpage>
+
+
+  <!-- Select Account IDs Page -->
+  <wizardpage id="pgSelectId" pageid="pgSelectId" next="pgKeySel"
+              label="&annealmail.setupWiz.pgSelectId.title;"
+              description="&annealmail.setupWiz.pgSelectId.subtitle;"
+              onpageshow="onPageShow();">
+    <description control="activateId">
+      &annealmail.setupWiz.pgSelectId.desc2;
+    </description>
+
+    <separator/>
+
+    <radiogroup id="activateId" value="1">
+      <radio id="activateId_all"
+             label="&annealmail.setupWiz.pgSelectId.selectallIds;"
+             selected="true"
+             oncommand="disableIdSel(true)"
+             value="1"/>
+      <radio id="activateId_sel"
+             label="&annealmail.setupWiz.pgSelectId.selectedIds;"
+             oncommand="disableIdSel(false)"
+             value="0"/>
+    </radiogroup>
+    <groupbox height="60px" width="200px">
+      <vbox id="idSelection"/>
+    </groupbox>
+
+    <separator/>
+    <description>
+      &annealmail.setupWiz.pgSelectId.note;
+    </description>
+  </wizardpage>
+
+
+  <!-- Select Keys Page -->
+  <wizardpage id="pgKeySel" pageid="pgKeySel"
+              next="pgComplete"
+              onpageshow="onPageShow(); displayKeySel()"
+              label="&annealmail.setupWiz.pgKeySel.title;"
+              description="&annealmail.setupWiz.pgKeySel.subtitle;">
+    <description id="createPgpKeyLabel">
+      &annealmail.setupWiz.pgKeySel.desc2;
+    </description>
+    <radiogroup id="createPgpKey" value="0" aria-labelledby="createPgpKeyLabel">
+      <radio id="createPgpKey_no"
+             label="&annealmail.setupWiz.pgKeySel.useExistingKey;"
+             oncommand="setUseKey()"
+             selected="true"
+             value="0"/>
+
+      <tree id="uidSelection"
+        hidecolumnpicker="false"
+        style="height:200px"
+        minwidth="450"
+        seltype="single"
+        onselect="onKeySelected();">
+
+        <treecols>
+          <treecol id="uidCol" primary="true"
+                   flex="1"
+                   ignoreincolumnpicker="true"
+                   label="&annealmail.keyUserId.label;"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="keyCol" style="width:90px"
+                   label="&annealmail.keyId.label;"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="expCol" style="width:70px"
+                   label="&annealmail.created.label;"/>
+        </treecols>
+
+        <treechildren id="uidSelectionChildren"/>
+      </tree>
+
+      <separator/>
+
+      <radio id="createNewPgpKey"
+             label="&annealmail.setupWiz.pgKeySel.newKey;"
+             oncommand="setNewKey()"
+             value="1"/>
+
+    </radiogroup>
+
+  </wizardpage>
+
+
+  <!-- Optional "No Key Found" Page -->
+  <wizardpage id="pgNoKeyFound" pageid="pgNoKeyFound"
+              next="pgKeyCreate"
+              onpageshow="onPageShow(); disableNext(true)"
+              label="&annealmail.setupWiz.pgNoKeyFound.title2;">
+
+    <description id="noPgpKeyFoundLabel">
+      &annealmail.setupWiz.pgNoKeyFound.desc2;
+    </description>
+    <radiogroup id="newPgpKey" value="0" aria-labelledby="noPgpKeyFoundLabel">
+
+      <radio id="createNewPgpKey2"
+             label="&annealmail.setupWiz.pgKeySel.newKey;"
+             oncommand="setNewKey()"
+             value="1"/>
+
+      <radio id="importPgpKeys"
+             label="&annealmail.setupWiz.pgNoKeyFound.importKey;"
+             oncommand="setImportKeys()"
+             value="2"/>
+    </radiogroup>
+  </wizardpage>
+
+
+  <!-- Optional Create Key Page -->
+  <wizardpage id="pgKeyCreate" pageid="pgKeyCreate"
+              next="pgKeygen"
+              onpageshow="onPageShow(); displayKeyCreate()"
+              label="&annealmail.setupWiz.pgKeyCreate.title;"
+              description="&annealmail.setupWiz.pgKeyCreate.subtitle;">
+    <description>
+      &annealmail.setupWiz.pgKeyCreate.descTwoKeys;
+    </description>
+    <description>
+      &annealmail.setupWiz.pgKeyCreate.descPub;
+    </description>
+    <description id="keyCreateDescSec1">
+      &annealmail.setupWiz.pgKeyCreate.descSec1;
+    </description>
+    <description id="keyCreateDescSec2" collapsed="true">
+      &annealmail.setupWiz.pgKeyCreate.descSec2;
+    </description>
+    <separator/>
+    <description>
+     &annealmail.setupWiz.pgKeyCreate.descPass;
+     &annealmail.setupWiz.pgKeyCreate.passContain;
+    </description>
+    <separator/>
+    <vbox>
+      <label class="label" value="&annealmail.keyUserId.label;:" control="userIdentity"/>
+      <hbox flex="1">
+        <menulist id="userIdentity" label="...">
+          <menupopup id="userIdentityPopup"/>
+        </menulist>
+      </hbox>
+    </vbox>
+    <label id="userIdentityLabel" value="" collapsed="true"/>
+
+    <vbox id="passphraseBox" align="start">
+      <label control="passphrase" value="&annealmail.keyPassphrase.label;" />
+      <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)"/>
+      <label control="passphraseRepeat" value="&annealmail.setupWiz.pgKeyCreate.passRepeat;" />
+      <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
+      <description>&annealmail.setupWiz.pgKeyCreate.passQuality;</description>
+      <progressmeter id="passphraseQuality" mode="determined" value="0"/>
+    </vbox>
+  </wizardpage>
+
+
+  <!-- Optional Import Key Page -->
+  <wizardpage id="pgKeyImport" pageid="pgKeyImport"
+              next="pgKeySel"
+              label="&annealmail.setupWiz.pgKeyImport.title;"
+              onpageadvanced="return importKeyFiles()"
+              description="&annealmail.setupWiz.pgKeyImport.subtitle;">
+    <description>
+      &annealmail.setupWiz.pgKeyImport.desc;
+    </description>
+
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+
+      <rows autostretch="never">
+        <row>
+          <hbox align="center">
+            <label class="label" value="&annealmail.setupWiz.pgKeyImport.pubkeyFile;" id="publicKeysFileLbl"/>
+          </hbox>
+          <hbox align="center">
+            <textbox id="publicKeysFile" size="30" aria-labelledby="publicKeysFileLbl" readonly="true"/>
+            <button id="browsePubKeyFile"
+                    label="&annealmail.browse.label;"
+              oncommand="browseKeyFile('publicKeysFile', gPubkeyFile);"/>
+          </hbox>
+        </row>
+
+        <row>
+          <hbox align="center">
+            <label class="label" value="&annealmail.setupWiz.pgKeyImport.seckeyFile;" id="privateKeysFileLbl"/>
+          </hbox>
+          <hbox align="center">
+            <textbox id="privateKeysFile" size="30" aria-labelledby="privateKeysFileLbl" readonly="true"/>
+            <button id="browseSecKeyFile"
+                    label="&annealmail.browse.label;"
+              oncommand="browseKeyFile('privateKeysFile', gSeckeyFile);"/>
+          </hbox>
+        </row>
+      </rows>
+    </grid>
+  </wizardpage>
+
+
+   <!-- Key Create Progress Page -->
+  <wizardpage id="pgKeygen" pageid="pgKeygen"
+              onpageshow="wizardGenKey()"
+              next="pgComplete"
+              label="&annealmail.setupWiz.pgKeygen.title;"
+              description="&annealmail.setupWiz.pgKeygen.subtitle;">
+    <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
+
+      <caption label="&annealmail.keyGen.console.label;"/>
+
+      <description>&annealmail.keygen.desc;</description>
+
+      <groupbox>
+        <progressmeter id="keygenProgress" mode="determined" value="0"/>
+      </groupbox>
+
+      <vbox id="revCertBox" hidden="true">
+        <separator/>
+        <description>
+          <html:b>&annealmail.setupWiz.pgKeygen.keyGenComplete;</html:b>
+        </description>
+        <separator/>
+        <description>
+          &annealmail.setupWiz.pgKeygen.revokeCertDesc;
+        </description>
+        <hbox>
+          <button label="&annealmail.setupWiz.pgKeygen.revCertButton;" oncommand="wizardCreateRevCert()"/>
+        </hbox>
+      </vbox>
+
+    </groupbox>
+
+  </wizardpage>
+
+
+  <wizardpage id="pgImportSettings" pageid="pgImportSettings"
+              next="pgComplete"
+              onpageshow="disableNext(true);"
+              onpageadvanced="return importSettings();"
+              label="&annealmail.setupWiz.pgImportSettings.title;">
+    <vbox>
+      <description>
+        &annealmail.setupWiz.pgImportSettings.desc;
+      </description>
+      <separator/>
+      <label class="label" value="&annealmail.setupWiz.pgImportSettings.fileName;" id="importFileLbl"/>
+      <hbox align="center">
+        <textbox id="importFile" size="30" aria-labelledby="importFileLbl" readonly="true"/>
+        <button id="browseBackupFile"
+                label="&annealmail.browse.label;"
+          oncommand="browseBackupFile('importFile', gImportSettingsFile);"/>
+      </hbox>
+
+      <vbox id="importInProgress" hidden="true">
+        <separator/>
+        <description>
+          &annealmail.setupWiz.pgImportSettings.importing;
+        </description>
+
+        <separator/>
+        <hbox flex="0" id="spinningWheel">
+          <spacer flex="1"/>
+          <image class="annealmailWheel annealmailSpinning"/>
+          <spacer flex="1"/>
+        </hbox>
+      </vbox>
+
+      <description id="errorMessage" hidden="true">
+        &annealmail.setupWiz.pgImportSettings.error;
+      </description>
+    </vbox>
+  </wizardpage>
+
+  <!-- End page Page -->
+  <wizardpage id="pgComplete" pageid="pgComplete"
+              onpageshow="applyWizardSettings()"
+              label="&annealmail.setupWiz.pgComplete.title;">
+    <description>
+      &annealmail.setupWiz.pgComplete.desc;
+    </description>
+  </wizardpage>
+
+
+  <!-- Manual setup Page -->
+  <wizardpage id="pgExpert" pageid="pgExpert"
+              label="&annealmail.setupWiz.pgExpert.title;">
+    <description>
+      &annealmail.setupWiz.pgExpert.desc;
+    </description>
+
+    <grid>
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+
+      <rows autostretch="never">
+        <row>
+          <hbox align="center">
+            <label class="label" value="&annealmail.setupWiz.pgExpert.keyManager;"/>
+          </hbox>
+          <hbox align="center">
+            <button label="&annealmail.keyManWindow.label;"
+              oncommand="AnnealMailWindows.openKeyManager();"/>
+          </hbox>
+        </row>
+
+        <row>
+          <hbox align="center">
+            <label class="label" value="&annealmail.setupWiz.pgExpert.expertSettings;"/>
+          </hbox>
+          <hbox align="center">
+            <button label="&annealmail.prefs.label;"
+              oncommand="AnnealMailWindows.openPrefWindow(window, true, null);"/>
+          </hbox>
+        </row>
+      </rows>
+    </grid>
+
+  </wizardpage>
+
+</wizard>

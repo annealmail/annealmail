@@ -19,11 +19,11 @@ dirs: $(DIRS)
 $(DIRS):
 	$(MAKE) -C $@
 
-MYJARFILE = enigmail.jar
+MYJARFILE = annealmail.jar
 
 
 jar: dirs
 	$(PYTHON) ../util/JarMaker.py -j $(DIST)/chrome -t . -f jar jar.mn
 
 clean:
-	rm -f $(DIST)/chrome/enigmail.jar
+	rm -f $(DIST)/chrome/annealmail.jar

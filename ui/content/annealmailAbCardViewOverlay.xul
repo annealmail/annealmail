@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+
+<overlay id="annealmailAbCardViewOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAbOverlay.js"/>
+
+  <!-- Thunderbird / SeaMonkey -->
+  <window id="addressbookWindow">
+    <popup id="annealmail_contextMenu" popupanchor="bottomleft">
+      <menuitem id="annealmail_createCardRule"
+                label="&annealmail.createRuleFromAddr.label;"
+                oncommand="AnnealMail.createRuleFromAddress(document.popupNode);"/>
+    </popup>
+
+  </window>
+
+  <!-- Spicebird only -->
+  <popupset id="framework-popupset">
+    <popup id="annealmail_contextMenu" popupanchor="bottomleft">
+      <menuitem id="annealmail_createCardRule"
+                label="&annealmail.createRuleFromAddr.label;"
+                oncommand="AnnealMail.createRuleFromAddress(document.popupNode);"/>
+    </popup>
+  </popupset>
+
+  <popup id="abResultsTreeContext">
+      <menuitem id="annealmail_createTreeRule"
+                label="&annealmail.createRuleFromAddr.label;"
+                oncommand="AnnealMail.createRuleFromCard();"/>
+  </popup>
+  <description id="cvEmail1Box" context="annealmail_contextMenu"/>
+  <description id="cvEmail2Box" context="annealmail_contextMenu"/>
+  <vbox id="cvAddresses" context="annealmail_contextMenu"/>
+
+</overlay>

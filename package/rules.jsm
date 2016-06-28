@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailFuncs: false, EnigmailLog: false, EnigmailOS: false, EnigmailFiles: false, EnigmailApp: false */
+/*global Components: false, AnnealMailFuncs: false, AnnealMailLog: false, AnnealMailOS: false, AnnealMailFiles: false, AnnealMailApp: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,16 +8,16 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailRules"];
+var EXPORTED_SYMBOLS = ["AnnealMailRules"];
 
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/os.jsm");
-Components.utils.import("resource://enigmail/files.jsm");
-Components.utils.import("resource://enigmail/app.jsm");
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("resource://annealmail/funcs.jsm");
+Components.utils.import("resource://annealmail/log.jsm");
+Components.utils.import("resource://annealmail/os.jsm");
+Components.utils.import("resource://annealmail/files.jsm");
+Components.utils.import("resource://annealmail/app.jsm");
+Components.utils.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Components.utils.import("resource://annealmail/constants.jsm"); /*global AnnealMailConstants: false */
+Components.utils.import("resource://annealmail/dialog.jsm"); /*global AnnealMailDialog: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -35,11 +35,11 @@ const rulesListHolder = {
   rulesList: null
 };
 
-var EnigmailRules = {
+var AnnealMailRules = {
 
   getRulesFile: function() {
-    EnigmailLog.DEBUG("rules.jsm: getRulesFile()\n");
-    var rulesFile = EnigmailApp.getProfileDirectory();
+    AnnealMailLog.DEBUG("rules.jsm: getRulesFile()\n");
+    var rulesFile = AnnealMailApp.getProfileDirectory();
     rulesFile.append("pgprules.xml");
     return rulesFile;
   },
@@ -48,7 +48,7 @@ var EnigmailRules = {
     var flags = NS_RDONLY;
     var rulesFile = this.getRulesFile();
     if (rulesFile.exists()) {
-      var fileContents = EnigmailFiles.readFile(rulesFile);
+      var fileContents = AnnealMailFiles.readFile(rulesFile);
 
       return this.loadRulesFromString(fileContents);
     }
@@ -57,7 +57,7 @@ var EnigmailRules = {
   },
 
   loadRulesFromString: function(contents) {
-    EnigmailLog.DEBUG("rules.jsm: loadRulesFromString()\n");
+    AnnealMailLog.DEBUG("rules.jsm: loadRulesFromString()\n");
     if (contents.length === 0 || contents.search(/^\s*$/) === 0) {
       return false;
     }
@@ -69,7 +69,7 @@ var EnigmailRules = {
   },
 
   saveRulesFile: function() {
-    EnigmailLog.DEBUG("rules.jsm: saveRulesFile()\n");
+    AnnealMailLog.DEBUG("rules.jsm: saveRulesFile()\n");
 
     var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
     var domSerializer = Cc[NS_DOMSERIALIZER_CONTRACTID].createInstance(Ci.nsIDOMSerializer);
@@ -77,7 +77,7 @@ var EnigmailRules = {
     if (rulesFile) {
       if (rulesListHolder.rulesList) {
         // the rule list is not empty -> write into file
-        return EnigmailFiles.writeFileContents(rulesFile.path,
+        return AnnealMailFiles.writeFileContents(rulesFile.path,
           domSerializer.serializeToString(rulesListHolder.rulesList.firstChild),
           DEFAULT_FILE_PERMS);
       }
@@ -96,7 +96,7 @@ var EnigmailRules = {
   },
 
   getRulesData: function(rulesListObj) {
-    EnigmailLog.DEBUG("rules.jsm: getRulesData()\n");
+    AnnealMailLog.DEBUG("rules.jsm: getRulesData()\n");
 
     var ret = true;
 
@@ -114,7 +114,7 @@ var EnigmailRules = {
   },
 
   addRule: function(appendToEnd, toAddress, keyList, sign, encrypt, pgpMime, flags) {
-    EnigmailLog.DEBUG("rules.jsm: addRule()\n");
+    AnnealMailLog.DEBUG("rules.jsm: addRule()\n");
     if (!rulesListHolder.rulesList) {
       var domParser = Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
       rulesListHolder.rulesList = domParser.parseFromString("<pgpRuleList/>", "text/xml");
@@ -131,11 +131,11 @@ var EnigmailRules = {
 
     if (origFirstChild && (!appendToEnd)) {
       rulesListHolder.rulesList.firstChild.insertBefore(rule, origFirstChild);
-      rulesListHolder.rulesList.firstChild.insertBefore(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike() ? "\r\n" : "\n"), origFirstChild);
+      rulesListHolder.rulesList.firstChild.insertBefore(rulesListHolder.rulesList.createTextNode(AnnealMailOS.isDosLike() ? "\r\n" : "\n"), origFirstChild);
     }
     else {
       rulesListHolder.rulesList.firstChild.appendChild(rule);
-      rulesListHolder.rulesList.firstChild.appendChild(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike() ? "\r\n" : "\n"));
+      rulesListHolder.rulesList.firstChild.appendChild(rulesListHolder.rulesList.createTextNode(AnnealMailOS.isDosLike() ? "\r\n" : "\n"));
     }
   },
 
@@ -144,17 +144,17 @@ var EnigmailRules = {
   },
 
   registerOn: function(target) {
-    target.getRulesFile = EnigmailRules.getRulesFile;
-    target.loadRulesFile = EnigmailRules.loadRulesFile;
-    target.loadRulesFromString = EnigmailRules.loadRulesFromString;
-    target.saveRulesFile = EnigmailRules.saveRulesFile;
-    target.getRulesData = EnigmailRules.getRulesData;
-    target.addRule = EnigmailRules.addRule;
-    target.clearRules = EnigmailRules.clearRules;
+    target.getRulesFile = AnnealMailRules.getRulesFile;
+    target.loadRulesFile = AnnealMailRules.loadRulesFile;
+    target.loadRulesFromString = AnnealMailRules.loadRulesFromString;
+    target.saveRulesFile = AnnealMailRules.saveRulesFile;
+    target.getRulesData = AnnealMailRules.getRulesData;
+    target.addRule = AnnealMailRules.addRule;
+    target.clearRules = AnnealMailRules.clearRules;
   },
 
   DEBUG_EmailList: function(name, list) {
-    EnigmailLog.DEBUG("           " + name + ":\n");
+    AnnealMailLog.DEBUG("           " + name + ":\n");
     for (let i = 0; i < list.length; i++) {
       let elem = list[i];
       let str = "            [" + i + "]: ";
@@ -167,7 +167,7 @@ var EnigmailRules = {
       if (elem.keys) {
         str += "keys: '" + elem.keys + "'  ";
       }
-      EnigmailLog.DEBUG(str + "\n");
+      AnnealMailLog.DEBUG(str + "\n");
     }
   },
 
@@ -189,12 +189,12 @@ var EnigmailRules = {
    */
   mapAddrsToKeys: function(emailAddrsStr, startDialogForMissingKeys, window,
     matchedKeysObj, flagsObj) {
-    EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): emailAddrsStr=\"" + emailAddrsStr + "\" startDialogForMissingKeys=" + startDialogForMissingKeys + "\n");
+    AnnealMailLog.DEBUG("rules.jsm: mapAddrsToKeys(): emailAddrsStr=\"" + emailAddrsStr + "\" startDialogForMissingKeys=" + startDialogForMissingKeys + "\n");
 
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+    const nsIAnnealMail = Components.interfaces.nsIAnnealMail;
 
-    let enigmailSvc = EnigmailCore.getService();
-    if (!enigmailSvc) {
+    let annealmailSvc = AnnealMailCore.getService();
+    if (!annealmailSvc) {
       return false;
     }
 
@@ -202,9 +202,9 @@ var EnigmailRules = {
     matchedKeysObj.value = "";
     flagsObj.value = false;
     let flags = {}; // object to be able to modify flags in subfunction
-    flags.sign = EnigmailConstants.ENIG_UNDEF; // default sign flag is: maybe
-    flags.encrypt = EnigmailConstants.ENIG_UNDEF; // default encrypt flag is: maybe
-    flags.pgpMime = EnigmailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
+    flags.sign = AnnealMailConstants.ENIG_UNDEF; // default sign flag is: maybe
+    flags.encrypt = AnnealMailConstants.ENIG_UNDEF; // default encrypt flag is: maybe
+    flags.pgpMime = AnnealMailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
 
     // create openList: list of addresses not processed by rules yet
     // - each entry has
@@ -221,7 +221,7 @@ var EnigmailRules = {
     for (let i = 0; i < emailAddrList.length; ++i) {
       let orig = emailAddrList[i];
       if (orig) {
-        let addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
+        let addr = AnnealMailFuncs.stripEmail(orig.toLowerCase());
         if (addr) {
           let elem = {
             orig: orig,
@@ -241,10 +241,10 @@ var EnigmailRules = {
 
       let rulesList = rulesListObj.value;
       if (rulesList.firstChild.nodeName == "parsererror") {
-        EnigmailDialog.alert(window, "Invalid pgprules.xml file:\n" + rulesList.firstChild.textContent);
+        AnnealMailDialog.alert(window, "Invalid pgprules.xml file:\n" + rulesList.firstChild.textContent);
         return false;
       }
-      EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): rules successfully loaded; now process them\n");
+      AnnealMailLog.DEBUG("rules.jsm: mapAddrsToKeys(): rules successfully loaded; now process them\n");
 
       // go through all rules to find match with email addresses
       // - note: only if the key field has a value, an address is done with processing
@@ -271,7 +271,7 @@ var EnigmailRules = {
             // no negate rule handling (turned off in dialog)
           }
           catch (ex) {
-            EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
+            AnnealMailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
           }
         }
       }
@@ -297,7 +297,7 @@ var EnigmailRules = {
           inputObj.toAddress = "{" + theAddr + "}";
           inputObj.options = "";
           inputObj.command = "add";
-          window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "",
+          window.openDialog("chrome://annealmail/content/annealmailSingleRcptSettings.xul", "",
             "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled === true) {
             return false;
@@ -346,38 +346,38 @@ var EnigmailRules = {
     flagsObj.pgpMime = flags.pgpMime;
     flagsObj.value = true;
 
-    EnigmailLog.DEBUG("   found keys:\n");
+    AnnealMailLog.DEBUG("   found keys:\n");
     for (let i = 0; i < matchedKeysObj.addrKeysList.length; i++) {
-      EnigmailLog.DEBUG("     " + matchedKeysObj.addrKeysList[i].addr + ": " + matchedKeysObj.addrKeysList[i].keys + "\n");
+      AnnealMailLog.DEBUG("     " + matchedKeysObj.addrKeysList[i].addr + ": " + matchedKeysObj.addrKeysList[i].keys + "\n");
     }
-    EnigmailLog.DEBUG("   addresses without keys:\n");
+    AnnealMailLog.DEBUG("   addresses without keys:\n");
     for (let i = 0; i < matchedKeysObj.addrNoKeyList.length; i++) {
-      EnigmailLog.DEBUG("     " + matchedKeysObj.addrNoKeyList[i].addr + "\n");
+      AnnealMailLog.DEBUG("     " + matchedKeysObj.addrNoKeyList[i].addr + "\n");
     }
-    EnigmailLog.DEBUG("   old returned value:\n");
-    EnigmailLog.DEBUG("     " + matchedKeysObj.value + "\n");
+    AnnealMailLog.DEBUG("   old returned value:\n");
+    AnnealMailLog.DEBUG("     " + matchedKeysObj.value + "\n");
 
     return true;
   },
 
   mapRuleToKeys: function(rule,
     openList, flags, addrKeysList, addrNoKeyList) {
-    //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
+    //AnnealMailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let ruleIndex = 0; ruleIndex < ruleList.length; ++ruleIndex) {
       let ruleEmailElem = ruleList[ruleIndex]; // ruleEmailElem has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
-      //EnigmailLog.DEBUG("   process ruleElem: '" + ruleEmailElem + "'\n");
+      //AnnealMailLog.DEBUG("   process ruleElem: '" + ruleEmailElem + "'\n");
       for (let openIndex = 0; openIndex < openList.length; ++openIndex) {
         let addr = openList[openIndex].addr;
         // search with { and } around because these are used a begin and end markers in the rules:
         let idx = ('{' + addr + '}').indexOf(ruleEmailElem);
         if (idx >= 0) {
           if (ruleEmailElem == rule.email) {
-            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
+            AnnealMailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
               "') found matching rule element '" + ruleEmailElem + "'\n");
           }
           else {
-            EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
+            AnnealMailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
               "') found matching rule element '" + ruleEmailElem + "' from '" + rule.email + "'\n");
           }
 
@@ -428,32 +428,32 @@ var EnigmailRules = {
    *           and combining it with oldVal
    */
   combineFlagValues: function(oldVal, newVal) {
-    //EnigmailLog.DEBUG("rules.jsm:    combineFlagValues(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
+    //AnnealMailLog.DEBUG("rules.jsm:    combineFlagValues(): oldVal=" + oldVal + " newVal=" + newVal + "\n");
 
     // conflict remains conflict
-    if (oldVal === EnigmailConstants.ENIG_CONFLICT) {
-      return EnigmailConstants.ENIG_CONFLICT;
+    if (oldVal === AnnealMailConstants.ENIG_CONFLICT) {
+      return AnnealMailConstants.ENIG_CONFLICT;
     }
 
     // 'never' and 'always' triggers conflict:
-    if ((oldVal === EnigmailConstants.ENIG_NEVER && newVal === EnigmailConstants.ENIG_ALWAYS) || (oldVal === EnigmailConstants.ENIG_ALWAYS && newVal === EnigmailConstants.ENIG_NEVER)) {
-      return EnigmailConstants.ENIG_CONFLICT;
+    if ((oldVal === AnnealMailConstants.ENIG_NEVER && newVal === AnnealMailConstants.ENIG_ALWAYS) || (oldVal === AnnealMailConstants.ENIG_ALWAYS && newVal === AnnealMailConstants.ENIG_NEVER)) {
+      return AnnealMailConstants.ENIG_CONFLICT;
     }
 
     // if there is any 'never' return 'never'
     // - thus: 'never' and 'maybe' => 'never'
-    if (oldVal === EnigmailConstants.ENIG_NEVER || newVal === EnigmailConstants.ENIG_NEVER) {
-      return EnigmailConstants.ENIG_NEVER;
+    if (oldVal === AnnealMailConstants.ENIG_NEVER || newVal === AnnealMailConstants.ENIG_NEVER) {
+      return AnnealMailConstants.ENIG_NEVER;
     }
 
     // if there is any 'always' return 'always'
     // - thus: 'always' and 'maybe' => 'always'
-    if (oldVal === EnigmailConstants.ENIG_ALWAYS || newVal === EnigmailConstants.ENIG_ALWAYS) {
-      return EnigmailConstants.ENIG_ALWAYS;
+    if (oldVal === AnnealMailConstants.ENIG_ALWAYS || newVal === AnnealMailConstants.ENIG_ALWAYS) {
+      return AnnealMailConstants.ENIG_ALWAYS;
     }
 
     // here, both values are 'maybe', which we return then
-    return EnigmailConstants.ENIG_UNDEF; // maybe
+    return AnnealMailConstants.ENIG_UNDEF; // maybe
   },
 
 

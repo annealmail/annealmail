@@ -11,6 +11,6 @@ else
     CURRENT_FILE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$(basename $0)"
 fi
 PROVISIONING_DIR=`dirname "$CURRENT_FILE"`
-ENIGMAIL_ROOT=`dirname "$PROVISIONING_DIR"`
+ANNEALMAIL_ROOT=`dirname "$PROVISIONING_DIR"`
 
-docker run -v $ENIGMAIL_ROOT:/enigmail-src -i -t enigmail-unit ./test.sh "$@"
+docker run -v $ANNEALMAIL_ROOT:/annealmail-src -i -t annealmail-unit ./test.sh "$@"

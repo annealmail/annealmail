@@ -8,33 +8,33 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailPassword"];
+var EXPORTED_SYMBOLS = ["AnnealMailPassword"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://annealmail/lazy.jsm"); /*global AnnealMailLazy: false */
+Cu.import("resource://annealmail/prefs.jsm"); /*global AnnealMailPrefs: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/subprocess.jsm"); /*global subprocess: false */
 
 
-const gpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
-const getLocale = EnigmailLazy.loader("enigmail/locale.jsm", "EnigmailLocale");
+const ccrAgent = AnnealMailLazy.loader("annealmail/ccrAgent.jsm", "AnnealMailCcrAgent");
+const getDialog = AnnealMailLazy.loader("annealmail/dialog.jsm", "AnnealMailDialog");
+const getLocale = AnnealMailLazy.loader("annealmail/locale.jsm", "AnnealMailLocale");
 
-const EnigmailPassword = {
+const AnnealMailPassword = {
   /*
    * Get GnuPG command line options for receiving the password depending
-   * on the various user and system settings (gpg-agent/no passphrase)
+   * on the various user and system settings (ccr-agent/no passphrase)
    *
    * @return: Array the GnuPG command line options
    */
   command: function() {
-    if (gpgAgent().useGpgAgent()) {
+    if (ccrAgent().useCcrAgent()) {
       return ["--use-agent"];
     }
     else {
-      if (!EnigmailPrefs.getPref("noPassphrase")) {
+      if (!AnnealMailPrefs.getPref("noPassphrase")) {
         return ["--passphrase-fd", "0", "--no-use-agent"];
       }
     }
@@ -43,7 +43,7 @@ const EnigmailPassword = {
 
   getMaxIdleMinutes: function() {
     try {
-      return EnigmailPrefs.getPref("maxIdleMinutes");
+      return AnnealMailPrefs.getPref("maxIdleMinutes");
     }
     catch (ex) {}
 
@@ -51,10 +51,10 @@ const EnigmailPassword = {
   },
 
   clearPassphrase: function(win) {
-    // clear all passphrases from gpg-agent by reloading the config
-    if (!EnigmailCore.getService()) return;
+    // clear all passphrases from ccr-agent by reloading the config
+    if (!AnnealMailCore.getService()) return;
 
-    if (!gpgAgent().useGpgAgent()) {
+    if (!ccrAgent().useCcrAgent()) {
       return;
     }
 
@@ -62,10 +62,10 @@ const EnigmailPassword = {
     let isError = 0;
 
     const proc = {
-      command: gpgAgent().connGpgAgentPath,
+      command: ccrAgent().connCcrAgentPath,
       arguments: [],
       charset: null,
-      environment: EnigmailCore.getEnvList(),
+      environment: AnnealMailCore.getEnvList(),
       stdin: function(pipe) {
         pipe.write("RELOADAGENT\n");
         pipe.write("/bye\n");

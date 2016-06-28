@@ -6,10 +6,10 @@
 -->
 
 <!--
-  This adds the Enigmail header box to the mail reading window on SeaMonkey
+  This adds the AnnealMail header box to the mail reading window on SeaMonkey
 
   Please not that is is only a placeholder to reference the location in
-  enigmailMessengerOverlay.xul properly
+  annealmailMessengerOverlay.xul properly
 -->
 
 <overlay id="messengerOverlay-tbird"
@@ -18,7 +18,7 @@
 
   <notificationbox id="messagepanebox">
     <vbox insertafter="msgHeaderView">
-      <vbox id="enigmailHdrBox"/> <!-- Enigmail header box is in here -->
+      <vbox id="annealmailHdrBox"/> <!-- AnnealMail header box is in here -->
     </vbox>
   </notificationbox>
 

@@ -8,19 +8,19 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailURIs"];
+var EXPORTED_SYMBOLS = ["AnnealMailURIs"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
 
 const messageIdList = {};
 const encryptedUris = [];
 
-const EnigmailURIs = {
+const AnnealMailURIs = {
   createMessageURI: function(originalUrl, contentType, contentCharset, contentData, persist) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.createMessageURI: " + originalUrl +
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.createMessageURI: " + originalUrl +
       ", " + contentType + ", " + contentCharset + "\n");
 
     const messageId = "msg" + Math.floor(Math.random() * 1.0e9);
@@ -33,13 +33,13 @@ const EnigmailURIs = {
       persist: persist
     };
 
-    return "enigmail:message/" + messageId;
+    return "annealmail:message/" + messageId;
   },
 
   deleteMessageURI: function(uri) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.deleteMessageURI: " + uri + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.deleteMessageURI: " + uri + "\n");
 
-    const messageId = EnigmailData.extractMessageId(uri);
+    const messageId = AnnealMailData.extractMessageId(uri);
 
     if (!messageId) {
       return false;
@@ -61,7 +61,7 @@ const EnigmailURIs = {
    * @return null
    */
   rememberEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: rememberEncryptedUri: uri=" + uri + "\n");
+    AnnealMailLog.DEBUG("uris.jsm: rememberEncryptedUri: uri=" + uri + "\n");
     if (encryptedUris.indexOf(uri) < 0) {
       encryptedUris.push(uri);
     }
@@ -75,7 +75,7 @@ const EnigmailURIs = {
    * @return null
    */
   forgetEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: forgetEncryptedUri: uri=" + uri + "\n");
+    AnnealMailLog.DEBUG("uris.jsm: forgetEncryptedUri: uri=" + uri + "\n");
     const pos = encryptedUris.indexOf(uri);
     if (pos >= 0) {
       encryptedUris.splice(pos, 1);
@@ -90,12 +90,12 @@ const EnigmailURIs = {
    * @return: Boolean true if yes, false otherwise
    */
   isEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: isEncryptedUri: uri=" + uri + "\n");
+    AnnealMailLog.DEBUG("uris.jsm: isEncryptedUri: uri=" + uri + "\n");
     return encryptedUris.indexOf(uri) >= 0;
   },
 
   registerOn: function(target) {
-    target.createMessageURI = EnigmailURIs.createMessageURI;
-    target.deleteMessageURI = EnigmailURIs.deleteMessageURI;
+    target.createMessageURI = AnnealMailURIs.createMessageURI;
+    target.deleteMessageURI = AnnealMailURIs.deleteMessageURI;
   }
 };

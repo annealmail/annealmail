@@ -42,9 +42,9 @@ sub loaddtd { # ($file)
       $ind=trim($1);
       #print "+ Line  '$ind'\n";
       $val=$2;
-      if ($ind eq "enigmail.ruleEmail.tooltip"
-          || $ind eq "enigmail.noHushMailSupport.label"
-          || $ind eq "enigmail.noHushMailSupport.tooltip") {
+      if ($ind eq "annealmail.ruleEmail.tooltip"
+          || $ind eq "annealmail.noHushMailSupport.label"
+          || $ind eq "annealmail.noHushMailSupport.tooltip") {
         $val =~ s/\</&lt;/g;
         $val =~ s/\>/&gt;/g;
       }
@@ -117,16 +117,16 @@ sub loadprop { # ($file)
 my $from=$ARGV[0];
 my $dest=$ARGV[1];
 
-(-f "$from/enigmail.dtd")        || die ("$from/enigmail.dtd not found\n");
-(-f "$dest/enigmail.dtd")        || die ("$dest/enigmail.dtd not found\n");
-(-f "$from/enigmail.properties") || die ("$from/enigmail.properties not found\n");
-(-f "$dest/enigmail.properties") || die ("$dest/enigmail.properties not found\n");
+(-f "$from/annealmail.dtd")        || die ("$from/annealmail.dtd not found\n");
+(-f "$dest/annealmail.dtd")        || die ("$dest/annealmail.dtd not found\n");
+(-f "$from/annealmail.properties") || die ("$from/annealmail.properties not found\n");
+(-f "$dest/annealmail.properties") || die ("$dest/annealmail.properties not found\n");
 
-my $endtd = loaddtd("$from/enigmail.dtd");
-my $frdtd = loaddtd("$dest/enigmail.dtd");
+my $endtd = loaddtd("$from/annealmail.dtd");
+my $frdtd = loaddtd("$dest/annealmail.dtd");
 
-print "+ Writing $dest/enigmail.dtd\n";
-open(OUT, ">$dest/enigmail.dtd.gen")  || die "Cannot write to $dest/enigmail.dtd";
+print "+ Writing $dest/annealmail.dtd\n";
+open(OUT, ">$dest/annealmail.dtd.gen")  || die "Cannot write to $dest/annealmail.dtd";
 
 for my $ind (sort keys %$endtd) {
 
@@ -141,11 +141,11 @@ for my $ind (sort keys %$endtd) {
 
 close(OUT);
 
-my $enprop = loadprop("$from/enigmail.properties");
-my $frprop = loadprop("$dest/enigmail.properties");
+my $enprop = loadprop("$from/annealmail.properties");
+my $frprop = loadprop("$dest/annealmail.properties");
 
-print "+ Writing $dest/enigmail.properties\n";
-open(OUT, ">$dest/enigmail.properties.gen") || die "Cannot write to $dest/enigmail.properties";
+print "+ Writing $dest/annealmail.properties\n";
+open(OUT, ">$dest/annealmail.properties.gen") || die "Cannot write to $dest/annealmail.properties";
 for my $ind (sort keys %$enprop) {
   if ($frprop->{$ind}) {
     print OUT "$frprop->{$ind}\n";

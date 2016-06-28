@@ -6,4 +6,4 @@
  */
 
 // the subprocess tests
-do_subtest("enigmailMsgComposeOverlay-test.js");
+do_subtest("annealmailMsgComposeOverlay-test.js");

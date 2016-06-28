@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailLocale: false, EnigmailData: false, EnigmailCore: false */
+/*global Components: false, AnnealMailLog: false, AnnealMailLocale: false, AnnealMailData: false, AnnealMailCore: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,52 +8,52 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
+var EXPORTED_SYMBOLS = ["AnnealMailErrorHandling"];
 
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/system.jsm"); /* global EnigmailSystem: false */
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
-const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
+Cu.import("resource://annealmail/log.jsm");
+Cu.import("resource://annealmail/locale.jsm");
+Cu.import("resource://annealmail/data.jsm");
+Cu.import("resource://annealmail/core.jsm");
+Cu.import("resource://annealmail/system.jsm"); /* global AnnealMailSystem: false */
+Cu.import("resource://annealmail/lazy.jsm"); /* global AnnealMailLazy: false */
+const getAnnealMailKeyRing = AnnealMailLazy.loader("annealmail/keyRing.jsm", "AnnealMailKeyRing");
 
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
 const gStatusFlags = {
-  GOODSIG: nsIEnigmail.GOOD_SIGNATURE,
-  BADSIG: nsIEnigmail.BAD_SIGNATURE,
-  ERRSIG: nsIEnigmail.UNVERIFIED_SIGNATURE,
-  EXPSIG: nsIEnigmail.EXPIRED_SIGNATURE,
-  REVKEYSIG: nsIEnigmail.GOOD_SIGNATURE,
-  EXPKEYSIG: nsIEnigmail.EXPIRED_KEY_SIGNATURE,
-  KEYEXPIRED: nsIEnigmail.EXPIRED_KEY,
-  KEYREVOKED: nsIEnigmail.REVOKED_KEY,
-  NO_PUBKEY: nsIEnigmail.NO_PUBKEY,
-  NO_SECKEY: nsIEnigmail.NO_SECKEY,
-  IMPORTED: nsIEnigmail.IMPORTED_KEY,
-  INV_RECP: nsIEnigmail.INVALID_RECIPIENT,
-  MISSING_PASSPHRASE: nsIEnigmail.MISSING_PASSPHRASE,
-  BAD_PASSPHRASE: nsIEnigmail.BAD_PASSPHRASE,
-  BADARMOR: nsIEnigmail.BAD_ARMOR,
-  NODATA: nsIEnigmail.NODATA,
-  ERROR: nsIEnigmail.BAD_SIGNATURE | nsIEnigmail.DECRYPTION_FAILED,
-  DECRYPTION_FAILED: nsIEnigmail.DECRYPTION_FAILED,
-  DECRYPTION_OKAY: nsIEnigmail.DECRYPTION_OKAY,
-  TRUST_UNDEFINED: nsIEnigmail.UNTRUSTED_IDENTITY,
-  TRUST_NEVER: nsIEnigmail.UNTRUSTED_IDENTITY,
-  TRUST_MARGINAL: nsIEnigmail.UNTRUSTED_IDENTITY,
-  TRUST_FULLY: nsIEnigmail.TRUSTED_IDENTITY,
-  TRUST_ULTIMATE: nsIEnigmail.TRUSTED_IDENTITY,
-  CARDCTRL: nsIEnigmail.CARDCTRL,
-  SC_OP_FAILURE: nsIEnigmail.SC_OP_FAILURE,
-  UNKNOWN_ALGO: nsIEnigmail.UNKNOWN_ALGO,
-  SIG_CREATED: nsIEnigmail.SIG_CREATED,
-  END_ENCRYPTION: nsIEnigmail.END_ENCRYPTION,
+  GOODSIG: nsIAnnealMail.GOOD_SIGNATURE,
+  BADSIG: nsIAnnealMail.BAD_SIGNATURE,
+  ERRSIG: nsIAnnealMail.UNVERIFIED_SIGNATURE,
+  EXPSIG: nsIAnnealMail.EXPIRED_SIGNATURE,
+  REVKEYSIG: nsIAnnealMail.GOOD_SIGNATURE,
+  EXPKEYSIG: nsIAnnealMail.EXPIRED_KEY_SIGNATURE,
+  KEYEXPIRED: nsIAnnealMail.EXPIRED_KEY,
+  KEYREVOKED: nsIAnnealMail.REVOKED_KEY,
+  NO_PUBKEY: nsIAnnealMail.NO_PUBKEY,
+  NO_SECKEY: nsIAnnealMail.NO_SECKEY,
+  IMPORTED: nsIAnnealMail.IMPORTED_KEY,
+  INV_RECP: nsIAnnealMail.INVALID_RECIPIENT,
+  MISSING_PASSPHRASE: nsIAnnealMail.MISSING_PASSPHRASE,
+  BAD_PASSPHRASE: nsIAnnealMail.BAD_PASSPHRASE,
+  BADARMOR: nsIAnnealMail.BAD_ARMOR,
+  NODATA: nsIAnnealMail.NODATA,
+  ERROR: nsIAnnealMail.BAD_SIGNATURE | nsIAnnealMail.DECRYPTION_FAILED,
+  DECRYPTION_FAILED: nsIAnnealMail.DECRYPTION_FAILED,
+  DECRYPTION_OKAY: nsIAnnealMail.DECRYPTION_OKAY,
+  TRUST_UNDEFINED: nsIAnnealMail.UNTRUSTED_IDENTITY,
+  TRUST_NEVER: nsIAnnealMail.UNTRUSTED_IDENTITY,
+  TRUST_MARGINAL: nsIAnnealMail.UNTRUSTED_IDENTITY,
+  TRUST_FULLY: nsIAnnealMail.TRUSTED_IDENTITY,
+  TRUST_ULTIMATE: nsIAnnealMail.TRUSTED_IDENTITY,
+  CARDCTRL: nsIAnnealMail.CARDCTRL,
+  SC_OP_FAILURE: nsIAnnealMail.SC_OP_FAILURE,
+  UNKNOWN_ALGO: nsIAnnealMail.UNKNOWN_ALGO,
+  SIG_CREATED: nsIAnnealMail.SIG_CREATED,
+  END_ENCRYPTION: nsIAnnealMail.END_ENCRYPTION,
   INV_SGNR: 0x100000000,
   IMPORT_OK: 0x200000000,
   FAILURE: 0x400000000
@@ -111,36 +111,36 @@ function handleErrorCode(c, errorNumber) {
       case 78: // agent error
       case 80: // assuan server fault
       case 81: // assuan error
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:get_passphrase ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = AnnealMailLocale.getString("errorHandling.gpgAgentError") + "\n\n" + AnnealMailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case 85: // no pinentry
       case 86: // pinentry error
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:get_passphrase ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = AnnealMailLocale.getString("errorHandling.pinentryError") + "\n\n" + AnnealMailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case 92: // no dirmngr
       case 93: // dirmngr error
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:get_passphrase ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.dirmngrError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = AnnealMailLocale.getString("errorHandling.dirmngrError") + "\n\n" + AnnealMailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case 2:
       case 3:
       case 149:
       case 188:
-        c.statusFlags |= Ci.nsIEnigmail.UNKNOWN_ALGO;
+        c.statusFlags |= Ci.nsIAnnealMail.UNKNOWN_ALGO;
         break;
       case 15:
-        c.statusFlags |= Ci.nsIEnigmail.BAD_ARMOR;
+        c.statusFlags |= Ci.nsIAnnealMail.BAD_ARMOR;
         break;
       case 58:
-        c.statusFlags |= Ci.nsIEnigmail.NODATA;
+        c.statusFlags |= Ci.nsIAnnealMail.NODATA;
         break;
     }
   }
@@ -156,14 +156,14 @@ function handleErrorCode(c, errorNumber) {
  */
 function handleError(c) {
   /*
-    check_hijacking: gpg-agent was hijacked by some other process (like gnome-keyring)
+    check_hijacking: ccr-agent was hijacked by some other process (like gnome-keyring)
     proc_pkt.plaintext: multiple plaintexts seen
     pkdecrypt_failed: public key decryption failed
     keyedit.passwd: error changing the passphrase
     card_key_generate: key generation failed (card)
     key_generate: key generation failed
     keyserver_send: keyserver send failed
-    get_passphrase: gpg-agent cannot query the passphrase from pinentry (GnuPG 2.0.x)
+    get_passphrase: ccr-agent cannot query the passphrase from pinentry (GnuPG 2.0.x)
   */
 
   var lineSplit = c.statusLine.split(/ +/);
@@ -177,15 +177,15 @@ function handleError(c) {
 
     switch (lineSplit[1]) {
       case "check_hijacking":
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:invalid_gpg_agent ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentInvalid") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = AnnealMailLocale.getString("errorHandling.gpgAgentInvalid") + "\n\n" + AnnealMailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case "get_passphrase":
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:get_passphrase ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = AnnealMailLocale.getString("errorHandling.pinentryError") + "\n\n" + AnnealMailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case "proc_pkt.plaintext":
@@ -226,22 +226,22 @@ function failureMessage(c) {
 }
 
 function missingPassphrase(c) {
-  c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
-  if (c.retStatusObj.statusMsg.indexOf(EnigmailLocale.getString("missingPassphrase")) < 0) {
-    c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+  c.statusFlags |= Ci.nsIAnnealMail.MISSING_PASSPHRASE;
+  if (c.retStatusObj.statusMsg.indexOf(AnnealMailLocale.getString("missingPassphrase")) < 0) {
+    c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
     c.flag = 0;
-    EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase\n");
-    c.retStatusObj.statusMsg += EnigmailLocale.getString("missingPassphrase") + "\n";
+    AnnealMailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase\n");
+    c.retStatusObj.statusMsg += AnnealMailLocale.getString("missingPassphrase") + "\n";
   }
 }
 
 function badPassphrase(c) {
-  c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
-  if (!(c.statusFlags & Ci.nsIEnigmail.BAD_PASSPHRASE)) {
-    c.statusFlags |= Ci.nsIEnigmail.BAD_PASSPHRASE;
+  c.statusFlags |= Ci.nsIAnnealMail.MISSING_PASSPHRASE;
+  if (!(c.statusFlags & Ci.nsIAnnealMail.BAD_PASSPHRASE)) {
+    c.statusFlags |= Ci.nsIAnnealMail.BAD_PASSPHRASE;
     c.flag = 0;
-    EnigmailLog.DEBUG("errorHandling.jsm: badPassphrase: bad passphrase\n");
-    c.retStatusObj.statusMsg += EnigmailLocale.getString("badPhrase") + "\n";
+    AnnealMailLog.DEBUG("errorHandling.jsm: badPassphrase: bad passphrase\n");
+    c.retStatusObj.statusMsg += AnnealMailLocale.getString("badPhrase") + "\n";
   }
 }
 
@@ -249,50 +249,50 @@ function badPassphrase(c) {
 function invalidSignature(c) {
   if (c.isError) return;
   var lineSplit = c.statusLine.split(/ +/);
-  c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+  c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
   c.flag = 0;
 
   let keySpec = lineSplit[2];
 
   if (keySpec) {
-    EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid sender " + keySpec + " / code: " + lineSplit[1] + "\n");
-    c.retStatusObj.errorMsg += EnigmailErrorHandling.determineInvSignReason(keySpec);
+    AnnealMailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid sender " + keySpec + " / code: " + lineSplit[1] + "\n");
+    c.retStatusObj.errorMsg += AnnealMailErrorHandling.determineInvSignReason(keySpec);
   }
 }
 
 function invalidRecipient(c) {
   if (c.isError) return;
   var lineSplit = c.statusLine.split(/ +/);
-  c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+  c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
   c.flag = 0;
 
   let keySpec = lineSplit[2];
 
   if (keySpec) {
-    EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid recipient " + keySpec + " / code: " + lineSplit[1] + "\n");
-    c.retStatusObj.errorMsg += EnigmailErrorHandling.determineInvRcptReason(keySpec);
+    AnnealMailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid recipient " + keySpec + " / code: " + lineSplit[1] + "\n");
+    c.retStatusObj.errorMsg += AnnealMailErrorHandling.determineInvRcptReason(keySpec);
   }
 }
 
 function importOk(c) {
   var lineSplit = c.statusLine.split(/ +/);
   if (lineSplit.length > 1) {
-    EnigmailLog.DEBUG("errorHandling.jsm: importOk: key imported: " + lineSplit[2] + "\n");
+    AnnealMailLog.DEBUG("errorHandling.jsm: importOk: key imported: " + lineSplit[2] + "\n");
   }
   else {
-    EnigmailLog.DEBUG("errorHandling.jsm: importOk: key without FPR imported\n");
+    AnnealMailLog.DEBUG("errorHandling.jsm: importOk: key without FPR imported\n");
   }
 
   let importFlag = Number(lineSplit[1]);
   if (importFlag & (1 | 2 | 8)) {
-    EnigmailCore.getKeyRing().clearCache();
+    AnnealMailCore.getKeyRing().clearCache();
   }
 }
 
 function unverifiedSignature(c) {
   var lineSplit = c.statusLine.split(/ +/);
   if (lineSplit.length > 7 && lineSplit[7] == "4") {
-    c.flag = Ci.nsIEnigmail.UNKNOWN_ALGO;
+    c.flag = Ci.nsIAnnealMail.UNKNOWN_ALGO;
   }
 }
 
@@ -320,12 +320,12 @@ function cardControl(c) {
 
 function setupFailureLookup() {
   var result = {};
-  result[Ci.nsIEnigmail.DECRYPTION_FAILED] = decryptionFailed;
-  result[Ci.nsIEnigmail.NODATA] = noData;
-  result[Ci.nsIEnigmail.CARDCTRL] = cardControl;
-  result[Ci.nsIEnigmail.UNVERIFIED_SIGNATURE] = unverifiedSignature;
-  result[Ci.nsIEnigmail.MISSING_PASSPHRASE] = missingPassphrase;
-  result[Ci.nsIEnigmail.BAD_PASSPHRASE] = badPassphrase;
+  result[Ci.nsIAnnealMail.DECRYPTION_FAILED] = decryptionFailed;
+  result[Ci.nsIAnnealMail.NODATA] = noData;
+  result[Ci.nsIAnnealMail.CARDCTRL] = cardControl;
+  result[Ci.nsIAnnealMail.UNVERIFIED_SIGNATURE] = unverifiedSignature;
+  result[Ci.nsIAnnealMail.MISSING_PASSPHRASE] = missingPassphrase;
+  result[Ci.nsIAnnealMail.BAD_PASSPHRASE] = badPassphrase;
   result[gStatusFlags.INV_RECP] = invalidRecipient;
   result[gStatusFlags.INV_SGNR] = invalidSignature;
   result[gStatusFlags.IMPORT_OK] = importOk;
@@ -433,7 +433,7 @@ function detectForgedInsets(c) {
     }
   }
   if (c.plaintextCount > 1) {
-    c.statusFlags |= (Ci.nsIEnigmail.PARTIALLY_PGP | Ci.nsIEnigmail.DECRYPTION_FAILED | Ci.nsIEnigmail.BAD_SIGNATURE);
+    c.statusFlags |= (Ci.nsIAnnealMail.PARTIALLY_PGP | Ci.nsIAnnealMail.DECRYPTION_FAILED | Ci.nsIAnnealMail.BAD_SIGNATURE);
   }
 }
 
@@ -442,27 +442,27 @@ function buildErrorMessageForCardCtrl(c, errCode, detectedCard) {
   switch (errCode) {
     case 1:
       if (detectedCard) {
-        errorMsg = EnigmailLocale.getString("sc.wrongCardAvailable", [c.detectedCard, c.requestedCard]);
+        errorMsg = AnnealMailLocale.getString("sc.wrongCardAvailable", [c.detectedCard, c.requestedCard]);
       }
       else {
-        errorMsg = EnigmailLocale.getString("sc.insertCard", [c.requestedCard]);
+        errorMsg = AnnealMailLocale.getString("sc.insertCard", [c.requestedCard]);
       }
       break;
     case 2:
-      errorMsg = EnigmailLocale.getString("sc.removeCard");
+      errorMsg = AnnealMailLocale.getString("sc.removeCard");
       break;
     case 4:
-      errorMsg = EnigmailLocale.getString("sc.noCardAvailable");
+      errorMsg = AnnealMailLocale.getString("sc.noCardAvailable");
       break;
     case 5:
-      errorMsg = EnigmailLocale.getString("sc.noReaderAvailable");
+      errorMsg = AnnealMailLocale.getString("sc.noReaderAvailable");
       break;
   }
   return errorMsg;
 }
 
 function parseErrorOutputWith(c) {
-  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: status message: \n" + c.errOutput + "\n");
+  AnnealMailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: status message: \n" + c.errOutput + "\n");
 
   c.errLines = splitErrorOutput(c.errOutput);
   c.isError = false; // set to true if a hard error was found
@@ -482,24 +482,24 @@ function parseErrorOutputWith(c) {
   if (c.retStatusObj.statusMsg.length === 0) c.retStatusObj.statusMsg = c.statusArray.join("\n");
   if (c.errorMsg.length === 0) {
     c.errorMsg = c.errArray.map(function f(str, idx) {
-      return EnigmailSystem.convertNativeToUnicode(str);
-    }, EnigmailSystem).join("\n");
+      return AnnealMailSystem.convertNativeToUnicode(str);
+    }, AnnealMailSystem).join("\n");
   }
   else {
-    c.errorMsg = EnigmailSystem.convertNativeToUnicode(c.errorMsg);
+    c.errorMsg = AnnealMailSystem.convertNativeToUnicode(c.errorMsg);
   }
 
-  if ((c.statusFlags & Ci.nsIEnigmail.CARDCTRL) && c.errCode > 0) {
+  if ((c.statusFlags & Ci.nsIAnnealMail.CARDCTRL) && c.errCode > 0) {
     c.errorMsg = buildErrorMessageForCardCtrl(c, c.errCode, c.detectedCard);
-    c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+    c.statusFlags |= Ci.nsIAnnealMail.DISPLAY_MESSAGE;
   }
 
-  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: statusFlags = " + EnigmailData.bytesToHex(EnigmailData.pack(c.statusFlags, 4)) + "\n");
-  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: return with c.errorMsg = " + c.errorMsg + "\n");
+  AnnealMailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: statusFlags = " + AnnealMailData.bytesToHex(AnnealMailData.pack(c.statusFlags, 4)) + "\n");
+  AnnealMailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: return with c.errorMsg = " + c.errorMsg + "\n");
   return c.errorMsg;
 }
 
-var EnigmailErrorHandling = {
+var AnnealMailErrorHandling = {
   parseErrorOutput: function(errOutput, retStatusObj) {
     var context = newContext(errOutput, retStatusObj);
     return parseErrorOutputWith(context);
@@ -514,14 +514,14 @@ var EnigmailErrorHandling = {
    *                  "" in case the key is valid
    */
   determineInvSignReason: function(keySpec) {
-    EnigmailLog.DEBUG("errorHandling.jsm: determineInvSignReason: keySpec: " + keySpec + "\n");
+    AnnealMailLog.DEBUG("errorHandling.jsm: determineInvSignReason: keySpec: " + keySpec + "\n");
 
     let reasonMsg = "";
 
     if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
-      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      let key = getAnnealMailKeyRing().getKeyById(keySpec);
       if (!key) {
-        reasonMsg = EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+        reasonMsg = AnnealMailLocale.getString("keyError.keyIdNotFound", keySpec);
       }
       else {
         let r = key.getSigningValidity();
@@ -529,9 +529,9 @@ var EnigmailErrorHandling = {
       }
     }
     else {
-      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      let keys = getAnnealMailKeyRing().getKeysByUserId(keySpec);
       if (!keys || keys.length === 0) {
-        reasonMsg = EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+        reasonMsg = AnnealMailLocale.getString("keyError.keySpecNotFound", keySpec);
       }
       else {
         for (let i in keys) {
@@ -553,14 +553,14 @@ var EnigmailErrorHandling = {
    *                  "" in case the key is valid
    */
   determineInvRcptReason: function(keySpec) {
-    EnigmailLog.DEBUG("errorHandling.jsm: determineInvRcptReason: keySpec: " + keySpec + "\n");
+    AnnealMailLog.DEBUG("errorHandling.jsm: determineInvRcptReason: keySpec: " + keySpec + "\n");
 
     let reasonMsg = "";
 
     if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
-      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      let key = getAnnealMailKeyRing().getKeyById(keySpec);
       if (!key) {
-        reasonMsg = EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+        reasonMsg = AnnealMailLocale.getString("keyError.keyIdNotFound", keySpec);
       }
       else {
         let r = key.getEncryptionValidity();
@@ -568,9 +568,9 @@ var EnigmailErrorHandling = {
       }
     }
     else {
-      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      let keys = getAnnealMailKeyRing().getKeysByUserId(keySpec);
       if (!keys || keys.length === 0) {
-        reasonMsg = EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+        reasonMsg = AnnealMailLocale.getString("keyError.keySpecNotFound", keySpec);
       }
       else {
         for (let i in keys) {

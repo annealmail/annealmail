@@ -1,5 +1,5 @@
-/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, withTestGpgHome:false */
-/*global Ec: false, Cc: false, Ci: false, do_print: false, EnigmailCore: false, EnigmailKeyEditor: false, Components: false, component: false, EnigmailPrefs: false, EnigmailExecution: false */
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, withTestCcrHome:false */
+/*global Ec: false, Cc: false, Ci: false, do_print: false, AnnealMailCore: false, AnnealMailKeyEditor: false, Components: false, component: false, AnnealMailPrefs: false, AnnealMailExecution: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,13 +9,13 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withAnnealMail: false */
 
 testing("keyEditor.jsm"); /*global editKey: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/time.jsm"); /*global EnigmailTime: false */
+component("annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+component("annealmail/time.jsm"); /*global AnnealMailTime: false */
 
-test(withTestGpgHome(withEnigmail(function shouldEditKey() {
+test(withTestCcrHome(withAnnealMail(function shouldEditKey() {
   importKeys();
   do_test_pending();
   var window = JSUnit.createStubWindow();
@@ -42,11 +42,11 @@ test(withTestGpgHome(withEnigmail(function shouldEditKey() {
   );
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldSetTrust() {
+test(withTestCcrHome(withAnnealMail(function shouldSetTrust() {
   importKeys();
   do_test_pending();
   var window = JSUnit.createStubWindow();
-  EnigmailKeyEditor.setKeyTrust(window,
+  AnnealMailKeyEditor.setKeyTrust(window,
     "781617319CE311C4",
     5,
     function(exitCode, errorMsg) {
@@ -57,11 +57,11 @@ test(withTestGpgHome(withEnigmail(function shouldSetTrust() {
   );
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldSignKey() {
+test(withTestCcrHome(withAnnealMail(function shouldSignKey() {
   importKeys();
   do_test_pending();
   var window = JSUnit.createStubWindow();
-  EnigmailKeyEditor.signKey(window,
+  AnnealMailKeyEditor.signKey(window,
     "anonymous strike <strike.devtest@gmail.com>",
     "781617319CE311C4",
     false,
@@ -74,21 +74,21 @@ test(withTestGpgHome(withEnigmail(function shouldSignKey() {
   );
 })));
 
-test(withTestGpgHome(function importKeyForEdit() {
+test(withTestCcrHome(function importKeyForEdit() {
   const result = importKeys();
   Assert.equal(result[0], 0);
   Assert.equal(result[1], 0);
 }));
 
 
-test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
+test(withTestCcrHome(withAnnealMail(function shouldGetSecretKeys() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
   const window = JSUnit.createStubWindow();
-  const importResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
+  const importResult = AnnealMailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
 
-  const createDate = EnigmailTime.getDateTime(1430756251, true, false);
+  const createDate = AnnealMailTime.getDateTime(1430756251, true, false);
 
   const expectedKey = [{
     userId: "anonymous strike <strike.devtest@gmail.com>",
@@ -97,11 +97,11 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
     keyTrust: "u"
   }];
   do_test_pending();
-  EnigmailKeyEditor.setKeyTrust(window,
+  AnnealMailKeyEditor.setKeyTrust(window,
     "781617319CE311C4",
     5,
     function() {
-      let result = EnigmailKeyRing.getAllSecretKeys();
+      let result = AnnealMailKeyRing.getAllSecretKeys();
       Assert.equal(result.length, 1);
       Assert.equal(result[0].userId, expectedKey[0].userId);
       Assert.equal(result[0].keyId, expectedKey[0].keyId);
@@ -116,8 +116,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
 test(function shouldDoErrorHandling() {
   let nextCmd = "";
 
-  /* global GpgEditorInterface: false */
-  let editor = new GpgEditorInterface(null, null, "");
+  /* global CcrEditorInterface: false */
+  let editor = new CcrEditorInterface(null, null, "");
   editor._stdin = {
     write: function processStdin(data) {
       nextCmd = data;
@@ -135,7 +135,7 @@ function importKeys() {
   var secretKey = do_get_file("resources/dev-strike.sec", false);
   var errorMsgObj = {};
   var importedKeysObj = {};
-  var publicImportResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
-  var secretImportResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
+  var publicImportResult = AnnealMailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  var secretImportResult = AnnealMailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
   return [publicImportResult, secretImportResult];
 }

@@ -1,4 +1,4 @@
-/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, EnigmailFiles: false */
+/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, AnnealMailFiles: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -52,16 +52,16 @@ var TestHelper = {
     }
   },
 
-  initalizeGpgHome: function() {
-    component("enigmail/files.jsm");
-    var homedir = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
+  initalizeCcrHome: function() {
+    component("annealmail/files.jsm");
+    var homedir = osUtils.OS.Path.join(AnnealMailFiles.getTempDir(), ".gnupgTest");
     var workingDirectory = new osUtils.FileUtils.File(homedir);
     if (!workingDirectory.exists()) {
       workingDirectory.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 448);
     }
 
     var file = workingDirectory.clone();
-    file.append("gpg-agent.conf");
+    file.append("ccr-agent.conf");
     if (!file.exists()) {
       file.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 384);
     }
@@ -84,7 +84,7 @@ var TestHelper = {
     return homedir;
   },
 
-  removeGpgHome: function(homedir) {
+  removeCcrHome: function(homedir) {
     var workingDirectory = new osUtils.FileUtils.File(homedir);
 
     try {
@@ -103,8 +103,8 @@ var component = TestHelper.loadModule;
 var run_test = TestHelper.runTests;
 var test = TestHelper.registerTest;
 var resetting = TestHelper.resetting;
-var initalizeGpgHome = TestHelper.initalizeGpgHome;
-var removeGpgHome = TestHelper.removeGpgHome;
+var initalizeCcrHome = TestHelper.initalizeCcrHome;
+var removeCcrHome = TestHelper.removeCcrHome;
 
 function withEnvironment(vals, f) {
   var environment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
@@ -123,29 +123,29 @@ function withEnvironment(vals, f) {
   }
 }
 
-function withTestGpgHome(f) {
+function withTestCcrHome(f) {
   return function() {
-    const homedir = initalizeGpgHome();
+    const homedir = initalizeCcrHome();
     try {
       f();
     }
     finally {
-      removeGpgHome(homedir);
+      removeCcrHome(homedir);
     }
   };
 }
 
 /**
- * Create a test account called Enigmail Unit Test with 3 identities:
- * - user1@enigmail-test.net - uses a specific key ID
- * - user2@enigmail-test.net - determine key be Email addresses
- * - user3@enigmail-test.net - Enigmail disabled
- * - user4@enigmail-test.net - determine key be Email addresses
+ * Create a test account called AnnealMail Unit Test with 3 identities:
+ * - user1@annealmail-test.net - uses a specific key ID
+ * - user2@annealmail-test.net - determine key be Email addresses
+ * - user3@annealmail-test.net - AnnealMail disabled
+ * - user4@annealmail-test.net - determine key be Email addresses
  */
 
 function setupTestAccounts() {
 
-  const UNITTEST_ACCT_NAME = "Enigmail Unit Test";
+  const UNITTEST_ACCT_NAME = "AnnealMail Unit Test";
   const Cc = Components.classes;
   const Ci = Components.interfaces;
 
@@ -154,13 +154,13 @@ function setupTestAccounts() {
 
 
   function reportError() {
-    return "Your profile is not set up correctly for Enigmail Unit Tests\n" +
+    return "Your profile is not set up correctly for AnnealMail Unit Tests\n" +
       "Please ensure that your profile contains exactly one Account of type POP3.\n" +
       "The account name must be set to '" + UNITTEST_ACCT_NAME + "'.\n" +
       "Alternatively, you can simply delete all accounts except for the Local Folders\n";
   }
 
-  function setIdentityData(ac, idNumber, idName, fullName, email, useEnigmail, keyId) {
+  function setIdentityData(ac, idNumber, idName, fullName, email, useAnnealMail, keyId) {
 
     let id;
 
@@ -177,7 +177,7 @@ function setupTestAccounts() {
     id.fullName = fullName;
     id.email = email;
     id.composeHtml = true;
-    id.setBoolAttribute("enablePgp", useEnigmail);
+    id.setBoolAttribute("enablePgp", useAnnealMail);
 
     if (keyId) {
       id.setIntAttribute("pgpKeyMode", 1);
@@ -192,10 +192,10 @@ function setupTestAccounts() {
     is.performingBiff = false;
     is.loginAtStartUp = false;
 
-    setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", "user1@enigmail-test.net", true, "ABCDEF0123456789");
-    setIdentityData(ac, 2, "Enigmail Unit Test 2", "John Doe II.", "user2@enigmail-test.net", true);
-    setIdentityData(ac, 3, "Enigmail Unit Test 3", "John Doe III.", "user3@enigmail-test.net", false);
-    setIdentityData(ac, 4, "Enigmail Unit Test 4", "John Doe IV.", "user4@enigmail-test.net", true);
+    setIdentityData(ac, 1, "AnnealMail Unit Test 1", "John Doe I.", "user1@annealmail-test.net", true, "ABCDEF0123456789");
+    setIdentityData(ac, 2, "AnnealMail Unit Test 2", "John Doe II.", "user2@annealmail-test.net", true);
+    setIdentityData(ac, 3, "AnnealMail Unit Test 3", "John Doe III.", "user3@annealmail-test.net", false);
+    setIdentityData(ac, 4, "AnnealMail Unit Test 4", "John Doe IV.", "user4@annealmail-test.net", true);
   }
 
   for (let acct = 0; acct < accountManager.accounts.length; acct++) {
@@ -228,18 +228,18 @@ function setupTestAccounts() {
   }
 }
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-function withEnigmail(f) {
+Components.utils.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+function withAnnealMail(f) {
   return function() {
     try {
-      const enigmail = Components.classes["@mozdev.org/enigmail/enigmail;1"].
-      createInstance(Components.interfaces.nsIEnigmail);
+      const annealmail = Components.classes["@mozdev.org/annealmail/annealmail;1"].
+      createInstance(Components.interfaces.nsIAnnealMail);
       const window = JSUnit.createStubWindow();
-      enigmail.initialize(window, "");
-      return f(EnigmailCore.getEnigmailService(), window);
+      annealmail.initialize(window, "");
+      return f(AnnealMailCore.getAnnealMailService(), window);
     }
     finally {
-      EnigmailCore.setEnigmailService(null);
+      AnnealMailCore.setAnnealMailService(null);
     }
   };
 }

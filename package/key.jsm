@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKey"];
+var EXPORTED_SYMBOLS = ["AnnealMailKey"];
 
 const Cu = Components.utils;
 
@@ -16,15 +16,15 @@ const KEY_BLOCK_UNKNOWN = 0;
 const KEY_BLOCK_KEY = 1;
 const KEY_BLOCK_REVOCATION = 2;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/armor.jsm"); /*global AnnealMailArmor: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Cu.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Cu.import("resource://annealmail/lazy.jsm"); /*global AnnealMailLazy: false */
+const getKeyRing = AnnealMailLazy.loader("annealmail/keyRing.jsm", "AnnealMailKeyRing");
+const getDialog = AnnealMailLazy.loader("annealmail/dialog.jsm", "AnnealMailDialog");
 
 
 function KeyEntry(key) {
@@ -76,7 +76,7 @@ KeyEntry.prototype = {
     }
     var lines = key.split("\n");
     for (var i in lines) {
-      if (!lines[i].startsWith("gpg:")) extractPackets(lines[i]);
+      if (!lines[i].startsWith("ccr:")) extractPackets(lines[i]);
     }
     return _packets;
   },
@@ -108,7 +108,7 @@ KeyEntry.prototype = {
   }
 };
 
-var EnigmailKey = {
+var AnnealMailKey = {
   Entry: KeyEntry,
 
   /**
@@ -118,7 +118,7 @@ var EnigmailKey = {
    * @return |string| - formatted string
    */
   formatFpr: function(fingerprint) {
-    //EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
+    //AnnealMailLog.DEBUG("key.jsm: AnnealMailKey.formatFpr(" + fingerprint + ")\n");
     // format key fingerprint
     let r = "";
     const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
@@ -134,7 +134,7 @@ var EnigmailKey = {
   extractPubkey: function(statusMsg) {
     const matchb = statusMsg.match(/(^|\n)NO_PUBKEY (\w{8})(\w{8})/);
     if (matchb && (matchb.length > 3)) {
-      EnigmailLog.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x" + matchb[3] + "\n");
+      AnnealMailLog.DEBUG("annealmailCommon.jsm:: AnnealMail.extractPubkey: NO_PUBKEY 0x" + matchb[3] + "\n");
       return matchb[2] + matchb[3];
     }
     else {
@@ -158,14 +158,14 @@ var EnigmailKey = {
       if (key) {
         if (key.keyTrust==="r") {
           // Key has already been revoked
-          getDialog().alert(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId.substr(-8, 8)));
+          getDialog().alert(null, AnnealMailLocale.getString("revokeKeyAlreadyRevoked", keyId.substr(-8, 8)));
         }
         else {
 
           let userId = key.userId + " - 0x" + key.keyId.substr(-8, 8);
           if (!getDialog().confirmDlg(null,
-              EnigmailLocale.getString("revokeKeyQuestion", userId),
-              EnigmailLocale.getString("keyMan.button.revokeKey"))) {
+              AnnealMailLocale.getString("revokeKeyQuestion", userId),
+              AnnealMailLocale.getString("keyMan.button.revokeKey"))) {
             return;
           }
 
@@ -177,7 +177,7 @@ var EnigmailKey = {
       }
       else {
         // Suitable key for revocation certificate is not present in keyring
-        getDialog().alert(null, EnigmailLocale.getString("revokeKeyNotPresent", keyId.substr(-8, 8)));
+        getDialog().alert(null, AnnealMailLocale.getString("revokeKeyNotPresent", keyId.substr(-8, 8)));
       }
     }
   },
@@ -195,12 +195,12 @@ var EnigmailKey = {
    *    - packetStr - String: the packet list as received from GnuPG
    */
   getKeyFileType: function(keyBlockStr) {
-    let args = EnigmailGpg.getStandardArgs(true).concat("--list-packets");
+    let args = AnnealMailCcr.getStandardArgs(true).concat("--list-packets");
     const exitCodeObj = {};
     const statusMsgObj = {};
     const errorMsgObj = {};
 
-    let packetStr = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
+    let packetStr = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
 
     if (packetStr.search(/^:(public|secret) key packet:/m) >= 0) {
       return {
@@ -243,7 +243,7 @@ var EnigmailKey = {
     let keyTypeObj = this.getKeyFileType(keyBlockStr);
 
     if (keyTypeObj.keyType === KEY_BLOCK_UNKNOWN) {
-      errorMsgObj.value = EnigmailLocale.getString("notFirstBlock");
+      errorMsgObj.value = AnnealMailLocale.getString("notFirstBlock");
       return ret;
     }
 
@@ -253,9 +253,9 @@ var EnigmailKey = {
       return ret;
     }
 
-    const tempDir = EnigmailFiles.createTempSubDir("enigmail_import");
-    const tempPath = EnigmailFiles.getFilePath(tempDir);
-    const args = EnigmailGpg.getStandardArgs(true).concat([
+    const tempDir = AnnealMailFiles.createTempSubDir("annealmail_import");
+    const tempPath = AnnealMailFiles.getFilePath(tempDir);
+    const args = AnnealMailCcr.getStandardArgs(true).concat([
       "--import",
       "--trustdb", tempPath + "/trustdb",
       "--no-default-keyring", "--keyring", tempPath + "/keyring"
@@ -264,7 +264,7 @@ var EnigmailKey = {
     const exitCodeObj = {};
     const statusMsgObj = {};
 
-    EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
+    AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
 
     const statusMsg = statusMsgObj.value;
 
@@ -278,7 +278,7 @@ var EnigmailKey = {
 
     while (state != "end") {
       if (idx >= lines.length) {
-        errorMsgObj.value = EnigmailLocale.getString("cantImport");
+        errorMsgObj.value = AnnealMailLocale.getString("cantImport");
         return [];
       }
 
@@ -286,19 +286,19 @@ var EnigmailKey = {
       keyexpired = lines[idx].match(/^KEYEXPIRED/);
 
       while (keyexpired && (keyexpired.length > 0) && (idx < (lines.length - 1))) {
-        EnigmailLog.DEBUG("Ignoring KEYEXPIRED line: '" + lines[idx] + "'\n");
+        AnnealMailLog.DEBUG("Ignoring KEYEXPIRED line: '" + lines[idx] + "'\n");
         idx += 1;
         keyexpired = lines[idx].match(/^KEYEXPIRED/);
       }
 
-      EnigmailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
+      AnnealMailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
 
       switch (state) {
         case "newOrResult":
           {
             const imported = lines[idx].match(/^IMPORTED (\w+) (.+)/);
             if (imported && (imported.length > 2)) {
-              EnigmailLog.DEBUG("new imported: " + imported[1] + " (" + imported[2] + ")\n");
+              AnnealMailLog.DEBUG("new imported: " + imported[1] + " (" + imported[2] + ")\n");
               state = "summary";
               cur.id = imported[1];
               cur.name = imported[2];
@@ -309,7 +309,7 @@ var EnigmailKey = {
 
             const import_res = lines[idx].match(/^IMPORT_RES ([0-9 ]+)/);
             if (import_res && (import_res.length > 1)) {
-              EnigmailLog.DEBUG("import result: " + import_res[1] + "\n");
+              AnnealMailLog.DEBUG("import result: " + import_res[1] + "\n");
               state = "end";
             }
             else {
@@ -323,7 +323,7 @@ var EnigmailKey = {
           {
             const import_ok = lines[idx].match(/^IMPORT_OK (\d+) (\w+)/);
             if (import_ok && (import_ok.length > 2)) {
-              EnigmailLog.DEBUG("import ok: " + import_ok[1] + " (" + import_ok[2] + ")\n");
+              AnnealMailLog.DEBUG("import ok: " + import_ok[1] + " (" + import_ok[2] + ")\n");
 
               state = "newOrResult";
               if (!(import_ok[1] === "16" || import_ok[1] === "0")) { // skip unchanged and private keys
@@ -342,7 +342,7 @@ var EnigmailKey = {
 
             const import_err = lines[idx].match(/^IMPORT_PROBLEM (\d+) (\w+)/);
             if (import_err && (import_err.length > 2)) {
-              EnigmailLog.DEBUG("import err: " + import_err[1] + " (" + import_err[2] + ")\n");
+              AnnealMailLog.DEBUG("import err: " + import_err[1] + " (" + import_err[2] + ")\n");
               state = "newOrResult";
               cur.fingerprint = import_err[2];
 
@@ -356,13 +356,13 @@ var EnigmailKey = {
               break;
             }
 
-            errorMsgObj.value = EnigmailLocale.getString("cantImport");
+            errorMsgObj.value = AnnealMailLocale.getString("cantImport");
             return [];
           }
 
         default:
           {
-            EnigmailLog.DEBUG("skip line '" + lines[idx] + "'\n");
+            AnnealMailLog.DEBUG("skip line '" + lines[idx] + "'\n");
             idx += 1;
             break;
           }
@@ -383,7 +383,7 @@ var EnigmailKey = {
    * @return Array (same as for getKeyListFromKeyBlock())
    */
   getKeyListFromKeyFile: function(path, errorMsgObj) {
-    var contents = EnigmailFiles.readFile(path);
+    var contents = AnnealMailFiles.readFile(path);
     return this.getKeyListFromKeyBlock(contents, errorMsgObj);
   }
 

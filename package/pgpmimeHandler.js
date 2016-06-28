@@ -11,11 +11,11 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
-Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Components.utils.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Components.utils.import("resource://annealmail/mimeDecrypt.jsm"); /*global AnnealMailMimeDecrypt: false */
+Components.utils.import("resource://annealmail/mimeVerify.jsm"); /*global AnnealMailVerify: false */
+Components.utils.import("resource://annealmail/mime.jsm"); /*global AnnealMailMime: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -62,7 +62,7 @@ UnknownProtoHandler.prototype = {
   onStartRequest: function(request) {
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.mimeSvc.onStartRequest(null, null);
-    this.bound = EnigmailMime.getBoundary(this.mimeSvc.contentType);
+    this.bound = AnnealMailMime.getBoundary(this.mimeSvc.contentType);
     /*
       readMode:
         0: before message
@@ -114,25 +114,25 @@ UnknownProtoHandler.prototype = {
 
 function PgpMimeHandler() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n"); // always log this one
+  AnnealMailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n"); // always log this one
 
 }
 
 PgpMimeHandler.prototype = {
-  classDescription: "Enigmail JS Decryption Handler",
+  classDescription: "AnnealMail JS Decryption Handler",
   classID: PGPMIME_JS_DECRYPTOR_CID,
   contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {
-    if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
+    if (!AnnealMailCore.getService()) // Ensure AnnealMail is initialized
       return null;
-    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
+    AnnealMailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
 
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
-    EnigmailLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
+    AnnealMailLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
 
     let cth = null;
 
@@ -142,12 +142,12 @@ PgpMimeHandler.prototype = {
         gLastEncryptedUri = u.spec;
       }
       // PGP/MIME encrypted message
-      cth = new EnigmailMimeDecrypt();
+      cth = new AnnealMailMimeDecrypt();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       if (ct.search(/application\/pgp-signature/i) > 0) {
         // PGP/MIME signed message
-        cth = EnigmailVerify.newVerifier();
+        cth = AnnealMailVerify.newVerifier();
       }
       else if (ct.search(/application\/(x-)?pkcs7-signature/i) > 0) {
         let lastUriSpec = "";
@@ -156,19 +156,19 @@ PgpMimeHandler.prototype = {
           lastUriSpec = u.spec;
         }
         // S/MIME signed message
-        if (lastUriSpec !== gLastEncryptedUri && EnigmailVerify.lastMsgWindow) {
+        if (lastUriSpec !== gLastEncryptedUri && AnnealMailVerify.lastMsgWindow) {
           // if message is displayed then handle like S/MIME message
           return this.handleSmime(uri);
         }
         else {
           // otherwise just make sure message body is returned
-          cth = EnigmailVerify.newVerifier("application/pkcs7-signature");
+          cth = AnnealMailVerify.newVerifier("application/pkcs7-signature");
         }
       }
     }
 
     if (!cth) {
-      EnigmailLog.ERROR("pgpmimeHandler.js: unknown protocol for content-type: " + ct + "\n");
+      AnnealMailLog.ERROR("pgpmimeHandler.js: unknown protocol for content-type: " + ct + "\n");
       cth = new UnknownProtoHandler();
     }
 
@@ -192,7 +192,7 @@ PgpMimeHandler.prototype = {
       uri = uri.QueryInterface(Ci.nsIURI).clone();
     }
 
-    let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+    let headerSink = AnnealMailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
     headerSink.handleSMimeMessage(uri);
   },
 

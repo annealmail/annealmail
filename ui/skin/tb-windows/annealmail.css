@@ -1,0 +1,594 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/**
+ * AnnealMail styles for Windows XP
+ */
+
+@import url("chrome://global/skin/");
+/* @import url("chrome://messenger/skin/"); */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+
+#button-annealmail-decrypt,
+[typeid="button-annealmail-decrypt"]
+  {
+    list-style-image : url("chrome://annealmail/skin/annealmail-toolbar.png");
+    -moz-image-region: rect(0px 24px 24px 0px);
+  }
+
+#button-annealmail-decrypt:hover,
+[typeid="button-annealmail-decrypt"]
+  {
+    -moz-image-region: rect(24px 24px 48px 0px);
+  }
+
+#button-annealmail-decrypt[disabled],
+[typeid="button-annealmail-decrypt"]
+  {
+    -moz-image-region: rect(48px 24px 72px 0px);
+  }
+
+toolbar[iconsize="small"]  #button-annealmail-decrypt
+  {
+    -moz-image-region: rect(0px 16px 16px 0px);
+    list-style-image      : url("chrome://annealmail/skin/annealmail-toolbar-small.png");
+  }
+
+toolbar[iconsize="small"] #button-annealmail-decrypt:hover
+  {
+    -moz-image-region: rect(16px 16px 32px 0px);
+  }
+
+toolbar[iconsize="small"] #button-annealmail-decrypt[disabled]
+  {
+    -moz-image-region: rect(32px 16px 48px 0px);
+  }
+
+/***************************************************
+ *  Icons for compose toolbar: encrytion
+ ***************************************************/
+
+#button-annealmail-encrypt
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-inactive-30.png");
+}
+
+/* hide label unless text-only mode is enabled */
+toolbar:not([mode="text"]) #button-annealmail-encrypt .toolbarbutton-text {
+  display: none;
+}
+
+
+#button-annealmail-encrypt[disabled] {
+  list-style-image : url("chrome://annealmail/skin/encrypt-disabled-30.png");
+}
+
+#button-annealmail-encrypt[encrypted="activeNone"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-active-30.png");
+}
+
+#button-annealmail-encrypt[encrypted="forceYes"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-active-force-30.png");
+}
+
+#button-annealmail-encrypt[encrypted="forceNo"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-inactive-force-30.png");
+}
+
+
+toolbar[iconsize="small"] #button-annealmail-encrypt
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-inactive-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-encrypt[disabled] {
+  list-style-image : url("chrome://annealmail/skin/encrypt-disabled-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-encrypt[encrypted="activeNone"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-active-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-encrypt[encrypted="forceYes"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-active-force-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-encrypt[encrypted="forceNo"]
+{
+  list-style-image : url("chrome://annealmail/skin/encrypt-inactive-force-16.png");
+}
+
+
+/***************************************************
+ *  Icons for compose toolbar: signing
+ ***************************************************/
+
+#button-annealmail-sign
+{
+  list-style-image : url("chrome://annealmail/skin/sign-inactive-30.png");
+}
+
+/* hide label unless text-only mode is enabled */
+toolbar:not([mode="text"]) #button-annealmail-sign .toolbarbutton-text {
+  display: none;
+}
+
+#button-annealmail-sign[disabled] {
+  list-style-image : url("chrome://annealmail/skin/sign-disabled-30.png");
+}
+
+#button-annealmail-sign[signed="activeNone"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-active-30.png");
+}
+
+#button-annealmail-sign[signed="forceYes"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-active-force-30.png");
+}
+
+#button-annealmail-sign[signed="forceNo"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-inactive-force-30.png");
+}
+
+
+toolbar[iconsize="small"] #button-annealmail-sign
+{
+  list-style-image : url("chrome://annealmail/skin/sign-inactive-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-sign[disabled] {
+  list-style-image : url("chrome://annealmail/skin/sign-disabled-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-sign[signed="activeNone"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-active-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-sign[signed="forceYes"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-active-force-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-sign[signed="forceNo"]
+{
+  list-style-image : url("chrome://annealmail/skin/sign-inactive-force-16.png");
+}
+
+/***************************************************
+ *  Icons for compose toolbar: attach own key
+ ***************************************************/
+
+#button-annealmail-attach
+{
+  list-style-image : url("chrome://annealmail/skin/attach-inactive-16.png");
+}
+
+#button-annealmail-attach[disabled] {
+  list-style-image : url("chrome://annealmail/skin/attach-disabled-16.png");
+}
+
+#button-annealmail-attach[addPubkey="true"]
+{
+  list-style-image : url("chrome://annealmail/skin/attach-active-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-attach
+{
+  list-style-image : url("chrome://annealmail/skin/attach-inactive-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-attach[disabled] {
+  list-style-image : url("chrome://annealmail/skin/attach-disabled-16.png");
+}
+
+toolbar[iconsize="small"] #button-annealmail-attach[addPubkey="true"]
+{
+  list-style-image : url("chrome://annealmail/skin/attach-active-16.png");
+}
+
+
+.action-box { width: 100px }
+
+#expandedAnnealMailBox {
+ background-color: #d8e0e8;
+ color: black;
+}
+
+.annealmailHeaderName {
+  color: #888a85; /* lower contrast, TB3 */
+  text-align: right;
+  background-color: transparent;
+  -moz-margin-end: 2px;
+}
+
+.annealmailHeaderValue {
+  min-width: 50px;
+  white-space: normal;
+  color: black;
+  line-height: 1.4em;
+
+  -moz-appearance: none !important;
+  -moz-appearance: none;
+
+  padding: 0px !important;
+  margin: 0px !important;
+  -moz-margin-start: 3px !important;
+  border: none !important;
+  background-color: transparent;
+}
+
+.annealmailHeaderSpacer {
+  width: 2px;
+}
+
+.annealmailHeaderBoxLabelNoSignature {
+  background-color:#d8e0e8;
+  color: black;
+}
+
+.annealmailHeaderBoxLabelSignatureOk {
+  background-color:#ccffcc;
+  color: black;
+}
+
+.annealmailHeaderBoxLabelSignatureVerified {
+  background-color:#ccffff;
+  color: black;
+}
+
+.annealmailHeaderBoxLabelSignatureNotOk {
+  background-color:#FFD8FE;
+  color: black;
+}
+
+.annealmailHeaderBoxLabelSignatureUnknown {
+  background-color:#FFFFC9;
+  color: black;
+}
+
+.annealmailHeaderBoxLabelBuggyMailFormat {
+  background-color:#FFD8FE;
+  color: black;
+}
+
+.annealmailLink {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+.annealmailStrong {
+  font-weight: bold;
+  color: red;
+}
+
+.annealmailUidInactive {
+  color: gray;
+  font-style: italic;
+}
+
+.enigMsgHdrView-flat-button {
+  min-width: 1px !important;
+  -moz-appearance: none;
+  color: black;
+  background-color: #DDDDDD;
+
+  border: 2px solid transparent;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0 2px;
+  border-radius: 2px;
+  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
+  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+  min-height: 1ex;
+}
+
+.enigMsgHdrView-flat-button:hover {
+  background-color: #CCCCCC;
+}
+
+.annealmailToolbar {
+  -moz-appearance: none;
+}
+
+/***************************************************
+ *  Icons for messenger status bar
+ ***************************************************/
+
+#annealmail-status-bar #annealmail-signed-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#annealmail-status-bar[signed="ok"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignOk.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="notok"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignNotOk.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="unknown"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignUnkown.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="inactive"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignInactive.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar #annealmail-encrypted-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#annealmail-status-bar[encrypted="ok"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncOk.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="notok"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncNotOk.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="inactive"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncInactive.png");
+  visibility: visible;
+}
+
+
+/***************************************************
+ *  Icons for compose status bar: signed states
+ ***************************************************/
+
+#annealmail-status-bar[signed="forceYes"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignForceYes.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="forceNo"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignForceNo.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="inactiveNone"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignInactiveNone.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="inactivePlus"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignInactivePlus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="inactiveMinus"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignInactiveMinus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="inactiveConflict"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignInactiveConflict.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="activeNone"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignActiveNone.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="activePlus"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignActivePlus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="activeMinus"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignActiveMinus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[signed="activeConflict"] #annealmail-signed-status {
+  list-style-image: url("chrome://annealmail/skin/enigSignActiveConflict.png");
+  visibility: visible;
+}
+
+/***************************************************
+ *  Icons for compose status bar: encrypted states
+ ***************************************************/
+
+#annealmail-status-bar[encrypted="forceYes"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncForceYes.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="forceNo"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncForceNo.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="activeNone"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncActiveNone.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="activePlus"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncActivePlus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="activeMinus"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncActiveMinus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="activeConflict"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncActiveConflict.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="inactiveNone"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncInactiveNone.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="inactivePlus"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncInactivePlus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="inactiveMinus"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncInactiveMinus.png");
+  visibility: visible;
+}
+
+#annealmail-status-bar[encrypted="inactiveConflict"] #annealmail-encrypted-status {
+  list-style-image: url("chrome://annealmail/skin/enigEncInactiveConflict.png");
+  visibility: visible;
+}
+
+
+.annealmailPrefsTitle {
+  font-weight: bold;
+  height: 25px;
+}
+
+.annealmailKeyImportHeader {
+	font-weight: bold;
+	color: #888;
+}
+
+.annealmailKeyImportCaption {
+	font-size: 2.5em;
+	color: green;
+}
+
+.annealmailKeyImportDetails {
+	color: blue;
+}
+
+.annealmailKeyImportDetails:hover {
+	text-decoration: underline;
+}
+
+treechildren::-moz-tree-cell-text(annealmailSubkeyTitle) {
+  font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(annealmailOwnKey) {
+  font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(enigKeyInactive) {
+  color: gray;
+  font-style: italic;
+}
+
+treechildren::-moz-tree-column(enigDontEncrypt) {
+  background-color: rgb(90%, 90%, 90%);
+}
+
+.annealmailExpandViewButton {
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://annealmail/skin/twisty-clsd.png");
+}
+
+.annealmailCollapseViewButton {
+  width: 9px; /* The image's width is 9 pixels */
+  list-style-image: url("chrome://annealmail/skin/twisty-open.png");
+
+}
+
+treechildren::-moz-tree-image(enigSignedEncrypted)
+{
+  list-style-image: url("chrome://annealmail/skin/col-encrypted-signed.png");
+}
+
+treechildren::-moz-tree-image(enigSigned)
+{
+  list-style-image: url("chrome://annealmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 24px 12px 12px);
+}
+
+treechildren::-moz-tree-image(enigEncrypted)
+{
+  list-style-image: url("chrome://annealmail/skin/col-encrypted-signed.png");
+    -moz-image-region: rect(0px 12px 12px 0px);
+}
+
+treechildren::-moz-tree-cell-text(fixedWidthFont) {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.annealmailWarningIcon {
+  list-style-image: url("chrome://annealmail/skin/warning-16.png");
+}
+
+/*
+   the following styles are available for the key trust
+   columnm in the key manager:
+    annealmail_keyValid_unknown
+    annealmail_keyValid_invalid
+    annealmail_keyValid_disabled
+    annealmail_keyValid_revoked
+    annealmail_keyValid_expired
+    annealmail_keyTrust_untrusted
+    annealmail_keyTrust_marginal
+    annealmail_keyTrust_full
+    annealmail_keyTrust_ultimate
+    annealmail_keyTrust_unknown
+
+They can be applied using:
+treechildren::-moz-tree-cell(STYLE) {}
+treechildren::-moz-tree-cell-text(STYLE) {}
+*/
+
+/******************************
+ *  Rules for filter actions
+ ******************************/
+
+.ruleactiontarget[type="annealmail@annealmail.net#filterActionMoveDecrypt"] {
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+}
+
+.ruleactiontarget[type="annealmail@annealmail.net#filterActionCopyDecrypt"] {
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+}
+
+/* a spinning wheel circle */
+.annealmailWheel {
+  list-style-image: url("chrome://annealmail/skin/spinning-wheel.png");
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.annealmailSpinning {
+  animation: annealmailDoRotation 1.4s infinite linear;
+  transform: translateZ(0);
+}
+
+@keyframes annealmailDoRotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

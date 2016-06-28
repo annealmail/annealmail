@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!--
+  This is the overlay that adds a menu and PGP buttons to the
+  messenger compose window
+-->
+
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % annealmailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealmailDTD;
+<!ENTITY % messengercomposeDTD SYSTEM "chrome://messenger/locale/messengercompose/messengercompose.dtd" >
+%messengercomposeDTD;
+]>
+
+<overlay id="enigMsgComposeOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailMsgComposeHelper.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailMsgComposeOverlay.js"/>
+
+ <commandset id="msgComposeCommandUpdate"
+              commandupdater="true"
+              events="focus"
+              oncommandupdate="AnnealMail.msg.focusChange()"/>
+
+  <broadcasterset id="composeBroadcasters">
+    <broadcaster id="annealmail-bc-encrypt" checked="false"/>
+    <broadcaster id="annealmail-bc-sign" checked="false"/>
+    <broadcaster id="annealmail-bc-attach" checked="false"/>
+    <broadcaster id="annealmail-bc-protectHdr" checked="false"/>
+    <broadcaster id="annealmail-bc-sendprocess"/>
+  </broadcasterset>
+
+  <command id="cmd_sendButton" observes="annealmail-bc-sendprocess"/>
+  <command id="cmd_sendNow" observes="annealmail-bc-sendprocess"/>
+  <command id="cmd_sendWithCheck" observes="annealmail-bc-sendprocess"/>
+  <command id="cmd_sendLater" observes="annealmail-bc-sendprocess"/>
+
+  <popupset id="aTooltipSet"/>
+
+  <keyset id="tasksKeys">
+    <key id="key_enigEncrypt" key="&annealmail.encryptedsend.key;"
+         oncommand="AnnealMail.msg.setFinalSendMode('toggle-final-encrypt')" modifiers="accel, shift"/>
+    <key id="key_enigSign" key="&annealmail.signedsend.key;"
+         oncommand="AnnealMail.msg.setFinalSendMode('toggle-final-sign')" modifiers="accel, shift"/>
+  </keyset>
+
+<!-- menu for all apps -->
+
+  <menubar id="mail-menubar">
+
+      <menu id="menu_AnnealMail"
+            label="&annealmail.label;"
+            accesskey="&annealmail.composemenu.accesskey;"
+            insertbefore="tasksMenu">
+
+        <menupopup id="menu_AnnealMailPopup"
+                   onpopupshowing="AnnealMailFuncs.collapseAdvanced(this, 'hidden', AnnealMail.msg.setMenuSettings(''))">
+
+          <!-- encryption state / toggle menu -->
+          <menuitem id="annealmail_compose_encrypt_item"
+                accesskey="&annealmail.encryptedsend.accesskey;"
+                label="&annealmail.encryptedsend.label;"
+                key="key_enigEncrypt"
+                type="checkbox"
+                oncommand="AnnealMail.msg.doPgpButton('toggle-final-encrypt');"/>
+
+          <!-- signing state / toggle menu -->
+          <menuitem id="annealmail_compose_sign_item"
+                accesskey="&annealmail.signedsend.accesskey;"
+                label="&annealmail.signedsend.label;"
+                key="key_enigSign"
+                type="checkbox"
+                oncommand="AnnealMail.msg.doPgpButton('toggle-final-sign');"/>
+
+          <!-- PGP/MIME state / toggle menu -->
+          <menuseparator/>
+          <menuitem id="annealmail_compose_pgpmime_item"
+                accesskey="&annealmail.usePgpMime.accesskey;"
+                label="&annealmail.usePgpMime.label;"
+                type="radio"
+                name="annealmailPgpProtocol"
+                oncommand="AnnealMail.msg.setFinalSendMode('final-pgpmimeYes');"/>
+
+          <menuitem id="annealmail_compose_inline_item"
+                accesskey="&annealmail.useInline.accesskey;"
+                label="&annealmail.useInline.label;"
+                name="annealmailPgpProtocol"
+                checked="false"
+                type="radio"
+                oncommand="AnnealMail.msg.setFinalSendMode('final-pgpmimeNo');"/>
+
+          <menuseparator/>
+
+          <menuitem id="annealmail_trust_all_keys"
+              label="&annealmail.tempTrustAllKeys.label;"
+              accesskey="&annealmail.tempTrustAllKeys.accesskey;"
+              type="checkbox"
+              checked="false"
+              advanced="true"
+              oncommand="AnnealMail.msg.tempTrustAllKeys();" />
+
+          <menuitem id="annealmail_undo_encryption"
+              label="&annealmail.undoencryption.label;"
+              accesskey="&annealmail.undoencryption.accesskey;"
+              oncommand="AnnealMail.msg.undoEncryption();" />
+
+          <menuitem id="annealmail_insert_own_key"
+              label="&annealmail.attachmykey.label;"
+              accesskey="&annealmail.attachmykey.accesskey;"
+              type="checkbox"
+              checked="false"
+              oncommand="AnnealMail.msg.toggleAttachOwnKey();" />
+
+          <menuitem id="annealmail_insert_key"
+              label="&annealmail.attachkey.label;"
+              accesskey="&annealmail.attachkey.accesskey;"
+              oncommand="AnnealMail.msg.attachKey();" />
+
+          <menuseparator/>
+
+          <menuitem id="annealmail_clearPassphrase"
+              label="&annealmail.clearPassphrase.label;"
+              accesskey="&annealmail.clearPassphrase.accesskey;"
+              advanced="true"
+              oncommand="AnnealMailPassword.clearPassphrase(window);" />
+
+          <menuitem id="annealmail_keymgmt"
+             label="&annealmail.keyManWindow.label;"
+             accesskey="&annealmail.keyManWindow.accesskey;"
+             oncommand="AnnealMailWindows.openKeyManager(window);" />
+
+          <menuitem id="annealmail_RulesEditor"
+              label="&annealmail.editRules.label;"
+              accesskey="&annealmail.editRules.accesskey;"
+              oncommand="AnnealMailWindows.openRulesEditor();"/>
+
+          <menuseparator/>
+
+          <menu id="annealmail_compose_options_menu"
+                label="&annealmail.prefs.label;"
+                accesskey="&annealmail.prefs.accesskey;">
+
+            <menupopup onpopupshowing="AnnealMailFuncs.collapseAdvanced(this, 'hidden', AnnealMail.msg.setMenuSettings(''))">
+
+              <menuitem id="annealmail_accountSettings"
+                label="&annealmail.pgpAccountSettings.label;"
+                accesskey="&annealmail.pgpAccountSettings.accesskey;"
+                oncommand="AnnealMail.msg.goAccountManager();" />
+
+              <menuitem id="annealmail_defaultSendOpts"
+                label="&annealmail.sendOptionsMenu.label;"
+                accesskey="&annealmail.sendOptionsMenu.accesskey;"
+                oncommand="AnnealMailWindows.openPrefWindow(window, true, 'sendingTab');" />
+
+              <menuitem id="annealmail_defaultKeySelOpts"
+                label="&annealmail.defaultKeySelOpts.label;"
+                accesskey="&annealmail.defaultKeySelOpts.accesskey;"
+                advanced="true"
+                oncommand="AnnealMailWindows.openPrefWindow(window, true, 'keySelTab');" />
+
+            </menupopup>
+          </menu>
+
+          <menuitem id="annealmail_help"
+              label="&annealmail.help.label;"
+              accesskey="&annealmail.help.accesskey;"
+              oncommand="AnnealMailWindows.openHelpWindow('compose');" />
+
+        </menupopup>
+      </menu>
+
+  </menubar>
+
+  <!-- AnnealMail toolbar button -->
+  <toolbarpalette id="MsgComposeToolbarPalette">
+    <!-- encryption button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-annealmail-encrypt"
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="annealmail-bc-encrypt"
+            oncommand="AnnealMail.msg.doPgpButton('toggle-final-encrypt');"
+            label="&annealmail.encryptedsend.label;"/>
+
+    <!-- signing button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-annealmail-sign"
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="annealmail-bc-sign"
+            oncommand="AnnealMail.msg.doPgpButton('toggle-final-sign');"
+            label="&annealmail.signedsend.label;"/>
+
+    <!-- 'attach key' button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-annealmail-attach"
+            label="&annealmail.attachmykey.label;"
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="annealmail-bc-attach"
+            oncommand="AnnealMail.msg.toggleAttachOwnKey();"/>
+
+    <!-- 'Encrypt subject' button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="annealmail-toolbar-encryptHdr-button"
+            label="&annealmail.protectHeaders.label;"
+            buttontype="thunderbird"
+            observes="annealmail-bc-protectHdr"
+            oncommand="AnnealMail.msg.toggleProtectHeaders()">
+      <label id="annealmail-toolbar-encSHdr-text" value="&annealmail.protectHeaders.label;"/>
+    </toolbarbutton>
+
+    <!-- AnnealMail: button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="annealmail-toolbar-header-button"
+            label="&annealmail.composetoolbar.desc;"
+            buttontype="thunderbird"
+            oncommand="AnnealMail.msg.doPgpButton('displaySecuritySettings')">
+      <label id="annealmail-toolbar-hdr-text" value="&annealmail.label;:"/>
+    </toolbarbutton>
+
+    <!-- status info button -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="annealmail-toolbar-text-button"
+            label="&annealmail.composetoolbar.desc;"
+            buttontype="thunderbird"
+            oncommand="AnnealMail.msg.doPgpButton('displaySecuritySettings')">
+      <label id="annealmail-toolbar-text" value="&annealmail.composetoolbar.desc;"/>
+    </toolbarbutton>
+
+  </toolbarpalette>
+
+  <!-- AnnealMail bar above text editor field -->
+
+  <toolbox id="compose-toolbox">
+    <toolbar id="annealmail-toolbar"
+            insertafter="composeToolbar2"
+            defaultset="annealmail-toolbar-header-button,button-annealmail-encrypt,button-annealmail-sign,button-annealmail-attach,annealmail-toolbar-text-button"
+            toolbarname="&annealmail.composetoolbar.label;"
+            customizable="true"
+            class="annealmailToolbar"
+            fullscreentoolbar="true"
+            mode="full"
+            context="toolbar-context-menu">
+    </toolbar>
+  </toolbox>
+
+
+</overlay>

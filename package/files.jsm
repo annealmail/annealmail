@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailOS: false, EnigmailData: false */
+/*global Components: false, AnnealMailLog: false, AnnealMailOS: false, AnnealMailData: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,14 +9,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFiles"];
+var EXPORTED_SYMBOLS = ["AnnealMailFiles"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/os.jsm");
-Cu.import("resource://enigmail/data.jsm");
+Cu.import("resource://annealmail/os.jsm");
+Cu.import("resource://annealmail/data.jsm");
 
 const NS_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
@@ -36,14 +36,14 @@ const lazyLog = (function() {
   let log = null;
   return function() {
     if (!log) {
-      Components.utils.import("resource://enigmail/log.jsm");
-      log = EnigmailLog;
+      Components.utils.import("resource://annealmail/log.jsm");
+      log = AnnealMailLog;
     }
     return log;
   };
 })();
 
-const EnigmailFiles = {
+const AnnealMailFiles = {
 
   isAbsolutePath: function(filePath, isDosLike) {
     // Check if absolute path
@@ -59,7 +59,7 @@ const EnigmailFiles = {
   resolvePath: function(filePath, envPath, isDosLike) {
     lazyLog().DEBUG("files.jsm: resolvePath: filePath=" + filePath + "\n");
 
-    if (EnigmailFiles.isAbsolutePath(filePath, isDosLike))
+    if (AnnealMailFiles.isAbsolutePath(filePath, isDosLike))
       return filePath;
 
     if (!envPath)
@@ -76,7 +76,7 @@ const EnigmailFiles = {
 
           lazyLog().DEBUG("files.jsm: resolvePath: checking for " + pathDirs[j] + "/" + fileNames[i] + "\n");
 
-          EnigmailFiles.initPath(pathDir, pathDirs[j]);
+          AnnealMailFiles.initPath(pathDir, pathDirs[j]);
 
           try {
             if (pathDir.exists() && pathDir.isDirectory()) {
@@ -100,7 +100,7 @@ const EnigmailFiles = {
       var localFile;
       if (typeof filePath == "string") {
         localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-        EnigmailFiles.initPath(localFile, filePath);
+        AnnealMailFiles.initPath(localFile, filePath);
       }
       else {
         localFile = filePath.QueryInterface(Ci.nsIFile);
@@ -178,13 +178,13 @@ const EnigmailFiles = {
       }
     }
 
-    var cmdStr = getQuoted(EnigmailFiles.getFilePathDesc(command)) + " ";
+    var cmdStr = getQuoted(AnnealMailFiles.getFilePathDesc(command)) + " ";
     var argStr = args.map(getQuoted).join(" ").replace(/\\\\/g, '\\');
     return cmdStr + argStr;
   },
 
   getFilePathDesc: function(nsFileObj) {
-    if (EnigmailOS.getOS() == "WINNT") {
+    if (AnnealMailOS.getOS() == "WINNT") {
       return nsFileObj.persistentDescriptor;
     }
     else {
@@ -193,16 +193,16 @@ const EnigmailFiles = {
   },
 
   getFilePath: function(nsFileObj) {
-    return EnigmailData.convertToUnicode(EnigmailFiles.getFilePathDesc(nsFileObj), "utf-8");
+    return AnnealMailData.convertToUnicode(AnnealMailFiles.getFilePathDesc(nsFileObj), "utf-8");
   },
 
   getEscapedFilename: function(fileNameStr) {
-    if (EnigmailOS.isDosLike()) {
+    if (AnnealMailOS.isDosLike()) {
       // escape the backslashes and the " character (for Windows and OS/2)
       fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
     }
 
-    if (EnigmailOS.getOS() == "WINNT") {
+    if (AnnealMailOS.getOS() == "WINNT") {
       // replace leading "\\" with "//"
       fileNameStr = fileNameStr.replace(/^\\\\*/, "//");
     }
@@ -225,7 +225,7 @@ const EnigmailFiles = {
     catch (ex) {
       // let's guess ...
       let tmpDirObj = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-      if (EnigmailOS.getOS() == "WINNT") {
+      if (AnnealMailOS.getOS() == "WINNT") {
         tmpDirObj.initWithPath("C:/TEMP");
       }
       else {
@@ -241,7 +241,7 @@ const EnigmailFiles = {
    * @return String containing the temp directory name
    */
   getTempDir: function() {
-    return EnigmailFiles.getTempDirObj().path;
+    return AnnealMailFiles.getTempDirObj().path;
   },
 
   /**
@@ -253,7 +253,7 @@ const EnigmailFiles = {
    * @return nsIFile object holding a reference to the created directory
    */
   createTempSubDir: function(dirName, unique = false) {
-    let localFile = EnigmailFiles.getTempDirObj().clone();
+    let localFile = AnnealMailFiles.getTempDirObj().clone();
 
     localFile.append(dirName);
     if (unique) {
@@ -276,7 +276,7 @@ const EnigmailFiles = {
    */
   writeFileContents: function(filePath, data, permissions) {
     try {
-      var fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
+      var fileOutStream = AnnealMailFiles.createFileStream(filePath, permissions);
 
       if (data.length) {
         if (fileOutStream.write(data, data.length) != data.length) {
@@ -288,14 +288,14 @@ const EnigmailFiles = {
       fileOutStream.close();
     }
     catch (ex) {
-      EnigmailLog.ERROR("files.jsm: writeFileContents: Failed to write to " + filePath + "\n");
+      AnnealMailLog.ERROR("files.jsm: writeFileContents: Failed to write to " + filePath + "\n");
       return false;
     }
 
     return true;
   },
 
-  // return the useable path (for gpg) of a file object
+  // return the useable path (for ccr) of a file object
   getFilePathReadonly: function(nsFileObj, creationMode) {
     if (creationMode === null) creationMode = NS_RDONLY;
     return nsFileObj.path;

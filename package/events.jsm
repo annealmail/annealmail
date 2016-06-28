@@ -9,16 +9,16 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailEvents"];
+var EXPORTED_SYMBOLS = ["AnnealMailEvents"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/timer.jsm"); /*global AnnealMailTimer: false */
 
-const EnigmailEvents = {
+const AnnealMailEvents = {
   /**
    * dispatch event aynchronously to the main thread
    *
@@ -28,7 +28,7 @@ const EnigmailEvents = {
    * @arrayOfArgs:      Array - arguments to pass to callbackFunction
    */
   dispatchEvent: function(callbackFunction, sleepTimeMs, arrayOfArgs) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent f=" + callbackFunction.name + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: dispatchEvent f=" + callbackFunction.name + "\n");
 
     // object for dispatching callback back to main thread
     var MainEvent = function() {};
@@ -48,12 +48,12 @@ const EnigmailEvents = {
       },
 
       run: function() {
-        EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent running mainEvent\n");
+        AnnealMailLog.DEBUG("annealmailCommon.jsm: dispatchEvent running mainEvent\n");
         this.cbFunc(this.args);
       },
 
       notify: function() {
-        EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent got notified\n");
+        AnnealMailLog.DEBUG("annealmailCommon.jsm: dispatchEvent got notified\n");
         this.cbFunc(this.args);
       }
 
@@ -62,7 +62,7 @@ const EnigmailEvents = {
     const event = new MainEvent();
     event.init(callbackFunction, arrayOfArgs);
     if (sleepTimeMs > 0) {
-      return EnigmailTimer.setTimeout(event, sleepTimeMs);
+      return AnnealMailTimer.setTimeout(event, sleepTimeMs);
     }
     else {
       const tm = Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager);

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailDecryptPermanently: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
+/*global Components: false, AnnealMailDecryptPermanently: false, AnnealMailCore: false, AnnealMailLog: false, AnnealMailLocale: false, AnnealMailDialog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,13 +9,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFilters"];
+var EXPORTED_SYMBOLS = ["AnnealMailFilters"];
 
-Components.utils.import("resource://enigmail/core.jsm");
-Components.utils.import("resource://enigmail/decryptPermanently.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
+Components.utils.import("resource://annealmail/core.jsm");
+Components.utils.import("resource://annealmail/decryptPermanently.jsm");
+Components.utils.import("resource://annealmail/log.jsm");
+Components.utils.import("resource://annealmail/locale.jsm");
+Components.utils.import("resource://annealmail/dialog.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -30,12 +30,12 @@ const Ci = Components.interfaces;
  */
 
 const filterActionMoveDecrypt = {
-  id: "enigmail@enigmail.net#filterActionMoveDecrypt",
-  name: EnigmailLocale.getString("filter.decryptMove.label"),
+  id: "annealmail@annealmail.net#filterActionMoveDecrypt",
+  name: AnnealMailLocale.getString("filter.decryptMove.label"),
   value: "movemessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
 
-    EnigmailLog.DEBUG("enigmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
 
     var msgHdrs = [];
 
@@ -43,7 +43,7 @@ const filterActionMoveDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
+    AnnealMailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
 
     return;
   },
@@ -53,10 +53,10 @@ const filterActionMoveDecrypt = {
   },
 
   validateActionValue: function(value, folder, type) {
-    EnigmailDialog.alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
+    AnnealMailDialog.alert(null, AnnealMailLocale.getString("filter.decryptMove.warnExperimental"));
 
     if (value === "") {
-      return EnigmailLocale.getString("filter.folderRequired");
+      return AnnealMailLocale.getString("filter.folderRequired");
     }
 
     return null;
@@ -72,11 +72,11 @@ const filterActionMoveDecrypt = {
  * message untouched
  */
 const filterActionCopyDecrypt = {
-  id: "enigmail@enigmail.net#filterActionCopyDecrypt",
-  name: EnigmailLocale.getString("filter.decryptCopy.label"),
+  id: "annealmail@annealmail.net#filterActionCopyDecrypt",
+  name: AnnealMailLocale.getString("filter.decryptCopy.label"),
   value: "copymessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
-    EnigmailLog.DEBUG("enigmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
 
     var msgHdrs = [];
 
@@ -84,7 +84,7 @@ const filterActionCopyDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
+    AnnealMailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
     return;
   },
 
@@ -94,7 +94,7 @@ const filterActionCopyDecrypt = {
 
   validateActionValue: function(value, folder, type) {
     if (value === "") {
-      return EnigmailLocale.getString("filter.folderRequired");
+      return AnnealMailLocale.getString("filter.folderRequired");
     }
 
     return null;
@@ -105,7 +105,7 @@ const filterActionCopyDecrypt = {
   needsBody: true
 };
 
-const EnigmailFilters = {
+const AnnealMailFilters = {
   registerAll: function() {
     var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomAction(filterActionMoveDecrypt);

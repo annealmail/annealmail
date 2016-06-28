@@ -9,23 +9,23 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailCard"];
+var EXPORTED_SYMBOLS = ["AnnealMailCard"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
 
-const EnigmailCard = {
+const AnnealMailCard = {
   getCardStatus: function(exitCodeObj, errorMsgObj) {
-    EnigmailLog.DEBUG("card.jsm: EnigmailCard.getCardStatus\n");
-    const args = EnigmailGpg.getStandardArgs(false).
+    AnnealMailLog.DEBUG("card.jsm: AnnealMailCard.getCardStatus\n");
+    const args = AnnealMailCcr.getStandardArgs(false).
     concat(["--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
     const statusMsgObj = {};
     const statusFlagsObj = {};
 
-    const outputTxt = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+    const outputTxt = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
 
     if ((exitCodeObj.value === 0) && !outputTxt) {
       exitCodeObj.value = -1;

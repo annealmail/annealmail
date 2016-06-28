@@ -9,7 +9,7 @@
 "use strict";
 
 component("/modules/mailServices.js"); /*global MailServices: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+component("annealmail/files.jsm"); /*global AnnealMailFiles: false */
 component("/modules/iteratorUtils.jsm");
 
 const MailHelper = {
@@ -24,7 +24,7 @@ const MailHelper = {
 
       let localAccount = MailServices.accounts.FindAccountForServer(MailServices.accounts.localFoldersServer);
       let identity = MailServices.accounts.createIdentity();
-      identity.email = "tester@enigmail.org";
+      identity.email = "tester@annealmail.org";
       localAccount.addIdentity(identity);
       localAccount.defaultIdentity = identity;
       MailHelper.incomingServer = MailServices.accounts.localFoldersServer;

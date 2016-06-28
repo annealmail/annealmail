@@ -8,20 +8,20 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withAnnealMail: false, withTestGpgHome: false */
 
-testing("execution.jsm"); /*global EnigmailExecution: false */
-component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+testing("execution.jsm"); /*global AnnealMailExecution: false */
+component("annealmail/gpgAgent.jsm"); /*global AnnealMailGpgAgent: false */
+component("annealmail/gpg.jsm"); /*global AnnealMailGpg: false */
 
-test(withTestGpgHome(withEnigmail(function shouldExecCmd() {
-  const command = EnigmailGpgAgent.agentPath;
+test(withTestGpgHome(withAnnealMail(function shouldExecCmd() {
+  const command = AnnealMailGpgAgent.agentPath;
 
-  const args = EnigmailGpg.getStandardArgs(false).
+  const args = AnnealMailGpg.getStandardArgs(false).
   concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]).
   concat(["--list-packets", "resources/dev-strike.asc"]);
   let output = "";
-  EnigmailExecution.execCmd2(command, args,
+  AnnealMailExecution.execCmd2(command, args,
     function(pipe) {
       //Assert.equal(stdin, 0);
     },

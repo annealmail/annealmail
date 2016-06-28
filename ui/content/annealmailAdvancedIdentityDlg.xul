@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+
+<dialog id="annealmailAdvancedIdentityDlg"
+        title="&annealmail.advancedIdentityDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad();"
+        ondialogaccept="onAccept()">
+
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAdvancedIdentityDlg.js"/>
+
+  <broadcaster id="annealmail_bcUseUrl" disabled="true"/>
+
+  <vbox>
+    <groupbox>
+      <caption label="&annealmail.amPrefPgpHeader.label;"/>
+      <checkbox id="openpgpHeaderMode.keyId"
+                label="&annealmail.amPrefPgpHeader.id.label;"
+                checked="false"/>
+      <hbox>
+        <checkbox id="openpgpHeaderMode.url"
+                label="&annealmail.amPrefPgpHeader.url.label;"
+                oncommand="enigEnableUrlName();"
+                checked="false"/>
+        <textbox id="openpgpHeaderMode.url.name"
+              observes="annealmail_bcUseUrl"
+              size="30" aria-labelledby="openpgpHeaderMode.url"/>
+      </hbox>
+    </groupbox>
+
+    <separator/>
+
+    <checkbox id="openpgp.sendKeyWithMsg"
+            label="&annealmail.amPrefPgp.sendKeyWithMsg.label;"
+            checked="false"/>
+  </vbox>
+
+</dialog>

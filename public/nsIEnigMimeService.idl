@@ -37,28 +37,28 @@ interface nsIEnigMimeService : nsISupports
 
 %{C++
 
-#define NS_ENIGMIMESERVICE_CONTRACTID "@mozdev.org/enigmail/enigmimeservice;1"
+#define NS_ENIGMIMESERVICE_CONTRACTID "@mozdev.org/annealmail/enigmimeservice;1"
 
-#define NS_ENIGMIMESERVICE_CLASSNAME  "Enigmail Mime Service"
+#define NS_ENIGMIMESERVICE_CLASSNAME  "AnnealMail Mime Service"
 
-#define APPLICATION_XENIGMAIL_DUMMY "application/x-enigmail-dummy"
+#define APPLICATION_XANNEALMAIL_DUMMY "application/x-annealmail-dummy"
 
 #define MULTIPART_ENCRYPTED "multipart/encrypted"
 
 #define APPLICATION_PGP "application/pgp"
 
-#define NS_ENIGDUMMYHANDLER_CONTRACTID "@mozilla.org/mimecth;1?type=" APPLICATION_XENIGMAIL_DUMMY
+#define NS_ENIGDUMMYHANDLER_CONTRACTID "@mozilla.org/mimecth;1?type=" APPLICATION_XANNEALMAIL_DUMMY
 
 #define NS_ENIGENCRYPTEDHANDLER_CONTRACTID "@mozilla.org/mimecth;1?type=" MULTIPART_ENCRYPTED
 
 #define NS_ENIGPGPHANDLER_CONTRACTID "@mozilla.org/mimecth;1?type=" APPLICATION_PGP
 
-#define NS_ENIGCONTENTHANDLER_CLASSNAME  "Enigmail Content Handler"
+#define NS_ENIGCONTENTHANDLER_CLASSNAME  "AnnealMail Content Handler"
 
 
-#define NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID "@mozilla.org/enigmail/contenthandler-factory;1"
+#define NS_ENIGCONTENTHANDLERFACTORY_CONTRACTID "@mozilla.org/annealmail/contenthandler-factory;1"
 
-#define NS_ENIGCONTENTHANDLERFACTORY_CLASSNAME "Enigmail Content Handler Factory"
+#define NS_ENIGCONTENTHANDLERFACTORY_CLASSNAME "AnnealMail Content Handler Factory"
 
 #define NS_ENIGMIMESERVICE_CID                   \
 { /* 847b3a41-7ab1-11d4-8f02-006008948af5 */     \

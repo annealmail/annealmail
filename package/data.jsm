@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, unescape: false, atob: false, btoa: false */
+/*global Components: false, AnnealMailLog: false, unescape: false, atob: false, btoa: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,7 +9,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailData"];
+var EXPORTED_SYMBOLS = ["AnnealMailData"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -24,7 +24,7 @@ function converter(charset) {
   return unicodeConv;
 }
 
-const EnigmailData = {
+const AnnealMailData = {
   getUnicodeData: function(data) {
     // convert output from subprocess to Unicode
     var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
@@ -37,7 +37,7 @@ const EnigmailData = {
   extractMessageId: function(uri) {
     var messageId = "";
 
-    var matches = uri.match(/^enigmail:message\/(.+)/);
+    var matches = uri.match(/^annealmail:message\/(.+)/);
 
     if (matches && (matches.length > 1)) {
       messageId = matches[1];
@@ -49,7 +49,7 @@ const EnigmailData = {
   extractMimeMessageId: function(uri) {
     var messageId = "";
 
-    var matches = uri.match(/^enigmail:mime-message\/(.+)/);
+    var matches = uri.match(/^annealmail:mime-message\/(.+)/);
 
     if (matches && (matches.length > 1)) {
       messageId = matches[1];
@@ -100,7 +100,7 @@ const EnigmailData = {
     }
   },
 
-  convertGpgToUnicode: function(text) {
+  convertCcrToUnicode: function(text) {
     if (typeof(text) === "string") {
       text = text.replace(/\\x3a/ig, "\\e3A");
       var a = text.search(/\\x[0-9a-fA-F]{2}/);
@@ -112,7 +112,7 @@ const EnigmailData = {
         a = text.search(/\\x[0-9a-fA-F]{2}/);
       }
 
-      text = EnigmailData.convertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
+      text = AnnealMailData.convertToUnicode(text, "utf-8").replace(/\\e3A/g, ":");
     }
 
     return text;

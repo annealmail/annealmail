@@ -12,16 +12,16 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withTestGpgHome: false */
 
-testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Cc: false, Ci: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
-component("enigmail/system.jsm"); /*global EnigmailSystem: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+testing("errorHandling.jsm"); /*global AnnealMailErrorHandling: false, Cc: false, Ci: false */
+component("annealmail/os.jsm"); /*global AnnealMailOS: false */
+component("annealmail/system.jsm"); /*global AnnealMailSystem: false */
+component("annealmail/locale.jsm"); /*global AnnealMailLocale: false */
 
 // simulate Unix, and UTF-8 (works on all systems)
-EnigmailOS.isWin32 = false;
+AnnealMailOS.isWin32 = false;
 let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 let lc = env.set("LC_ALL", "en_US.UTF-8");
-EnigmailSystem.determineSystemCharset();
+AnnealMailSystem.determineSystemCharset();
 
 
 test(function decryptionFailedWillSetDecryptionFailedFlag() {
@@ -88,7 +88,7 @@ test(function shouldHandleNoDataErrors() {
     "[GNUPG:] NODATA 2\n" +
     "gpg: decrypt_message failed: Unknown system error\n";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, {});
 
   Assert.assertContains(result, "no valid OpenPGP data found");
 });
@@ -96,15 +96,15 @@ test(function shouldHandleNoDataErrors() {
 test(function shouldHandleErrorOutput() {
   const errorOutput = "[GNUPG:] USERID_HINT 781617319CE311C4 anonymous strike <strike.devtest@gmail.com>\n" +
     "[GNUPG:] NEED_PASSPHRASE 781617319CE311C4 781617319CE311C4 1 0\n" +
-    "gpg-agent[14654]: command get_passphrase failed: Operation cancelled\n" +
-    "gpg: cancelled by user\n" +
+    "ccr-agent[14654]: command get_passphrase failed: Operation cancelled\n" +
+    "ccr: cancelled by user\n" +
     "[GNUPG:] MISSING_PASSPHRASE\n" +
-    "gpg: skipped \"<strike.devtest@gmail.com>\": Operation cancelled\n" +
+    "ccr: skipped \"<strike.devtest@gmail.com>\": Operation cancelled\n" +
     "[GNUPG:] INV_SGNR 0 <strike.devtest@gmail.com>\n" +
-    "gpg: [stdin]: clearsign failed: Operation cancelled\n";
+    "ccr: [stdin]: clearsign failed: Operation cancelled\n";
   const retStatusObj = {};
-  EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
-  Assert.assertContains(retStatusObj.statusMsg, EnigmailLocale.getString("missingPassphrase"));
+  AnnealMailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
+  Assert.assertContains(retStatusObj.statusMsg, AnnealMailLocale.getString("missingPassphrase"));
   Assert.equal(retStatusObj.extendedStatus, "");
 });
 
@@ -121,7 +121,7 @@ test(function shouldHandleFailedEncryption() {
     "gpg: decryption failed: Invalid packet\n" +
     "[GNUPG:] END_DECRYPTION";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, {});
   Assert.assertContains(result, "decryption failed: Invalid packet");
 });
 
@@ -140,7 +140,7 @@ test(withTestGpgHome(function shouldHandleSuccessfulImport() {
     "gpg:   secret keys imported: 1\n" +
     "[GNUPG:] IMPORT_RES 2 0 1 1 1 0 0 0 0 1 1 0 0 0";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, {});
   Assert.assertContains(result, "secret key imported");
 }));
 
@@ -158,7 +158,7 @@ test(function shouldHandleUnverifiedSignature() {
     "[GNUPG:] USERID_HINT D535623BB60E9E71 anonymous strike <strike.devtest@gmail.com>\n" +
     "Use this key anyway? (y/N) y";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, {});
 
   Assert.assertContains(result, "Use this key anyway");
 });
@@ -169,10 +169,10 @@ test(function shouldHandleEncryptionFailedNoPublicKey() {
     "gpg: salida3.xtxt: encryption failed: No public key";
 
   const o = {};
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, o);
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, o);
 
   Assert.assertContains(result, "No public key");
-  Assert.equal(o.errorMsg, EnigmailLocale.getString("keyError.keySpecNotFound", "iapazmino@thoughtworks.com"));
+  Assert.equal(o.errorMsg, AnnealMailLocale.getString("keyError.keySpecNotFound", "iapazmino@thoughtworks.com"));
 });
 
 test(function shouldHandleErrors() {
@@ -184,7 +184,7 @@ test(function shouldHandleErrors() {
     "[GNUPG:] MISSING_PASSPHRASE \n" +
     "[GNUPG:] KEY_NOT_CREATED";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const result = AnnealMailErrorHandling.parseErrorOutput(errorOutput, {});
 
   Assert.assertContains(result, "Invalid IPC response");
 });
@@ -196,9 +196,9 @@ test(function shouldHandleInvalidSender() {
     "gpg: signing failed: No secret key\n";
 
   const retStatusObj = {};
-  EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
+  AnnealMailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
 
-  Assert.assertContains(retStatusObj.errorMsg, EnigmailLocale.getString("keyError.keyIdNotFound", "0x12345678"));
+  Assert.assertContains(retStatusObj.errorMsg, AnnealMailLocale.getString("keyError.keyIdNotFound", "0x12345678"));
 });
 
 test(function shouldHandleFailures() {
@@ -208,8 +208,8 @@ test(function shouldHandleFailures() {
     "gpg: [stdin]: clearsign failed: No pinentry\n";
 
   const retStatusObj = {};
-  EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
+  AnnealMailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
 
-  Assert.ok((retStatusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) !== 0);
-  Assert.assertContains(retStatusObj.statusMsg, EnigmailLocale.getString("errorHandling.pinentryError"));
+  Assert.ok((retStatusObj.statusFlags & Ci.nsIAnnealMail.DISPLAY_MESSAGE) !== 0);
+  Assert.assertContains(retStatusObj.statusMsg, AnnealMailLocale.getString("errorHandling.pinentryError"));
 });

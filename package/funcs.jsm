@@ -9,10 +9,10 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
+var EXPORTED_SYMBOLS = ["AnnealMailFuncs"];
 
 /*
- * Common Enigmail crypto-related GUI functionality
+ * Common AnnealMail crypto-related GUI functionality
  *
  */
 
@@ -20,16 +20,16 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/prefs.jsm"); /*global AnnealMailPrefs: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
 
 var gTxtConverter = null;
 
-const EnigmailFuncsRegexTwoAddr = new RegExp("<[^>,]*>[^,<]*<[^>,]*>");
-const EnigmailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*", "g");
+const AnnealMailFuncsRegexTwoAddr = new RegExp("<[^>,]*>[^,<]*<[^>,]*>");
+const AnnealMailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*", "g");
 
-const EnigmailFuncs = {
+const AnnealMailFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
    * @mailAddrs |string| - address-list as specified in RFC 2822, 3.4
@@ -38,13 +38,13 @@ const EnigmailFuncs = {
    * @return |string|    - list of pure email addresses separated by ","
    */
   stripEmail: function(mailAddrs) {
-    //EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddrs=" + mailAddrs + "\n");
+    //AnnealMailLog.DEBUG("funcs.jsm: stripEmail(): mailAddrs=" + mailAddrs + "\n");
 
     var qStart, qEnd;
     while ((qStart = mailAddrs.indexOf('"')) != -1) {
       qEnd = mailAddrs.indexOf('"', qStart + 1);
       if (qEnd == -1) {
-        EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: " + mailAddrs + "\n");
+        AnnealMailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: " + mailAddrs + "\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
 
@@ -55,13 +55,13 @@ const EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(/\s+/g, "");
 
     // having two <..> <..> in one email is an error
-    if (mailAddrs.match(EnigmailFuncsRegexTwoAddr)) {
-      EnigmailLog.ERROR("funcs.jsm: stripEmail: Two <..> entries in mail address: " + mailAddrs + "\n");
+    if (mailAddrs.match(AnnealMailFuncsRegexTwoAddr)) {
+      AnnealMailLog.ERROR("funcs.jsm: stripEmail: Two <..> entries in mail address: " + mailAddrs + "\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
     // Extract pure e-mail address list (stripping out angle brackets)
-    mailAddrs = mailAddrs.replace(EnigmailFuncsRegexExtractPureEmail, "$1$2");
+    mailAddrs = mailAddrs.replace(AnnealMailFuncsRegexExtractPureEmail, "$1$2");
 
     // remove empty email addresses (including removing all ';')
     mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/, "").replace(/,$/, "");
@@ -83,9 +83,9 @@ const EnigmailFuncs = {
 
 
   collapseAdvanced: function(obj, attribute, dummy) {
-    EnigmailLog.DEBUG("funcs.jsm: collapseAdvanced:\n");
+    AnnealMailLog.DEBUG("funcs.jsm: collapseAdvanced:\n");
 
-    var advancedUser = EnigmailPrefs.getPref("advancedUser");
+    var advancedUser = AnnealMailPrefs.getPref("advancedUser");
 
     obj = obj.firstChild;
     while (obj) {
@@ -112,19 +112,19 @@ const EnigmailFuncs = {
 
   /**
    * determine default values for signing and encryption.
-   * Translates "old-style" defaults (pre-Enigmail v1.0) to "current" defaults
+   * Translates "old-style" defaults (pre-AnnealMail v1.0) to "current" defaults
    *
    * @identiy - nsIMsgIdentity object
    *
    * no return values
    */
   getSignMsg: function(identity) {
-    EnigmailLog.DEBUG("funcs.jsm: getSignMsg: identity.key=" + identity.key + "\n");
+    AnnealMailLog.DEBUG("funcs.jsm: getSignMsg: identity.key=" + identity.key + "\n");
     var sign = null;
 
-    EnigmailPrefs.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
+    AnnealMailPrefs.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
 
-    var prefRoot = EnigmailPrefs.getPrefRoot();
+    var prefRoot = AnnealMailPrefs.getPrefRoot();
 
     if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignPlain") === 0) {
       if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignMsg") === 0) {
@@ -155,7 +155,7 @@ const EnigmailFuncs = {
     if (!gTxtConverter)
       gTxtConverter = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
-    var prefRoot = EnigmailPrefs.getPrefRoot();
+    var prefRoot = AnnealMailPrefs.getPrefRoot();
     var fontStyle = "";
 
     // set the style stuff according to perferences
@@ -239,7 +239,7 @@ const EnigmailFuncs = {
     }
 
     var r = '<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>' : '') + '</pre>';
-    //EnigmailLog.DEBUG("funcs.jsm: r='"+r+"'\n");
+    //AnnealMailLog.DEBUG("funcs.jsm: r='"+r+"'\n");
     return r;
   },
 
@@ -252,7 +252,7 @@ const EnigmailFuncs = {
    * @return |array| of |arrays| containing pairs of aa/b and cc/d
    */
   getHeaderData: function(data) {
-    EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + data.substr(0, 100) + "\n");
+    AnnealMailLog.DEBUG("funcs.jsm: getHeaderData: " + data.substr(0, 100) + "\n");
     var a = data.split(/\n/);
     var res = [];
     for (let i = 0; i < a.length; i++) {
@@ -265,7 +265,7 @@ const EnigmailFuncs = {
         if (m) {
           // m[2]: identifier / m[6]: data
           res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-          EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + m[2].toLowerCase() + " = " + res[m[2].toLowerCase()] + "\n");
+          AnnealMailLog.DEBUG("funcs.jsm: getHeaderData: " + m[2].toLowerCase() + " = " + res[m[2].toLowerCase()] + "\n");
         }
       }
       if (i === 0 && a[i].indexOf(";") < 0) break;
@@ -278,11 +278,11 @@ const EnigmailFuncs = {
    * Get the text for the encrypted subject (either configured by user or default)
    */
   getProtectedSubjectText: function() {
-    if (EnigmailPrefs.getPref("protectedSubjectText").length > 0) {
-      return EnigmailPrefs.getPref("protectedSubjectText");
+    if (AnnealMailPrefs.getPref("protectedSubjectText").length > 0) {
+      return AnnealMailPrefs.getPref("protectedSubjectText");
     }
     else {
-      return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
+      return AnnealMailLocale.getString("msgCompose.encryptedSubjectStub");
     }
   },
 

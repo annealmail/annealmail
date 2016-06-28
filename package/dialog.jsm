@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLocale: false, EnigmailLog: false, EnigmailWindows: false, EnigmailPrefs: false */
+/*global Components: false, AnnealMailLocale: false, AnnealMailLog: false, AnnealMailWindows: false, AnnealMailPrefs: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,16 +9,16 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailDialog"];
+var EXPORTED_SYMBOLS = ["AnnealMailDialog"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/windows.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
+Cu.import("resource://annealmail/locale.jsm");
+Cu.import("resource://annealmail/log.jsm");
+Cu.import("resource://annealmail/windows.jsm");
+Cu.import("resource://annealmail/prefs.jsm");
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;
@@ -28,7 +28,7 @@ const gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.n
 
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
-const EnigmailDialog = {
+const AnnealMailDialog = {
   /***
    * Confirmation dialog with OK / Cancel buttons (both customizable)
    *
@@ -62,7 +62,7 @@ const EnigmailDialog = {
     }
 
     let buttonPressed = gPromptSvc.confirmEx(win,
-      EnigmailLocale.getString("enigConfirm"),
+      AnnealMailLocale.getString("enigConfirm"),
       mesg,
       buttonTitles,
       okLabel, cancelLabel, null,
@@ -81,14 +81,14 @@ const EnigmailDialog = {
    */
   alert: function(win, mesg) {
     if (mesg.length > 1000) {
-      EnigmailDialog.longAlert(win, mesg, null, EnigmailLocale.getString("dlg.button.close"));
+      AnnealMailDialog.longAlert(win, mesg, null, AnnealMailLocale.getString("dlg.button.close"));
     }
     else {
       try {
-        gPromptSvc.alert(win, EnigmailLocale.getString("enigAlert"), mesg);
+        gPromptSvc.alert(win, AnnealMailLocale.getString("enigAlert"), mesg);
       }
       catch (ex) {
-        EnigmailLog.writeException("alert", ex);
+        AnnealMailLog.writeException("alert", ex);
       }
     }
   },
@@ -116,10 +116,10 @@ const EnigmailDialog = {
     };
 
     if (!win) {
-      win = EnigmailWindows.getBestParentWin();
+      win = AnnealMailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailAlertDlg.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         msgtext: mesg,
         checkboxLabel: checkBoxLabel,
@@ -145,7 +145,7 @@ const EnigmailDialog = {
    * @return:   Boolean - true if OK was pressed / false otherwise
    */
   promptValue: function(win, mesg, valueObj) {
-    return gPromptSvc.prompt(win, EnigmailLocale.getString("enigPrompt"),
+    return gPromptSvc.prompt(win, AnnealMailLocale.getString("enigPrompt"),
       mesg, valueObj, "", {});
   },
 
@@ -156,25 +156,25 @@ const EnigmailDialog = {
    *
    * @win:      nsIWindow - the parent window to hold the modal dialog
    * @mesg:     String    - the localized message to display
-   * @prefText: String    - the name of the Enigmail preference to read/store the
+   * @prefText: String    - the name of the AnnealMail preference to read/store the
    *                        the future display status
    */
   alertPref: function(win, mesg, prefText) {
     const display = true;
     const dontDisplay = false;
 
-    let prefValue = EnigmailPrefs.getPref(prefText);
+    let prefValue = AnnealMailPrefs.getPref(prefText);
     if (prefValue === display) {
       let checkBoxObj = {
         value: false
       };
       let buttonPressed = gPromptSvc.confirmEx(win,
-        EnigmailLocale.getString("enigAlert"),
+        AnnealMailLocale.getString("enigAlert"),
         mesg, (gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0),
         null, null, null,
-        EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
+        AnnealMailLocale.getString("dlgNoPrompt"), checkBoxObj);
       if (checkBoxObj.value && buttonPressed === 0) {
-        EnigmailPrefs.setPref(prefText, dontDisplay);
+        AnnealMailPrefs.setPref(prefText, dontDisplay);
       }
     }
   },
@@ -185,29 +185,29 @@ const EnigmailDialog = {
    * If |counter| is 0, the dialog is not displayed.
    *
    * @win:           nsIWindow - the parent window to hold the modal dialog
-   * @countPrefName: String    - the name of the Enigmail preference to read/store the
+   * @countPrefName: String    - the name of the AnnealMail preference to read/store the
    *                             the |counter| value
    * @mesg:          String    - the localized message to display
    *
    */
   alertCount: function(win, countPrefName, mesg) {
-    let alertCount = EnigmailPrefs.getPref(countPrefName);
+    let alertCount = AnnealMailPrefs.getPref(countPrefName);
 
     if (alertCount <= 0)
       return;
 
     alertCount--;
-    EnigmailPrefs.setPref(countPrefName, alertCount);
+    AnnealMailPrefs.setPref(countPrefName, alertCount);
 
     if (alertCount > 0) {
-      mesg += EnigmailLocale.getString("repeatPrefix", [alertCount]) + " ";
-      mesg += (alertCount == 1) ? EnigmailLocale.getString("repeatSuffixSingular") : EnigmailLocale.getString("repeatSuffixPlural");
+      mesg += AnnealMailLocale.getString("repeatPrefix", [alertCount]) + " ";
+      mesg += (alertCount == 1) ? AnnealMailLocale.getString("repeatSuffixSingular") : AnnealMailLocale.getString("repeatSuffixPlural");
     }
     else {
-      mesg += EnigmailLocale.getString("noRepeat");
+      mesg += AnnealMailLocale.getString("noRepeat");
     }
 
-    EnigmailDialog.alert(win, mesg);
+    AnnealMailDialog.alert(win, mesg);
   },
 
   /**
@@ -217,7 +217,7 @@ const EnigmailDialog = {
    *
    * @win:         nsIWindow - parent window to display modal dialog; can be null
    * @mesg:        String    - message text
-   * @prefText     String    - the name of the Enigmail preference to read/store the
+   * @prefText     String    - the name of the AnnealMail preference to read/store the
    *                           the future display status.
    *                           the default action is chosen
    * @okLabel:     String    - OPTIONAL label for OK button
@@ -257,7 +257,7 @@ const EnigmailDialog = {
       }
     }
 
-    var prefValue = EnigmailPrefs.getPref(prefText);
+    var prefValue = AnnealMailPrefs.getPref(prefText);
 
     if (typeof(prefValue) != "boolean") {
       // number: remember user's choice
@@ -268,13 +268,13 @@ const EnigmailDialog = {
               value: false
             };
             let buttonPressed = gPromptSvc.confirmEx(win,
-              EnigmailLocale.getString("enigConfirm"),
+              AnnealMailLocale.getString("enigConfirm"),
               mesg,
               buttonTitles,
               okLabel, cancelLabel, null,
-              EnigmailLocale.getString("dlgKeepSetting"), checkBoxObj);
+              AnnealMailLocale.getString("dlgKeepSetting"), checkBoxObj);
             if (checkBoxObj.value) {
-              EnigmailPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
+              AnnealMailPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
             }
             return (buttonPressed === 0 ? 1 : 0);
           }
@@ -295,13 +295,13 @@ const EnigmailDialog = {
               value: false
             };
             let buttonPressed = gPromptSvc.confirmEx(win,
-              EnigmailLocale.getString("enigConfirm"),
+              AnnealMailLocale.getString("enigConfirm"),
               mesg,
               buttonTitles,
               okLabel, cancelLabel, null,
-              EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
+              AnnealMailLocale.getString("dlgNoPrompt"), checkBoxObj);
             if (checkBoxObj.value) {
-              EnigmailPrefs.setPref(prefText, false);
+              AnnealMailPrefs.setPref(prefText, false);
             }
             return (buttonPressed === 0 ? 1 : 0);
           }
@@ -328,7 +328,7 @@ const EnigmailDialog = {
    *  return value:     nsIFile object representing the file to load or save
    */
   filePicker: function(win, title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: filePicker: " + save + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: filePicker: " + save + "\n");
 
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance();
     filePicker = filePicker.QueryInterface(Ci.nsIFilePicker);
@@ -397,10 +397,10 @@ const EnigmailDialog = {
     };
 
     if (!win) {
-      win = EnigmailWindows.getBestParentWin();
+      win = AnnealMailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailKeyImportInfo.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailKeyImportInfo.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         keyList: keyList,
         checkboxLabel: checkBoxLabel,
@@ -421,4 +421,4 @@ const EnigmailDialog = {
   }
 };
 
-EnigmailWindows.alert = EnigmailDialog.alert;
+AnnealMailWindows.alert = AnnealMailDialog.alert;

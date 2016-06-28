@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!--
+  This is the overlay that adds the OpenPGP account
+  settings to the identity editor of the account manager
+-->
+
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<overlay id="annealmailAmIdEditOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAmIdEditOverlay.js"/>
+
+  <tabs id="identitySettings">
+    <tab label="&annealmail.openPgpSecurity.label;" id="annealmailSecurity"/>
+  </tabs>
+
+  <tabpanels id="identityTabsPanels">
+    <vbox>
+      <broadcasterset>
+        <broadcaster id="annealmail_bcEnablePgp" disabled="false"/>
+        <broadcaster id="annealmail_bcUseKeyId" disabled="false"/>
+        <broadcaster id="annealmail_bcUseUrl" disabled="true"/>
+      </broadcasterset>
+
+      <label id="annealmail_identityName" value="(unknown ID)"/>
+
+      <separator/>
+
+      <vbox id="annealmail_IdentityEdit"/>
+
+    </vbox>
+  </tabpanels>
+</overlay>

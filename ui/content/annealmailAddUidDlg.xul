@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<dialog id="annealmailSignKeyDlg"
+        title="&annealmail.addUidDlg.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        ondialogaccept="return onAccept();">
+
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAddUidDlg.js"/>
+
+  <vbox>
+    <grid>
+      <columns>
+        <column/>
+        <column/>
+      </columns>
+      <rows autostretch="never">
+        <row>
+          <label value="&annealmail.addUidDlg.name.label;" control="addUid_name"/>
+          <textbox id="addUid_name" size="30"/>
+        </row>
+        <row>
+          <label value="&annealmail.addUidDlg.email.label;" control="addUid_email"/>
+          <textbox id="addUid_email" size="30"/>
+        </row>
+      </rows>
+    </grid>
+  </vbox>
+
+</dialog>

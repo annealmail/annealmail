@@ -7,14 +7,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailSystem"];
+var EXPORTED_SYMBOLS = ["AnnealMailSystem"];
 
 Components.utils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
-Components.utils.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
-Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
-Components.utils.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /* global EnigmailPrefs: false */
+Components.utils.import("resource://annealmail/os.jsm"); /* global AnnealMailOS: false */
+Components.utils.import("resource://annealmail/data.jsm"); /* global AnnealMailData: false */
+Components.utils.import("resource://annealmail/subprocess.jsm"); /* global subprocess: false */
+Components.utils.import("resource://annealmail/log.jsm"); /* global AnnealMailLog: false */
+Components.utils.import("resource://annealmail/prefs.jsm"); /* global AnnealMailPrefs: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -70,12 +70,12 @@ const CODEPAGE_MAPPING = {
 
 
 /**
- * Get the default codepage that is set on Windows (which equals to the chatset of the console output of gpg)
+ * Get the default codepage that is set on Windows (which equals to the chatset of the console output of ccr)
  */
 function getWindowsCopdepage() {
-  EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
+  AnnealMailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
 
-  if (EnigmailPrefs.getPref("gpgLocaleEn")) {
+  if (AnnealMailPrefs.getPref("ccrLocaleEn")) {
     return "437";
   }
 
@@ -111,10 +111,10 @@ function getWindowsCopdepage() {
 }
 
 /**
- * Get the charset defined with LC_ALL or locale. That's the charset used by gpg console output
+ * Get the charset defined with LC_ALL or locale. That's the charset used by ccr console output
  */
 function getUnixCharset() {
-  EnigmailLog.DEBUG("system.jsm: getUnixCharset\n");
+  AnnealMailLog.DEBUG("system.jsm: getUnixCharset\n");
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
   let lc = env.get("LC_ALL");
 
@@ -167,7 +167,7 @@ function getUnixCharset() {
 
 function getKernel32Dll() {
   if (!gKernel32Dll) {
-    if (EnigmailOS.isWin32) {
+    if (AnnealMailOS.isWin32) {
       gKernel32Dll = ctypes.open("kernel32.dll");
     }
     else {
@@ -179,13 +179,13 @@ function getKernel32Dll() {
 }
 
 
-var EnigmailSystem = {
+var AnnealMailSystem = {
 
   determineSystemCharset: function() {
-    EnigmailLog.DEBUG("system.jsm: determineSystemCharset\n");
+    AnnealMailLog.DEBUG("system.jsm: determineSystemCharset\n");
 
     if (!gSystemCharset) {
-      if (EnigmailOS.isWin32) {
+      if (AnnealMailOS.isWin32) {
         gSystemCharset = getWindowsCopdepage();
       }
       else {
@@ -193,7 +193,7 @@ var EnigmailSystem = {
       }
     }
 
-    EnigmailLog.DEBUG("system.jsm: determineSystemCharset: charset='" + gSystemCharset + "'\n");
+    AnnealMailLog.DEBUG("system.jsm: determineSystemCharset: charset='" + gSystemCharset + "'\n");
     return gSystemCharset;
   },
 
@@ -213,25 +213,25 @@ var EnigmailSystem = {
     try {
       if (!cs) cs = this.determineSystemCharset();
 
-      if (EnigmailOS.isWin32) {
+      if (AnnealMailOS.isWin32) {
         if (cs in CODEPAGE_MAPPING) {
-          return EnigmailData.convertToUnicode(str, CODEPAGE_MAPPING[cs]);
+          return AnnealMailData.convertToUnicode(str, CODEPAGE_MAPPING[cs]);
         }
         else {
           let charSetNum = Number(cs);
           if (Number.isNaN(charSetNum)) {
-            return EnigmailData.convertToUnicode(str, cs);
+            return AnnealMailData.convertToUnicode(str, cs);
           }
           else
-            return EnigmailData.convertToUnicode(this.winConvertNativeToUnichar(str, Number(cs)), "UTF-8");
+            return AnnealMailData.convertToUnicode(this.winConvertNativeToUnichar(str, Number(cs)), "UTF-8");
         }
       }
       else {
-        return EnigmailData.convertToUnicode(str, cs);
+        return AnnealMailData.convertToUnicode(str, cs);
       }
     }
     catch (ex) {
-      EnigmailLog.DEBUG("system.jsm: convertNativeToUnicode: exception +" + ex.toString() + "\n");
+      AnnealMailLog.DEBUG("system.jsm: convertNativeToUnicode: exception +" + ex.toString() + "\n");
 
       return str;
     }

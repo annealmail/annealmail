@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+
+<window id="annealmailGenCardKeyDlg"
+        title="&annealmail.genCardKey.title;"
+        windowtype="annealmail:genCardKey"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="onLoad()"
+        buttons="accept,cancel"
+        minwidth="450px"
+        width="600px">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailKeygen.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailGenCardKey.js"/>
+
+  <broadcasterset>
+    <broadcaster id="bcBackupKey"/>
+    <broadcaster id="bcNoExpiry"/>
+  </broadcasterset>
+
+  <popupset id="aTooltipSet"/>
+
+  <groupbox id="userIdBox" orient="vertical">
+
+    <hbox orient="horizontal" align="center">
+      <label value="&annealmail.keyUserId.label;" control="userIdentity"/>
+      <menulist id="userIdentity" label="..." flex="1">
+        <menupopup id="userIdentityPopup"/>
+      </menulist>
+    </hbox>
+
+    <checkbox id="useForSigning"
+              label="&annealmail.useForSigning.label;"
+              checked="true" />
+
+  </groupbox>
+
+  <checkbox id="createBackup"
+            label="&annealmail.genCardKey.backupKey.label;"
+            checked="true"
+            oncommand="enableDisable('createBackup','bcBackupKey', false)"/>
+  <grid>
+    <columns>
+      <column />
+      <column flex="1"/>
+    </columns>
+
+    <rows>
+      <row>
+        <hbox id="passphraseBox" align="center">
+          <label control="passphrase" value="&annealmail.keyPassphrase.label;" />
+        </hbox>
+        <hbox align="center">
+          <textbox id="passphrase" type="password" observes="bcBackupKey"/>
+          <label control="passphraseRepeat" value="&annealmail.keyPassphraseRepeat.label;" />
+          <textbox id="passphraseRepeat" type="password" observes="bcBackupKey"/>
+        </hbox>
+      </row>
+
+      <row>
+        <hbox align="center">
+          <label value="&annealmail.keyGen.expire.label;" control="expireInput"/>
+        </hbox>
+        <hbox align="center">
+          <textbox id="expireInput" size="5" maxlength="5" value="5" observes="bcNoExpiry"/>
+          <menulist id="timeScale" label="&annealmail.keyGen.years.label;" value="365"  observes="bcNoExpiry">
+            <menupopup id="timeScalePopup" value="5">
+              <menuitem id="years" value="y" label="&annealmail.keyGen.years.label;" selected="true"/>
+              <menuitem id="months" value="m" label="&annealmail.keyGen.months.label;"/>
+              <menuitem id="days" value="d" label="&annealmail.keyGen.days.label;"/>
+            </menupopup>
+          </menulist>
+          <checkbox label="&annealmail.keyGen.noExpiry.label;"
+                    id="noExpiry"
+                    oncommand="enableDisable('noExpiry','bcNoExpiry', true)"/>
+        </hbox>
+      </row>
+
+    </rows>
+  </grid>
+
+  <separator/>
+
+<hbox autostretch="never">
+  <button label="&annealmail.generateKey.label;"
+          class="dialog"
+          tooltip="aTooltip"
+          tooltiptext="&annealmail.generateKey.tooltip;"
+          oncommand="startKeyGen();" />
+
+  <button label="&annealmail.cancelKey.label;"
+          class="dialog"
+          tooltip="aTooltip"
+          tooltiptext="&annealmail.cancelKey.tooltip;"
+          oncommand="onClose();" />
+</hbox>
+
+<groupbox id="keygenConsoleBox" orient="vertical">
+
+  <caption label="&annealmail.keyGen.console.label;"/>
+
+  <description>&annealmail.genCardKey.desc;</description>
+
+  <iframe id="keygenConsole" type="content" name="keygenConsole"
+          src="chrome://annealmail/content/annealmailKeygenConsole.htm"
+          height="200" flex="1"/>
+
+</groupbox>
+
+</window>

@@ -1,0 +1,435 @@
+<?xml version="1.0"?>
+
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!--
+  This is the overlay that adds a menu and some PGP buttons
+  to messenger mail reading window
+-->
+
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
+                 type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+
+<overlay id="annealmailMessengerOverlay"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript"  src="chrome://annealmail/content/annealmailMessengerOverlay.js"/>
+
+  <commandset id="mailToolbarItems">
+    <command id="button_annealmail_decrypt"/>
+  </commandset>
+
+  <broadcasterset>
+    <broadcaster id="annealmailBcDisplayClass" class="headerValue"/>
+  </broadcasterset>
+
+  <!-- Menu insert point for Thunderbird & SeaMonkey -->
+  <menubar id="mail-menubar">
+    <menu id="menu_AnnealMail"
+          label="&annealmail.label;"
+          accesskey="&annealmail.messengermenu.accesskey;"
+          insertbefore="tasksMenu" />
+  </menubar>
+
+  <!-- Menu insert point for Spicebird -->
+  <menubar id="framework-menubar">
+    <menu id="menu_AnnealMail"
+          label="&annealmail.label;"
+          accesskey="&annealmail.messengermenu.accesskey;"
+          insertafter="messageMenu,go-menu,view-menu" insertbefore="tools-menu"
+          app="mailnews"/>
+  </menubar>
+
+  <!-- Thunderbird secondary pane -->
+  <popup id="appmenuSecondaryPane">
+        <splitmenu id="menu_AnnealMail2ndPane"
+          label="&annealmail.label;"
+          accesskey="&annealmail.messengermenu.accesskey;"
+          insertafter="appmenu_customize">
+        <menupopup id="annealmail_2ndPanePopup" onpopupshowing="AnnealMail.msg.displayMainMenu(this)"/>
+    </splitmenu>
+  </popup>
+
+  <!-- Menu content for all apps -->
+  <menu id="menu_AnnealMail">
+
+    <menupopup id="menu_AnnealMailPopup"
+      onpopupshowing="AnnealMailFuncs.collapseAdvanced(this, 'hidden', AnnealMail.msg.updateOptionsDisplay());">
+
+      <menuitem id="annealmail_wizard_basic"
+           label="&annealmail.setupWiz.label;"
+           advanced="reverse"
+           accesskey="&annealmail.setupWiz.accesskey;"
+           oncommand="AnnealMailWindows.openSetupWizard(window, true);" />
+
+      <menuitem id="annealmail_decryptverify"
+           label="&annealmail.decryptverify.label;"
+           accesskey="&annealmail.decryptverify.accesskey;"
+           advanced="true"
+           hidden="false"
+           oncommand="AnnealMail.msg.messageDecrypt(null, false);" />
+
+      <menuseparator
+           advanced="true"
+           hidden="false"/>
+
+      <menuitem id="annealmail_autoDecrypt"
+           type="checkbox"
+           checked="false"
+           advanced="true"
+           hidden="false"
+           label="&annealmail.autoDecrypt.label;"
+           accesskey="&annealmail.autoDecrypt.accesskey;"
+           oncommand="AnnealMail.msg.toggleAttribute('autoDecrypt');" />
+
+      <menuseparator
+           advanced="true"
+           hidden="false"/>
+
+      <menuitem id="annealmail_clearPassphrase"
+           label="&annealmail.clearPassphrase.label;"
+           accesskey="&annealmail.clearPassphrase.accesskey;"
+           advanced="true"
+           hidden="false"
+           oncommand="AnnealMailPassword.clearPassphrase(window);" />
+
+      <menuitem id="annealmail_reload_msg"
+           label="&annealmail.reload.label;"
+           accesskey="&annealmail.reload.accesskey;"
+           advanced="true"
+           hidden="false"
+           oncommand="AnnealMail.msg.reloadCompleteMsg();" />
+
+      <menu id="annealmail_sendersKeyMenu"
+           label="&annealmail.sendersKeyMenu.label;"
+           advanced="true"
+           hidden="false"
+           accesskey="&annealmail.sendersKeyMenu.accesskey;">
+
+        <menupopup onpopupshowing="AnnealMail.hdrView.updateSendersKeyMenu();">
+
+          <menuitem id="annealmail_importpublickey"
+               label="&annealmail.importpublickey.label;"
+               accesskey="&annealmail.importpublickey.accesskey;"
+               disabled="true"
+               oncommand="AnnealMail.msg.messageImport();" />
+
+          <menuseparator/>
+
+          <menuitem label="&annealmail.displayKeyProperties.label;"
+                    id="annealmail_keyMgmtDispKeyDetails"
+                    oncommand="AnnealMail.hdrView.dispKeyDetails();"/>
+          <menuitem label="&annealmail.signSenderKey.label;"
+                    id="annealmail_keyMgmtSignKey"
+                    oncommand="AnnealMail.hdrView.signKey();"/>
+          <menuitem label="&annealmail.trustSenderKey.label;"
+                    id="annealmail_keyMgmtKeyTrust"
+                    oncommand="AnnealMail.hdrView.editKeyTrust();"/>
+          <menuitem label="&annealmail.showPhoto.label;"
+                    id="annealmail_keyMgmtShowPhoto"
+                    oncommand="AnnealMail.hdrView.showPhoto();"/>
+        </menupopup>
+      </menu>
+
+      <menu
+          id="annealmailDecryptToFolder"
+          label="&annealmail.decryptToFolder.label;"
+          accesskey="&annealmail.decryptToFolder.accesskey;"
+          oncommand="AnnealMail.msg.decryptToFolder(event.target._folder)">
+        <menupopup id="annealmailDecryptfileHereMenu"
+                   type="folder"
+                   mode="filing"
+                   showFileHereLabel="true"
+                   showRecent="true"
+                   recentLabel="&annealmail.recent.label;"
+                   recentAccessKey="&annealmail.recent.accesskey;"/>
+      </menu>
+
+      <menuseparator/>
+
+      <menuitem id="annealmail_keymgmt"
+           label="&annealmail.keyManWindow.label;"
+           accesskey="&annealmail.keyManWindow.accesskey;"
+           oncommand="AnnealMailWindows.openKeyManager(window);" />
+
+      <menuitem label="&annealmail.adminSmartCard.label;"
+              id="annealmail_smartCard"
+              accesskey="&annealmail.adminSmartCard.accesskey;"
+              advanced="true"
+              hidden="false"
+              oncommand="AnnealMailWindows.openCardDetails();"/>
+
+      <menuitem id="annealmail_RulesEditor"
+          label="&annealmail.editRules.label;"
+          accesskey="&annealmail.editRules.accesskey;"
+          oncommand="AnnealMailWindows.openRulesEditor();"/>
+
+      <menuseparator/>
+
+      <menuitem id="annealmail_prefs"
+           label="&annealmail.prefs.label;"
+           accesskey="&annealmail.prefs.accesskey;"
+           oncommand="AnnealMailWindows.openPrefWindow(window, true, null);" />
+
+      <menuitem id="annealmail_help"
+           label="&annealmail.help.label;"
+           accesskey="&annealmail.help.accesskey;"
+           oncommand="AnnealMailWindows.openHelpWindow('messenger');" />
+
+      <menu id="annealmail_debugMenu"
+           label="&annealmail.debugMenu.label;"
+           advanced="true"
+           hidden="false"
+           accesskey="&annealmail.debugMenu.accesskey;">
+
+        <menupopup>
+          <menuitem id="annealmail_console"
+               label="&annealmail.viewconsole.label;"
+               accesskey="&annealmail.viewconsole.accesskey;"
+               oncommand="AnnealMailWindows.openConsoleWindow();" />
+
+          <menuitem id="annealmail_debug_log"
+               label="&annealmail.viewlog.label;"
+               accesskey="&annealmail.viewlog.accesskey;"
+               oncommand="AnnealMailWindows.openDebugLog(window);" />
+        </menupopup>
+      </menu>
+
+      <menuitem id="annealmail_wizard_advanced"
+           label="&annealmail.setupWiz.label;"
+           advanced="true"
+           accesskey="&annealmail.setupWiz.accesskey;"
+           oncommand="AnnealMailWindows.openSetupWizard(window, true);" />
+
+      <menuitem id="annealmail_about"
+           label="&annealmail.about.label;"
+           accesskey="&annealmail.about.accesskey;"
+           oncommand="AnnealMailWindows.openAboutWindow();" />
+
+    </menupopup>
+  </menu>
+
+  <!-- menuitem in folder list context menu to decrypt message -->
+  <menupopup id="mailContext">
+    <menu
+        id="annealmailContext-decryptToFolder"
+        insertafter="mailContext-copyMenu"
+        label="&annealmail.decryptToFolder.label;"
+        accesskey="&annealmail.decryptToFolder.accesskey;"
+        oncommand="AnnealMail.msg.decryptToFolder(event.target._folder)">
+      <menupopup id="annealmailCtxDecrypt-fileHereMenu"
+                 type="folder"
+                 mode="filing"
+                 showFileHereLabel="true"
+                 showRecent="true"
+                 recentLabel="&annealmail.recent.label;"
+                 recentAccessKey="&annealmail.recent.accesskey;"/>
+    </menu>
+  </menupopup>
+
+<!-- Thunderbird & SeaMonkey 2.x -->
+   <toolbarpalette id="MailToolbarPalette">
+      <toolbarbutton class="toolbarbutton-1"
+              id="button-annealmail-decrypt"
+              label="&annealmail.decryptbutton.label;"
+              tooltiptext="&annealmail.decryptbutton.tip;"
+              oncommand="AnnealMail.msg.messageDecrypt(null, false);"
+              buttontype="thunderbird"
+              observes="button_annealmail_decrypt"
+              insertafter="button-newmsg"
+              />
+  </toolbarpalette>
+
+<!-- Spicebird -->
+   <toolbarpalette id="framework-toolpalette">
+      <toolbarbutton class="framework-toolbarbutton padded-toolbarbutton"
+              id="button-annealmail-decrypt"
+              label="&annealmail.decryptbutton.label;"
+              tooltiptext="&annealmail.decryptbutton.tip;"
+              oncommand="AnnealMail.msg.messageDecrypt(null, false);"
+              buttontype="thunderbird"
+              observes="button_annealmail_decrypt"
+              insertafter="button-newmsg"
+              app="mailnews"
+              />
+  </toolbarpalette>
+
+  <!-- the default set does not include the AnnealMail decryption icon anymore -->
+
+  <!-- annealmailHdrBox is defined in messengerOverlay-(tbird|sm).xul -->
+
+  <vbox id="annealmailHdrBox">
+    <hbox id="annealmailBox"
+          class="expandedAnnealMailBox"
+          collapsed="true" align="center">
+
+      <vbox>
+        <spacer class="annealmailHeaderSpacer"/>
+      </vbox>
+
+      <hbox class="headerNameBox" align="start" id="annealmailStatusTextBox" pack="start">
+        <image id="enigToggleHeaderView2"
+               class="annealmailExpandViewButton" onclick="AnnealMail.hdrView.toggleHeaderView();"
+               state="false" persist="state class"/>
+        <spacer flex="1"/>
+        <label class="annealmailHeaderName"
+              id="annealmailStatusHdr" flex="1"
+              value="&annealmail.label;" control="annealmailStatusText"/>
+      </hbox>
+
+      <hbox flex="1" pack="start" class="headerValueBox">
+        <vbox flex="1" pack="start">
+          <hbox flex="1" align="center">
+            <label flex="1" readonly="true"
+                 id="annealmailStatusText" chromedir="ltr"
+                 class="annealmailHeaderValue">...
+            </label>
+          </hbox>
+          <textbox flex="1" readonly="true"
+                 id="expandedAnnealMailStatusText"
+                 class="annealmailHeaderValue"
+                 observes="annealmailStatusText"
+                 chromedir="ltr"
+                 collapsed="true" display="false" state="false"
+                 persist="display" aria-labelledby="annealmailStatusHdr"/>
+        </vbox>
+        <vbox flex="0" pack="center">
+          <button id="annealmail_importKey" pack="center"
+                  label="&annealmail.importKey.label;"
+                  hidden="true"
+                  class="enigMsgHdrView-flat-button"
+                  oncommand="AnnealMail.msg.handleUnknownKey();"/>
+        </vbox>
+        <vbox class="annealmailHeaderNameBox" flex="0" pack="center">
+          <observes element="annealmailStatusText" attribute="class"/>
+          <button id="annealmailStatusHdrDetails" pack="center"
+                  label="&annealmail.detailsHdrButton.label;"
+                  type="menu"
+                  class="enigMsgHdrView-flat-button">
+            <menupopup id="enigSecurityContext"
+                   onpopupshowing="AnnealMail.hdrView.dispSecurityContext();">
+              <menuitem label="&annealmail.importpublickey.label;"
+                        id="annealmail_importKeyunused"
+                        hidden="true"
+                        oncommand="AnnealMail.msg.handleUnknownKey();"/>
+              <menuitem label="&annealmail.reload.label;"
+                        id="annealmail_reloadMessage"
+                        disabled="true"
+                        oncommand="AnnealMail.msg.reloadCompleteMsg();"/>
+              <menuitem label="&annealmail.pgpSecurityInfo.label;"
+                        id="annealmail_pgpSecurityInfo"
+                        oncommand="AnnealMail.msg.viewOpenpgpInfo(null, false);"/>
+              <menuitem label="&annealmail.copySecurityInfo.label;"
+                        id="annealmail_copySecurityInfo"
+                        oncommand="AnnealMail.hdrView.copyStatusInfo();"/>
+              <menuseparator/>
+              <menuitem label="&annealmail.displayKeyProperties.label;"
+                        id="annealmail_dispKeyDetails"
+                        oncommand="AnnealMail.hdrView.dispKeyDetails();"/>
+              <menuitem label="&annealmail.showPhoto.label;"
+                        id="annealmail_showPhoto"
+                        oncommand="AnnealMail.hdrView.showPhoto();"/>
+              <menuitem label="&annealmail.signSenderKeyPopup.label;"
+                        id="annealmail_signSenderKey"
+                        oncommand="AnnealMail.hdrView.signKey();"/>
+              <menuitem label="&annealmail.trustSenderKeyPopup.label;"
+                        id="annealmail_editSenderKeyTrust"
+                        oncommand="AnnealMail.hdrView.editKeyTrust();"/>
+            </menupopup>
+          </button>
+        </vbox>
+      </hbox>
+    </hbox>
+
+    <hbox id="annealmailRevealAttachments" hidden="true" class="annealmailHeaderNameBox annealmailHeaderBoxLabelSignatureUnknown" flex="0" pack="center">
+      <vbox flex="1" pack="start">
+        <textbox flex="1" readonly="true" align="center" class="annealmailHeaderValue" chromedir="ltr"
+          value="&annealmail.revealAttachmentsButton.label;"/>
+      </vbox>
+      <button class="enigMsgHdrView-flat-button"
+              label="&annealmail.revealAttachments.button;"
+              oncommand="AnnealMail.msg.revealAttachments();"/>
+    </hbox>
+
+    <vbox id="annealmailBrokenExchangeBox"
+        flex="0" class="annealmailHeaderNameBox annealmailHeaderBoxLabelSignatureUnknown"
+        collapsed="true"
+        pack="center">
+      <hbox pack="center">
+        <vbox flex="1" pack="start">
+          <description class="annealmailHeaderValue">&annealmail.exchangeGarbage.desc;</description>
+        </vbox>
+        <vbox flex="0" pack="center">
+          <button id="annealmailFixBrokenMessageButton"
+                class="enigMsgHdrView-flat-button"
+                label="&annealmail.exchangeGarbage.fixButton.label;"
+                oncommand="AnnealMail.msg.fixBuggyExchangeMail()"/>
+          <label id="annealmailFixBrokenMessageProgress" value="&annealmail.exchangeGarbage.waitMessage;" collapsed="true"/>
+        </vbox>
+      </hbox>
+    </vbox>
+  </vbox>
+
+
+  <!-- Thunderbird -->
+  <popup id="attachmentItemContext" onpopupshowing="return AnnealMail.hdrView.enigOnShowAttachmentContextMenu();">
+    <menuseparator/>
+    <menuitem id="annealmail_ctxImportKey"
+      label="&annealmail.ctxImportKey.label;"
+      accesskey="&annealmail.ctxImportKey.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('importKey');"/>
+    <menuitem id="annealmail_ctxDecryptOpen"
+      label="&annealmail.ctxDecryptOpen.label;"
+      accesskey="&annealmail.ctxDecryptOpen.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('openAttachment');"/>
+    <menuitem id="annealmail_ctxDecryptSave"
+      label="&annealmail.ctxDecryptSave.label;"
+      accesskey="&annealmail.ctxDecryptSave.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('saveAttachment');"/>
+    <menuitem id="annealmail_ctxVerifyAtt"
+      label="&annealmail.ctxVerifyAtt.label;"
+      accesskey="&annealmail.ctxVerifyAtt.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('verifySig');"/>
+  </popup>
+
+  <!-- SeaMonkey -->
+  <popup id="attachmentListContext">
+    <menuseparator/>
+    <menuitem id="annealmail_ctxImportKey_SM"
+      label="&annealmail.ctxImportKey.label;"
+      accesskey="&annealmail.ctxImportKey.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('importKey');"/>
+    <menuitem id="annealmail_ctxDecryptOpen_SM"
+      label="&annealmail.ctxDecryptOpen.label;"
+      accesskey="&annealmail.ctxDecryptOpen.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('openAttachment');"/>
+    <menuitem id="annealmail_ctxDecryptSave_SM"
+      label="&annealmail.ctxDecryptSave.label;"
+      accesskey="&annealmail.ctxDecryptSave.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('saveAttachment');"/>
+    <menuitem id="annealmail_ctxVerifyAtt_SM"
+      label="&annealmail.ctxVerifyAtt.label;"
+      accesskey="&annealmail.ctxVerifyAtt.accesskey;"
+      oncommand="AnnealMail.msg.handleAttachmentSel('verifySig');"/>
+  </popup>
+
+  <statusbar id="status-bar">
+    <hbox id="annealmail-status-bar"
+          insertafter="totalMessageCount"
+          app="mailnews">
+      <statusbarpanel id="annealmail-encrypted-status"
+        class="statusbarpanel-iconic"
+        collapsed="true"/>
+      <statusbarpanel id="annealmail-signed-status"
+        class="statusbarpanel-iconic"
+        collapsed="true"/>
+    </hbox>
+  </statusbar>
+</overlay>

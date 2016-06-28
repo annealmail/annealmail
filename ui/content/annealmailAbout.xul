@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE window [
+  <!ENTITY % annealmailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd">
+   %annealmailDTD;
+  <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+   %utilDTD;
+]>
+
+<window id="AnnealMailAbout"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&annealmail.about.title;"
+        width="540" height="600"
+        screenX="10" screenY="10"
+        persist="screenX screenY"
+        onload="return enigAboutLoad();">
+
+  <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailAbout.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailBuildDate.js"/>
+
+<commandset id="tasksCommands"/>
+
+<command id="cmd_close" oncommand="window.close()"/>
+<command id="cmd_quit"/>
+
+<keyset id="tasksKeys">
+  <!-- File Menu -->
+  <key id="key_close"/>
+  <key id="key_quit"/>
+</keyset>
+
+<browser id="contentFrame" type="content" name="contentFrame"
+        src="chrome://annealmail/content/annealmailAbout.htm"
+        flex="1"
+        disablehistory="true"
+        autofind="false"
+        context="mailContext"
+        disablesecurity="true"
+        onclick="return contentAreaClick(event);"
+        clickthrough="never"/>
+
+</window>

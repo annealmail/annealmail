@@ -1,74 +1,74 @@
-content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/
-locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/
+content       annealmail                jar:chrome/annealmail.jar!/content/annealmail/
+locale        annealmail    en-US       jar:chrome/annealmail.jar!/locale/en-US/
 
 
 # Skin for TBird Mac OS X
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-mac/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-mac/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
 # Skin for TBird Windows
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-win-xp/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/aero/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-win-xp/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-win-xp/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/aero/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-win-xp/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
 # Skin for TBird other OS (e.g. Linux)
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/tb-linux/annealmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
 # Skin for SeaMonkey
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/classic-seamonkey/enigmail/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-skin          enigmail    modern/1.0 jar:chrome/enigmail.jar!/skin/modern/enigmail/
-overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://enigmail/content/enigmailCheckLanguage.xul
-overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://enigmail/content/enigmailMsgComposeOverlay.xul
-overlay chrome://messenger/content/mailWindowOverlay.xul chrome://enigmail/content/enigmailCheckLanguage.xul
-overlay chrome://messenger/content/messenger.xul chrome://enigmail/content/columnOverlay.xul
-overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://enigmail/content/enigmailCheckLanguage.xul
+skin          annealmail    classic/1.0 jar:chrome/annealmail.jar!/skin/classic-seamonkey/annealmail/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+skin          annealmail    modern/1.0 jar:chrome/annealmail.jar!/skin/modern/annealmail/
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://annealmail/content/annealmailCheckLanguage.xul
+overlay chrome://messenger/content/messengercompose/messengercompose.xul chrome://annealmail/content/annealmailMsgComposeOverlay.xul
+overlay chrome://messenger/content/mailWindowOverlay.xul chrome://annealmail/content/annealmailCheckLanguage.xul
+overlay chrome://messenger/content/messenger.xul chrome://annealmail/content/columnOverlay.xul
+overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://annealmail/content/annealmailCheckLanguage.xul
 
 # Overlay for mailWindowOverlay on Spicebird
-overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://enigmail/content/messengerOverlay-tbird.xul
+overlay chrome://messenger/content/csMailWindowOverlay.xul chrome://annealmail/content/messengerOverlay-tbird.xul
 
 # Overlay for mailWindowOverlay on Thunderbird
-overlay chrome://messenger/content/mailWindowOverlay.xul  chrome://enigmail/content/messengerOverlay-tbird.xul application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-overlay chrome://enigmail/content/messengerOverlay-tbird.xul chrome://enigmail/content/enigmailMessengerOverlay.xul application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://messenger/content/mailWindowOverlay.xul  chrome://annealmail/content/messengerOverlay-tbird.xul application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://annealmail/content/messengerOverlay-tbird.xul chrome://annealmail/content/annealmailMessengerOverlay.xul application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 
 # Overlay for mailWindowOverlay on SeaMonkey
-overlay chrome://messenger/content/mailWindowOverlay.xul  chrome://enigmail/content/messengerOverlay-sm.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-overlay chrome://enigmail/content/messengerOverlay-sm.xul chrome://enigmail/content/enigmailMessengerOverlay.xul  application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://messenger/content/mailWindowOverlay.xul  chrome://annealmail/content/messengerOverlay-sm.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+overlay chrome://annealmail/content/messengerOverlay-sm.xul chrome://annealmail/content/annealmailMessengerOverlay.xul  application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 
-overlay chrome://messenger/content/msgHdrViewOverlay.xul chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul
-overlay chrome://messenger/content/FilterEditor.xul chrome://enigmail/content/enigmailFilterEditorOverlay.xul
-overlay chrome://messenger/content/msgPrintEngine.xul chrome://enigmail/content/enigmailMsgPrintOverlay.xul
-overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailAmIdEditOverlay.xul
-overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
-overlay chrome://messenger/content/addressbook/addressbook.xul chrome://enigmail/content/enigmailAbCardViewOverlay.xul
-overlay chrome://messenger/content/addressbook/csContactsOverlay.xul chrome://enigmail/content/enigmailAbCardViewOverlay.xul
-overlay chrome://messenger/content/addressbook/abContactsPanel.xul chrome://enigmail/content/enigmailAbContactsPanel.xul
-overlay chrome://global/content/customizeToolbar.xul chrome://enigmail/content/enigmailCustToolOverlay.xul
-overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
-overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
+overlay chrome://messenger/content/msgHdrViewOverlay.xul chrome://annealmail/content/annealmailMsgHdrViewOverlay.xul
+overlay chrome://messenger/content/FilterEditor.xul chrome://annealmail/content/annealmailFilterEditorOverlay.xul
+overlay chrome://messenger/content/msgPrintEngine.xul chrome://annealmail/content/annealmailMsgPrintOverlay.xul
+overlay chrome://messenger/content/am-identity-edit.xul chrome://annealmail/content/annealmailAmIdEditOverlay.xul
+overlay chrome://messenger/content/am-identity-edit.xul chrome://annealmail/content/annealmailEditIdentity.xul
+overlay chrome://messenger/content/addressbook/addressbook.xul chrome://annealmail/content/annealmailAbCardViewOverlay.xul
+overlay chrome://messenger/content/addressbook/csContactsOverlay.xul chrome://annealmail/content/annealmailAbCardViewOverlay.xul
+overlay chrome://messenger/content/addressbook/abContactsPanel.xul chrome://annealmail/content/annealmailAbContactsPanel.xul
+overlay chrome://global/content/customizeToolbar.xul chrome://annealmail/content/annealmailCustToolOverlay.xul
+overlay chrome://annealmail/content/am-enigprefs.xul chrome://annealmail/content/annealmailEditIdentity.xul
+overlay chrome://annealmail/content/am-enigprefs-edit.xul chrome://annealmail/content/annealmailEditIdentity.xul
 
 # Resource module registration
-resource enigmail modules/
+resource annealmail modules/
 
 ## Gecko 2.0 JavaScript component registration
-# Enigmail
-component {847b3a01-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozdev.org/enigmail/enigmail;1 {847b3a01-7ab1-11d4-8f02-006008948af5}
+# AnnealMail
+component {847b3a01-7ab1-11d4-8f02-006008948af5} components/annealmail.js
+contract @mozdev.org/annealmail/annealmail;1 {847b3a01-7ab1-11d4-8f02-006008948af5}
 
-# EnigmailProtocolHandler
-component {847b3a11-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozilla.org/network/protocol;1?name=enigmail {847b3a11-7ab1-11d4-8f02-006008948af5}
+# AnnealMailProtocolHandler
+component {847b3a11-7ab1-11d4-8f02-006008948af5} components/annealmail.js
+contract @mozilla.org/network/protocol;1?name=annealmail {847b3a11-7ab1-11d4-8f02-006008948af5}
 
 # Command line service
-component {847b3ab1-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozilla.org/enigmail/cline-handler;1 {847b3ab1-7ab1-11d4-8f02-006008948af5}
-category command-line-handler cline-enigmail @mozilla.org/enigmail/cline-handler;1
+component {847b3ab1-7ab1-11d4-8f02-006008948af5} components/annealmail.js
+contract @mozilla.org/annealmail/cline-handler;1 {847b3ab1-7ab1-11d4-8f02-006008948af5}
+category command-line-handler cline-annealmail @mozilla.org/annealmail/cline-handler;1
 
 # EnigMsgCompFields
 component {847b3a30-7ab1-11d4-8f02-006008948af5} components/msgCompFields.js
-contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
+contract @mozdev.org/annealmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
 
 # registration of service to decrypt PGP/MIME messages
 component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/pgpmimeHandler.js
@@ -81,7 +81,7 @@ contract @mozilla.org/messengercompose/composesecure;1 {1b040e64-e704-42b9-b05a-
 # Preference Service
 component {847b3ab0-7ab1-11d4-8f02-006008948af5} components/prefs-service.js
 contract @mozilla.org/accountmanager/extension;1?name=enigprefs {847b3ab0-7ab1-11d4-8f02-006008948af5}
-category mailnews-accountmanager-extensions enigmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
+category mailnews-accountmanager-extensions annealmail-account-manager-extension @mozilla.org/accountmanager/extension;1?name=enigprefs
 
 ## interface specifiacations
-interfaces  components/enigmail.xpt
+interfaces  components/annealmail.xpt

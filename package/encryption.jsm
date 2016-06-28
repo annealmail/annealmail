@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailCore: false, EnigmailLog: false, EnigmailPrefs: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false */
+/*global Components: false, AnnealMailCore: false, AnnealMailLog: false, AnnealMailPrefs: false, AnnealMailApp: false, AnnealMailLocale: false, AnnealMailDialog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,29 +9,29 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailEncryption"];
+var EXPORTED_SYMBOLS = ["AnnealMailEncryption"];
 
-Components.utils.import("resource://enigmail/core.jsm");
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/prefs.jsm");
-Components.utils.import("resource://enigmail/app.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
-Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://annealmail/core.jsm");
+Components.utils.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
+Components.utils.import("resource://annealmail/log.jsm");
+Components.utils.import("resource://annealmail/prefs.jsm");
+Components.utils.import("resource://annealmail/app.jsm");
+Components.utils.import("resource://annealmail/locale.jsm");
+Components.utils.import("resource://annealmail/dialog.jsm");
+Components.utils.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Components.utils.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Components.utils.import("resource://annealmail/errorHandling.jsm"); /*global AnnealMailErrorHandling: false */
+Components.utils.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Components.utils.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Components.utils.import("resource://annealmail/passwords.jsm"); /*global AnnealMailPassword: false */
+Components.utils.import("resource://annealmail/funcs.jsm"); /*global AnnealMailFuncs: false */
+Components.utils.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
-var EC = EnigmailCore;
+var EC = AnnealMailCore;
 
 const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];
 
@@ -39,51 +39,51 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
-const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
+const CCR_COMMENT_OPT = "Using CodeCrypt with %s - http://annealmail.org";
 
 
-const EnigmailEncryption = {
+const AnnealMailEncryption = {
   getEncryptCommand: function(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
-    EnigmailLog.DEBUG("encryption.jsm: getEncryptCommand: hashAlgorithm=" + hashAlgorithm + "\n");
+    AnnealMailLog.DEBUG("encryption.jsm: getEncryptCommand: hashAlgorithm=" + hashAlgorithm + "\n");
 
     try {
-      fromMailAddr = EnigmailFuncs.stripEmail(fromMailAddr);
-      toMailAddr = EnigmailFuncs.stripEmail(toMailAddr);
-      bccMailAddr = EnigmailFuncs.stripEmail(bccMailAddr);
+      fromMailAddr = AnnealMailFuncs.stripEmail(fromMailAddr);
+      toMailAddr = AnnealMailFuncs.stripEmail(toMailAddr);
+      bccMailAddr = AnnealMailFuncs.stripEmail(bccMailAddr);
 
     }
     catch (ex) {
-      errorMsgObj.value = EnigmailLocale.getString("invalidEmail");
+      errorMsgObj.value = AnnealMailLocale.getString("invalidEmail");
       return null;
     }
 
-    var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
-    var signMsg = sendFlags & nsIEnigmail.SEND_SIGNED;
-    var encryptMsg = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
-    var usePgpMime = sendFlags & nsIEnigmail.SEND_PGP_MIME;
+    var defaultSend = sendFlags & nsIAnnealMail.SEND_DEFAULT;
+    var signMsg = sendFlags & nsIAnnealMail.SEND_SIGNED;
+    var encryptMsg = sendFlags & nsIAnnealMail.SEND_ENCRYPTED;
+    var usePgpMime = sendFlags & nsIAnnealMail.SEND_PGP_MIME;
 
     var useDefaultComment = false;
     try {
-      useDefaultComment = EnigmailPrefs.getPref("useDefaultComment");
+      useDefaultComment = AnnealMailPrefs.getPref("useDefaultComment");
     }
     catch (ex) {}
 
     var hushMailSupport = false;
     try {
-      hushMailSupport = EnigmailPrefs.getPref("hushMailSupport");
+      hushMailSupport = AnnealMailPrefs.getPref("hushMailSupport");
     }
     catch (ex) {}
 
-    var detachedSig = (usePgpMime || (sendFlags & nsIEnigmail.SEND_ATTACHMENT)) && signMsg && !encryptMsg;
+    var detachedSig = (usePgpMime || (sendFlags & nsIAnnealMail.SEND_ATTACHMENT)) && signMsg && !encryptMsg;
 
     var toAddrList = toMailAddr.split(/\s*,\s*/);
     var bccAddrList = bccMailAddr.split(/\s*,\s*/);
     var k;
 
-    var encryptArgs = EnigmailGpg.getStandardArgs(true);
+    var encryptArgs = AnnealMailCcr.getStandardArgs(true);
 
     if (!useDefaultComment)
-      encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/\%s/, EnigmailApp.getName())]);
+      encryptArgs = encryptArgs.concat(["--comment", CCR_COMMENT_OPT.replace(/\%s/, AnnealMailApp.getName())]);
 
     var angledFromMailAddr = ((fromMailAddr.search(/^0x/) === 0) || hushMailSupport) ?
       fromMailAddr : "<" + fromMailAddr + ">";
@@ -108,11 +108,11 @@ const EnigmailEncryption = {
       if (signMsg)
         encryptArgs.push("--sign");
 
-      if (sendFlags & nsIEnigmail.SEND_ALWAYS_TRUST) {
+      if (sendFlags & nsIAnnealMail.SEND_ALWAYS_TRUST) {
         encryptArgs.push("--trust-model");
         encryptArgs.push("always");
       }
-      if ((sendFlags & nsIEnigmail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
+      if ((sendFlags & nsIAnnealMail.SEND_ENCRYPT_TO_SELF) && fromMailAddr)
         encryptArgs = encryptArgs.concat(["--encrypt-to", angledFromMailAddr]);
 
       for (k = 0; k < toAddrList.length; k++) {
@@ -120,7 +120,7 @@ const EnigmailEncryption = {
         if (toAddrList[k].length > 0) {
           encryptArgs.push("-r");
           if (toAddrList[k].search(/^GROUP:/) === 0) {
-            // groups from gpg.conf file
+            // groups from ccr.conf file
             encryptArgs.push(toAddrList[k].substr(6));
           }
           else {
@@ -172,7 +172,7 @@ const EnigmailEncryption = {
    *         - errorMsg: String - the erorr message if key not valid, or null if key is valid
    */
   determineOwnKeyUsability: function(sendFlags, fromMailAddr) {
-    EnigmailLog.DEBUG("encryption.jsm: determineOwnKeyUsability: sendFlags=" + sendFlags + ", sender=" + fromMailAddr + "\n");
+    AnnealMailLog.DEBUG("encryption.jsm: determineOwnKeyUsability: sendFlags=" + sendFlags + ", sender=" + fromMailAddr + "\n");
 
     let keyList = [];
     let ret = {
@@ -180,21 +180,21 @@ const EnigmailEncryption = {
       errorMsg: null
     };
 
-    let sign = (sendFlags & nsIEnigmail.SEND_SIGNED ? true : false);
-    let encrypt = (sendFlags & nsIEnigmail.SEND_ENCRYPTED ? true : false);
+    let sign = (sendFlags & nsIAnnealMail.SEND_SIGNED ? true : false);
+    let encrypt = (sendFlags & nsIAnnealMail.SEND_ENCRYPTED ? true : false);
 
     if (fromMailAddr.search(/^(0x)?[A-Z0-9]+$/) === 0) {
       // key ID specified
-      let key = EnigmailKeyRing.getKeyById(fromMailAddr);
+      let key = AnnealMailKeyRing.getKeyById(fromMailAddr);
       keyList.push(key);
     }
     else {
       // email address specified
-      keyList = EnigmailKeyRing.getKeysByUserId(fromMailAddr);
+      keyList = AnnealMailKeyRing.getKeysByUserId(fromMailAddr);
     }
 
     if (keyList.length === 0) {
-      ret.errorMsg = EnigmailLocale.getString("errorOwnKeyUnusable", fromMailAddr);
+      ret.errorMsg = AnnealMailLocale.getString("errorOwnKeyUnusable", fromMailAddr);
       return ret;
     }
 
@@ -214,10 +214,10 @@ const EnigmailEncryption = {
 
     if (keyList.length === 0) {
       if (sign) {
-        ret.errorMsg = EnigmailErrorHandling.determineInvSignReason(fromMailAddr);
+        ret.errorMsg = AnnealMailErrorHandling.determineInvSignReason(fromMailAddr);
       }
       else {
-        ret.errorMsg = EnigmailErrorHandling.determineInvRcptReason(fromMailAddr);
+        ret.errorMsg = AnnealMailErrorHandling.determineInvRcptReason(fromMailAddr);
       }
     }
     else {
@@ -230,23 +230,23 @@ const EnigmailEncryption = {
 
   encryptMessageStart: function(win, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
     hashAlgorithm, sendFlags, listener, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + EnigmailData.bytesToHex(
-      EnigmailData.pack(sendFlags, 4)) + ")\n");
+    AnnealMailLog.DEBUG("encryption.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + AnnealMailData.bytesToHex(
+      AnnealMailData.pack(sendFlags, 4)) + ")\n");
 
     let keyUseability = this.determineOwnKeyUsability(sendFlags, fromMailAddr);
 
     if (!keyUseability.keyId) {
-      EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: own key invalid\n");
+      AnnealMailLog.DEBUG("encryption.jsm: encryptMessageStart: own key invalid\n");
       errorMsgObj.value = keyUseability.errorMsg;
-      statusFlagsObj.value = nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.NO_SECKEY | nsIEnigmail.DISPLAY_MESSAGE;
+      statusFlagsObj.value = nsIAnnealMail.INVALID_RECIPIENT | nsIAnnealMail.NO_SECKEY | nsIAnnealMail.DISPLAY_MESSAGE;
 
       return null;
     }
     // TODO: else - use the found key ID
 
-    var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
+    var pgpMime = uiFlags & nsIAnnealMail.UI_PGP_MIME;
 
-    var hashAlgo = gMimeHashAlgorithms[EnigmailPrefs.getPref("mimeHashAlgorithm")];
+    var hashAlgo = gMimeHashAlgorithms[AnnealMailPrefs.getPref("mimeHashAlgorithm")];
 
     if (hashAlgorithm) {
       hashAlgo = hashAlgorithm;
@@ -255,59 +255,59 @@ const EnigmailEncryption = {
     errorMsgObj.value = "";
 
     if (!sendFlags) {
-      EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: NO ENCRYPTION!\n");
-      errorMsgObj.value = EnigmailLocale.getString("notRequired");
+      AnnealMailLog.DEBUG("encryption.jsm: encryptMessageStart: NO ENCRYPTION!\n");
+      errorMsgObj.value = AnnealMailLocale.getString("notRequired");
       return null;
     }
 
-    if (!EnigmailCore.getService(win)) {
-      EnigmailLog.ERROR("encryption.jsm: encryptMessageStart: not yet initialized\n");
-      errorMsgObj.value = EnigmailLocale.getString("notInit");
+    if (!AnnealMailCore.getService(win)) {
+      AnnealMailLog.ERROR("encryption.jsm: encryptMessageStart: not yet initialized\n");
+      errorMsgObj.value = AnnealMailLocale.getString("notInit");
       return null;
     }
 
-    var encryptArgs = EnigmailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+    var encryptArgs = AnnealMailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj);
     if (!encryptArgs)
       return null;
 
-    var signMsg = sendFlags & nsIEnigmail.SEND_SIGNED;
+    var signMsg = sendFlags & nsIAnnealMail.SEND_SIGNED;
 
-    var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, encryptArgs, signMsg, win, listener, statusFlagsObj);
+    var proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath, encryptArgs, signMsg, win, listener, statusFlagsObj);
 
-    if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
-      EnigmailLog.ERROR("encryption.jsm: encryptMessageStart: Error - no passphrase supplied\n");
+    if (statusFlagsObj.value & nsIAnnealMail.MISSING_PASSPHRASE) {
+      AnnealMailLog.ERROR("encryption.jsm: encryptMessageStart: Error - no passphrase supplied\n");
 
       errorMsgObj.value = "";
     }
 
     if (pgpMime && errorMsgObj.value) {
-      EnigmailDialog.alert(win, errorMsgObj.value);
+      AnnealMailDialog.alert(win, errorMsgObj.value);
     }
 
     return proc;
   },
 
   encryptMessageEnd: function(fromMailAddr, stderrStr, exitCode, uiFlags, sendFlags, outputLen, retStatusObj) {
-    EnigmailLog.DEBUG("encryption.jsm: encryptMessageEnd: uiFlags=" + uiFlags + ", sendFlags=" + EnigmailData.bytesToHex(EnigmailData.pack(sendFlags, 4)) + ", outputLen=" + outputLen + "\n");
+    AnnealMailLog.DEBUG("encryption.jsm: encryptMessageEnd: uiFlags=" + uiFlags + ", sendFlags=" + AnnealMailData.bytesToHex(AnnealMailData.pack(sendFlags, 4)) + ", outputLen=" + outputLen + "\n");
 
-    var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
-    var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
-    var signMsg = sendFlags & nsIEnigmail.SEND_SIGNED;
-    var encryptMsg = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
+    var pgpMime = uiFlags & nsIAnnealMail.UI_PGP_MIME;
+    var defaultSend = sendFlags & nsIAnnealMail.SEND_DEFAULT;
+    var signMsg = sendFlags & nsIAnnealMail.SEND_SIGNED;
+    var encryptMsg = sendFlags & nsIAnnealMail.SEND_ENCRYPTED;
 
     retStatusObj.statusFlags = 0;
     retStatusObj.errorMsg = "";
     retStatusObj.blockSeparation = "";
 
-    if (!EnigmailCore.getService().initialized) {
-      EnigmailLog.ERROR("encryption.jsm: encryptMessageEnd: not yet initialized\n");
-      retStatusObj.errorMsg = EnigmailLocale.getString("notInit");
+    if (!AnnealMailCore.getService().initialized) {
+      AnnealMailLog.ERROR("encryption.jsm: encryptMessageEnd: not yet initialized\n");
+      retStatusObj.errorMsg = AnnealMailLocale.getString("notInit");
       return -1;
     }
 
-    EnigmailErrorHandling.parseErrorOutput(stderrStr, retStatusObj);
+    AnnealMailErrorHandling.parseErrorOutput(stderrStr, retStatusObj);
 
-    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj);
+    exitCode = AnnealMailExecution.fixExitCode(exitCode, retStatusObj);
     if ((exitCode === 0) && !outputLen) {
       exitCode = -1;
     }
@@ -318,17 +318,17 @@ const EnigmailEncryption = {
 
       var correctedExitCode = 0;
       if (signMsg) {
-        if (!(retStatusObj.statusFlags & nsIEnigmail.SIG_CREATED)) correctedExitCode = exitCode;
+        if (!(retStatusObj.statusFlags & nsIAnnealMail.SIG_CREATED)) correctedExitCode = exitCode;
       }
       if (encryptMsg) {
-        if (!(retStatusObj.statusFlags & nsIEnigmail.END_ENCRYPTION)) correctedExitCode = exitCode;
+        if (!(retStatusObj.statusFlags & nsIAnnealMail.END_ENCRYPTION)) correctedExitCode = exitCode;
       }
       exitCode = correctedExitCode;
     }
 
-    EnigmailLog.DEBUG("encryption.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
+    AnnealMailLog.DEBUG("encryption.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
 
-    if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
+    if (retStatusObj.statusFlags & nsIAnnealMail.DISPLAY_MESSAGE) {
       if (retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
         retStatusObj.errorMsg = retStatusObj.statusMsg;
       }
@@ -342,18 +342,18 @@ const EnigmailEncryption = {
 
         let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ (\\<|0x)?" + fromMailAddr + "\\>?", "m");
         if (retStatusObj.statusMsg.search(s) >= 0) {
-          retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
+          retStatusObj.errorMsg += "\n\n" + AnnealMailLocale.getString("keyError.resolutionAction");
         }
         else if (retStatusObj.statusMsg.length > 0) {
           retStatusObj.errorMsg = retStatusObj.statusMsg;
         }
       }
     }
-    else if (retStatusObj.statusFlags & nsIEnigmail.INVALID_RECIPIENT) {
+    else if (retStatusObj.statusFlags & nsIAnnealMail.INVALID_RECIPIENT) {
       retStatusObj.errorMsg = retStatusObj.statusMsg;
     }
     else if (exitCode !== 0) {
-      retStatusObj.errorMsg = EnigmailLocale.getString("badCommand");
+      retStatusObj.errorMsg = AnnealMailLocale.getString("badCommand");
     }
 
     return exitCode;
@@ -361,22 +361,22 @@ const EnigmailEncryption = {
 
   encryptMessage: function(parent, uiFlags, plainText, fromMailAddr, toMailAddr, bccMailAddr, sendFlags,
     exitCodeObj, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: " + plainText.length + " bytes from " + fromMailAddr + " to " + toMailAddr + " (" + sendFlags + ")\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.encryptMessage: " + plainText.length + " bytes from " + fromMailAddr + " to " + toMailAddr + " (" + sendFlags + ")\n");
 
     exitCodeObj.value = -1;
     statusFlagsObj.value = 0;
     errorMsgObj.value = "";
 
     if (!plainText) {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
+      AnnealMailLog.DEBUG("annealmail.js: AnnealMail.encryptMessage: NO ENCRYPTION!\n");
       exitCodeObj.value = 0;
-      EnigmailLog.DEBUG("  <=== encryptMessage()\n");
+      AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
       return plainText;
     }
 
-    var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
-    var signMsg = sendFlags & nsIEnigmail.SEND_SIGNED;
-    var encryptMsg = sendFlags & nsIEnigmail.SEND_ENCRYPTED;
+    var defaultSend = sendFlags & nsIAnnealMail.SEND_DEFAULT;
+    var signMsg = sendFlags & nsIAnnealMail.SEND_SIGNED;
+    var encryptMsg = sendFlags & nsIAnnealMail.SEND_ENCRYPTED;
 
     if (encryptMsg) {
       // First convert all linebreaks to newlines
@@ -389,7 +389,7 @@ const EnigmailEncryption = {
 
     var inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
-    var listener = EnigmailExecution.newSimpleListener(
+    var listener = AnnealMailExecution.newSimpleListener(
       function _stdin(pipe) {
         pipe.write(plainText);
         pipe.close();
@@ -402,13 +402,13 @@ const EnigmailEncryption = {
       });
 
 
-    var proc = EnigmailEncryption.encryptMessageStart(parent, uiFlags,
+    var proc = AnnealMailEncryption.encryptMessageStart(parent, uiFlags,
       fromMailAddr, toMailAddr, bccMailAddr,
       null, sendFlags,
       listener, statusFlagsObj, errorMsgObj);
     if (!proc) {
       exitCodeObj.value = -1;
-      EnigmailLog.DEBUG("  <=== encryptMessage()\n");
+      AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
       return "";
     }
 
@@ -416,7 +416,7 @@ const EnigmailEncryption = {
     inspector.enterNestedEventLoop(0);
 
     var retStatusObj = {};
-    exitCodeObj.value = EnigmailEncryption.encryptMessageEnd(fromMailAddr, EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
+    exitCodeObj.value = AnnealMailEncryption.encryptMessageEnd(fromMailAddr, AnnealMailData.getUnicodeData(listener.stderrData), listener.exitCode,
       uiFlags, sendFlags,
       listener.stdoutData.length,
       retStatusObj);
@@ -431,52 +431,52 @@ const EnigmailEncryption = {
 
     if (exitCodeObj.value === 0) {
       // Normal return
-      EnigmailLog.DEBUG("  <=== encryptMessage()\n");
-      return EnigmailData.getUnicodeData(listener.stdoutData);
+      AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
+      return AnnealMailData.getUnicodeData(listener.stdoutData);
     }
 
     // Error processing
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: command execution exit code: " + exitCodeObj.value + "\n");
+    AnnealMailLog.DEBUG("annealmail.js: AnnealMail.encryptMessage: command execution exit code: " + exitCodeObj.value + "\n");
     return "";
   },
 
   encryptAttachment: function(parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outFile,
     exitCodeObj, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("encryption.jsm: EnigmailEncryption.encryptAttachment infileName=" + inFile.path + "\n");
+    AnnealMailLog.DEBUG("encryption.jsm: AnnealMailEncryption.encryptAttachment infileName=" + inFile.path + "\n");
 
     statusFlagsObj.value = 0;
-    sendFlags |= nsIEnigmail.SEND_ATTACHMENT;
+    sendFlags |= nsIAnnealMail.SEND_ATTACHMENT;
 
     let asciiArmor = false;
     try {
-      asciiArmor = EnigmailPrefs.getPrefBranch().getBoolPref("inlineAttachAsciiArmor");
+      asciiArmor = AnnealMailPrefs.getPrefBranch().getBoolPref("inlineAttachAsciiArmor");
     }
     catch (ex) {}
 
     const asciiFlags = (asciiArmor ? ENC_TYPE_ATTACH_ASCII : ENC_TYPE_ATTACH_BINARY);
-    let args = EnigmailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
+    let args = AnnealMailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, "", sendFlags, asciiFlags, errorMsgObj);
 
     if (!args) {
       return null;
     }
 
-    const signMessage = (sendFlags & nsIEnigmail.SEND_SIGNED);
+    const signMessage = (sendFlags & nsIAnnealMail.SEND_SIGNED);
 
     if (signMessage) {
-      args = args.concat(EnigmailPassword.command());
+      args = args.concat(AnnealMailPassword.command());
     }
 
-    const inFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(inFile.QueryInterface(Ci.nsIFile)));
-    const outFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile)));
+    const inFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(inFile.QueryInterface(Ci.nsIFile)));
+    const outFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile)));
 
     args = args.concat(["--yes", "-o", outFilePath, inFilePath]);
 
     let cmdErrorMsgObj = {};
 
-    const msg = EnigmailExecution.execCmd(EnigmailGpgAgent.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
+    const msg = AnnealMailExecution.execCmd(AnnealMailCcrAgent.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
     if (exitCodeObj.value !== 0) {
       if (cmdErrorMsgObj.value) {
-        errorMsgObj.value = EnigmailFiles.formatCmdLine(EnigmailGpgAgent.agentPath, args);
+        errorMsgObj.value = AnnealMailFiles.formatCmdLine(AnnealMailCcrAgent.agentPath, args);
         errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
       }
       else {
@@ -490,7 +490,7 @@ const EnigmailEncryption = {
   },
 
   registerOn: function(target) {
-    target.encryptMessage = EnigmailEncryption.encryptMessage;
-    target.encryptAttachment = EnigmailEncryption.encryptAttachment;
+    target.encryptMessage = AnnealMailEncryption.encryptMessage;
+    target.encryptAttachment = AnnealMailEncryption.encryptAttachment;
   }
 };

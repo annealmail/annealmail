@@ -8,17 +8,17 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailWindows"];
+var EXPORTED_SYMBOLS = ["AnnealMailWindows"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Cu.import("resource://annealmail/rules.jsm"); /*global AnnealMailRules: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -26,7 +26,7 @@ const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const EnigmailWindows = {
+const AnnealMailWindows = {
   /**
    * Display the OpenPGP setup wizard window
    *
@@ -40,7 +40,7 @@ const EnigmailWindows = {
     if (skipIntro) {
       param = "?skipIntro=true";
     }
-    win.open("chrome://enigmail/content/enigmailSetupWizard.xul" + param,
+    win.open("chrome://annealmail/content/annealmailSetupWizard.xul" + param,
       "", "chrome,centerscreen,resizable");
   },
 
@@ -48,7 +48,7 @@ const EnigmailWindows = {
    * Open a window, or focus it if it is already open
    *
    * @winName   : String - name of the window; used to identify if it is already open
-   * @spec      : String - window URL (e.g. chrome://enigmail/content/test.xul)
+   * @spec      : String - window URL (e.g. chrome://annealmail/content/test.xul)
    * @winOptions: String - window options as defined in nsIWindow.open
    * @optObj    : any    - an Object, Array, String, etc. that is passed as parameter
    *                       to the window
@@ -126,7 +126,7 @@ const EnigmailWindows = {
    * @return:    the frame object or null if not found
    */
   getFrame: function(win, frameName) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: getFrame: name=" + frameName + "\n");
+    AnnealMailLog.DEBUG("annealmailCommon.jsm: getFrame: name=" + frameName + "\n");
     for (var j = 0; j < win.frames.length; j++) {
       if (win.frames[j].name == frameName) {
         return win.frames[j];
@@ -150,19 +150,19 @@ const EnigmailWindows = {
    */
 
   openHelpWindow: function(source) {
-    EnigmailWindows.openWin("enigmail:help",
-      "chrome://enigmail/content/enigmailHelp.xul?src=" + source,
+    AnnealMailWindows.openWin("annealmail:help",
+      "chrome://annealmail/content/annealmailHelp.xul?src=" + source,
       "centerscreen,resizable");
   },
 
   /**
-   * Display the "About Enigmail" window
+   * Display the "About AnnealMail" window
    *
    * no return value
    */
   openAboutWindow: function() {
-    EnigmailWindows.openWin("about:enigmail",
-      "chrome://enigmail/content/enigmailAbout.xul",
+    AnnealMailWindows.openWin("about:annealmail",
+      "chrome://annealmail/content/annealmailAbout.xul",
       "resizable,centerscreen");
   },
 
@@ -172,8 +172,8 @@ const EnigmailWindows = {
    * no return value
    */
   openRulesEditor: function() {
-    EnigmailWindows.openWin("enigmail:rulesEditor",
-      "chrome://enigmail/content/enigmailRulesEditor.xul",
+    AnnealMailWindows.openWin("annealmail:rulesEditor",
+      "chrome://annealmail/content/annealmailRulesEditor.xul",
       "dialog,centerscreen,resizable");
   },
 
@@ -183,10 +183,10 @@ const EnigmailWindows = {
    * no return value
    */
   openKeyManager: function(win) {
-    EnigmailCore.getService(win);
+    AnnealMailCore.getService(win);
 
-    EnigmailWindows.openWin("enigmail:KeyManager",
-      "chrome://enigmail/content/enigmailKeyManager.xul",
+    AnnealMailWindows.openWin("annealmail:KeyManager",
+      "chrome://annealmail/content/annealmailKeyManager.xul",
       "resizable");
   },
 
@@ -197,8 +197,8 @@ const EnigmailWindows = {
 
   keyManReloadKeys: function() {
     let windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-    let winName = "enigmail:KeyManager";
-    let spec = "chrome://enigmail/content/enigmailKeygen.xul";
+    let winName = "annealmail:KeyManager";
+    let spec = "chrome://annealmail/content/annealmailKeygen.xul";
 
     let winEnum = windowManager.getEnumerator(null);
     let recentWin = null;
@@ -225,8 +225,8 @@ const EnigmailWindows = {
    * no return value
    */
   openKeyGen: function() {
-    EnigmailWindows.openWin("enigmail:generateKey",
-      "chrome://enigmail/content/enigmailKeygen.xul",
+    AnnealMailWindows.openWin("annealmail:generateKey",
+      "chrome://annealmail/content/annealmailKeygen.xul",
       "chrome,resizable=yes");
   },
 
@@ -236,8 +236,8 @@ const EnigmailWindows = {
    * no return value
    */
   openCardDetails: function() {
-    EnigmailWindows.openWin("enigmail:cardDetails",
-      "chrome://enigmail/content/enigmailCardDetails.xul",
+    AnnealMailWindows.openWin("annealmail:cardDetails",
+      "chrome://annealmail/content/annealmailCardDetails.xul",
       "centerscreen");
   },
 
@@ -250,8 +250,8 @@ const EnigmailWindows = {
    * no return value
    */
   openConsoleWindow: function() {
-    EnigmailWindows.openWin("enigmail:console",
-      "chrome://enigmail/content/enigmailConsole.xul",
+    AnnealMailWindows.openWin("annealmail:console",
+      "chrome://annealmail/content/annealmailConsole.xul",
       "resizable,centerscreen");
   },
 
@@ -263,8 +263,8 @@ const EnigmailWindows = {
    * no return value
    */
   openDebugLog: function(win) {
-    EnigmailWindows.openWin("enigmail:logFile",
-      "chrome://enigmail/content/enigmailViewFile.xul?viewLog=1&title=" + escape(EnigmailLocale.getString("debugLog.title")),
+    AnnealMailWindows.openWin("annealmail:logFile",
+      "chrome://annealmail/content/annealmailViewFile.xul?viewLog=1&title=" + escape(AnnealMailLocale.getString("debugLog.title")),
       "resizable,centerscreen");
   },
 
@@ -279,11 +279,11 @@ const EnigmailWindows = {
    * no return value
    */
   openPrefWindow: function(win, showBasic, selectTab) {
-    EnigmailLog.DEBUG("windows.js: openPrefWindow\n");
+    AnnealMailLog.DEBUG("windows.js: openPrefWindow\n");
 
-    EnigmailCore.getService(win, true); // true: starting preferences dialog
+    AnnealMailCore.getService(win, true); // true: starting preferences dialog
 
-    win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+    win.openDialog("chrome://annealmail/content/pref-annealmail.xul",
       "_blank", "chrome,resizable=yes", {
         'showBasic': showBasic,
         'clientType': 'thunderbird',
@@ -301,20 +301,20 @@ const EnigmailWindows = {
    */
   createNewRule: function(win, emailAddress) {
     // make sure the rules database is loaded
-    const enigmailSvc = EnigmailCore.getService(win);
-    if (!enigmailSvc) {
+    const annealmailSvc = AnnealMailCore.getService(win);
+    if (!annealmailSvc) {
       return false;
     }
 
     // open rule dialog
-    EnigmailRules.getRulesData({});
+    AnnealMailRules.getRulesData({});
 
     const inputObj = {
       toAddress: "{" + emailAddress + "}",
       options: "",
       command: "add"
     };
-    win.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailSingleRcptSettings.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, {});
     return true;
   },
@@ -336,7 +336,7 @@ const EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/enigmailEditKeyExpiryDlg.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailEditKeyExpiryDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -358,7 +358,7 @@ const EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/enigmailEditKeyTrustDlg.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailEditKeyTrustDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -381,7 +381,7 @@ const EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/enigmailSignKeyDlg.xul", "",
+    win.openDialog("chrome://annealmail/content/annealmailSignKeyDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -396,8 +396,8 @@ const EnigmailWindows = {
    * no return value
    */
   showPhoto: function(win, keyId, userId, photoNumber) {
-    const enigmailSvc = EnigmailCore.getService(win);
-    if (enigmailSvc) {
+    const annealmailSvc = AnnealMailCore.getService(win);
+    if (annealmailSvc) {
       if (!photoNumber) photoNumber = 0;
 
       if (keyId.search(/^0x/) < 0) {
@@ -405,11 +405,11 @@ const EnigmailWindows = {
       }
 
       let exitCodeObj = {};
-      let photoFile = EnigmailKeyRing.getPhotoFile(keyId, photoNumber, exitCodeObj, {});
+      let photoFile = AnnealMailKeyRing.getPhotoFile(keyId, photoNumber, exitCodeObj, {});
 
       if (photoFile && exitCodeObj.value === 0) {
         if (!(photoFile.isFile() && photoFile.isReadable())) {
-          EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoFile.path));
+          AnnealMailWindows.alert(win, AnnealMailLocale.getString("error.photoPathNotReadable", photoFile.path));
         }
         else {
           const photoUri = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService).
@@ -420,7 +420,7 @@ const EnigmailWindows = {
             keyId: keyId
           };
 
-          win.openDialog("chrome://enigmail/content/enigmailDispPhoto.xul",
+          win.openDialog("chrome://annealmail/content/annealmailDispPhoto.xul",
             photoUri,
             "chrome,modal,resizable,dialog,centerscreen",
             argsObj);
@@ -432,7 +432,7 @@ const EnigmailWindows = {
         }
       }
       else {
-        EnigmailWindows.alert(win, EnigmailLocale.getString("noPhotoAvailable"));
+        AnnealMailWindows.alert(win, AnnealMailLocale.getString("noPhotoAvailable"));
       }
     }
   },
@@ -453,7 +453,7 @@ const EnigmailWindows = {
     keyId = keyId.replace(/^0x/, "");
 
     if (refresh) {
-      EnigmailKeyRing.clearCache();
+      AnnealMailKeyRing.clearCache();
     }
 
     const inputObj = {
@@ -462,10 +462,10 @@ const EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/keyDetailsDlg.xul", "",
+    win.openDialog("chrome://annealmail/content/keyDetailsDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.refresh) {
-      EnigmailKeyRing.clearCache();
+      AnnealMailKeyRing.clearCache();
     }
 
     return resultObj.refresh;
@@ -481,13 +481,13 @@ const EnigmailWindows = {
    * no return value
    */
   downloadKeys: function(win, inputObj, resultObj) {
-    EnigmailLog.DEBUG("windows.jsm: downloadKeys: searchList=" + inputObj.searchList + "\n");
+    AnnealMailLog.DEBUG("windows.jsm: downloadKeys: searchList=" + inputObj.searchList + "\n");
 
     resultObj.importedKeys = 0;
 
     const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
     if (ioService && ioService.offline) {
-      EnigmailWindows.alert(win, EnigmailLocale.getString("needOnline"));
+      AnnealMailWindows.alert(win, AnnealMailLocale.getString("needOnline"));
       return;
     }
 
@@ -504,7 +504,7 @@ const EnigmailWindows = {
       keysrvObj.value = inputObj.autoKeyServer;
     }
     else {
-      win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+      win.openDialog("chrome://annealmail/content/annealmailKeyserverDlg.xul",
         "", "dialog,modal,centerscreen", valueObj, keysrvObj);
     }
 
@@ -540,7 +540,7 @@ const EnigmailWindows = {
       }
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
+    win.openDialog("chrome://annealmail/content/annealmailSearchKey.xul",
       "", "dialog,modal,centerscreen", inputObj, resultObj);
   }
 };

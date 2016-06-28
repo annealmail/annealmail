@@ -8,30 +8,30 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
+var EXPORTED_SYMBOLS = ["AnnealMailKeyServer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/httpProxy.jsm"); /*global AnnealMailHttpProxy: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Cu.import("resource://annealmail/ccrAgent.jsm"); /*global AnnealMailCcrAgent: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
+Cu.import("resource://annealmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
-const EnigmailKeyServer = {
+const AnnealMailKeyServer = {
   /**
    * search, download or upload key on, from or to a keyserver
    *
    * @actionFlags: Integer - flags (bitmap) to determine the required action
-   *                         (see nsIEnigmail - Keyserver action flags for details)
+   *                         (see nsIAnnealMail - Keyserver action flags for details)
    * @keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @searchTerms: String  - space-separated list of search terms or key IDs
    * @listener:    Object  - execStart Listener Object. See execStart for details.
@@ -40,23 +40,23 @@ const EnigmailKeyServer = {
    * @return:      Subprocess object, or null in case process could not be started
    */
   access: function(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
-    EnigmailLog.DEBUG("keyserver.jsm: access: " + searchTerms + "\n");
+    AnnealMailLog.DEBUG("keyserver.jsm: access: " + searchTerms + "\n");
 
     if (!keyserver) {
-      errorMsgObj.value = EnigmailLocale.getString("failNoServer");
+      errorMsgObj.value = AnnealMailLocale.getString("failNoServer");
       return null;
     }
 
-    if (!searchTerms && !(actionFlags & nsIEnigmail.REFRESH_KEY)) {
-      errorMsgObj.value = EnigmailLocale.getString("failNoID");
+    if (!searchTerms && !(actionFlags & nsIAnnealMail.REFRESH_KEY)) {
+      errorMsgObj.value = AnnealMailLocale.getString("failNoID");
       return null;
     }
 
-    const proxyHost = EnigmailHttpProxy.getHttpProxy(keyserver);
-    let args = EnigmailGpg.getStandardArgs(true);
+    const proxyHost = AnnealMailHttpProxy.getHttpProxy(keyserver);
+    let args = AnnealMailCcr.getStandardArgs(true);
 
-    if (actionFlags & nsIEnigmail.SEARCH_KEY) {
-      args = EnigmailGpg.getStandardArgs(false).
+    if (actionFlags & nsIAnnealMail.SEARCH_KEY) {
+      args = AnnealMailCcr.getStandardArgs(false).
       concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
     }
     if (proxyHost) {
@@ -64,42 +64,42 @@ const EnigmailKeyServer = {
     }
     args = args.concat(["--keyserver", keyserver.trim()]);
 
-    //     if (actionFlags & nsIEnigmail.SEARCH_KEY | nsIEnigmail.DOWNLOAD_KEY | nsIEnigmail.REFRESH_KEY) {
+    //     if (actionFlags & nsIAnnealMail.SEARCH_KEY | nsIAnnealMail.DOWNLOAD_KEY | nsIAnnealMail.REFRESH_KEY) {
     //       args = args.concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
     //     }
 
     let inputData = null;
     const searchTermsList = searchTerms.split(" ");
 
-    if (actionFlags & nsIEnigmail.DOWNLOAD_KEY) {
+    if (actionFlags & nsIAnnealMail.DOWNLOAD_KEY) {
       args.push("--recv-keys");
       args = args.concat(searchTermsList);
     }
-    else if (actionFlags & nsIEnigmail.REFRESH_KEY) {
+    else if (actionFlags & nsIAnnealMail.REFRESH_KEY) {
       args.push("--refresh-keys");
     }
-    else if (actionFlags & nsIEnigmail.SEARCH_KEY) {
+    else if (actionFlags & nsIAnnealMail.SEARCH_KEY) {
       args.push("--search-keys");
       args = args.concat(searchTermsList);
       inputData = "quit\n";
     }
-    else if (actionFlags & nsIEnigmail.UPLOAD_KEY) {
+    else if (actionFlags & nsIAnnealMail.UPLOAD_KEY) {
       args.push("--send-keys");
       args = args.concat(searchTermsList);
     }
 
-    const isDownload = actionFlags & (nsIEnigmail.REFRESH_KEY | nsIEnigmail.DOWNLOAD_KEY);
+    const isDownload = actionFlags & (nsIAnnealMail.REFRESH_KEY | nsIAnnealMail.DOWNLOAD_KEY);
 
-    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(EnigmailGpgAgent.agentPath, args) + "\n");
+    AnnealMailLog.CONSOLE("annealmail> " + AnnealMailFiles.formatCmdLine(AnnealMailCcrAgent.agentPath, args) + "\n");
 
     let proc = null;
     let exitCode = null;
 
     try {
       proc = subprocess.call({
-        command: EnigmailGpgAgent.agentPath,
+        command: AnnealMailCcrAgent.agentPath,
         arguments: args,
-        environment: EnigmailCore.getEnvList(),
+        environment: AnnealMailCore.getEnvList(),
         charset: null,
         stdin: inputData,
         stdout: function(data) {
@@ -114,7 +114,7 @@ const EnigmailKeyServer = {
         done: function(result) {
           try {
             if (result.exitCode === 0 && isDownload) {
-              EnigmailKeyRing.clearCache();
+              AnnealMailKeyRing.clearCache();
             }
             if (exitCode === null) {
               exitCode = result.exitCode;
@@ -127,12 +127,12 @@ const EnigmailKeyServer = {
       });
     }
     catch (ex) {
-      EnigmailLog.ERROR("keyserver.jsm: access: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.ERROR("keyserver.jsm: access: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
 
     if (!proc) {
-      EnigmailLog.ERROR("keyserver.jsm: access: subprocess failed due to unknown reasons\n");
+      AnnealMailLog.ERROR("keyserver.jsm: access: subprocess failed due to unknown reasons\n");
       return null;
     }
 

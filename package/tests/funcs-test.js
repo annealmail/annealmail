@@ -1,5 +1,5 @@
-/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, EnigmailApp: false */
-/*global EnigmailFuncs: false, rulesListHolder: false, EC: false */
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, AnnealMailApp: false */
+/*global AnnealMailFuncs: false, rulesListHolder: false, EC: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,55 +13,55 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("funcs.jsm");
 
-var EnigmailFuncsTests = {
+var AnnealMailFuncsTests = {
   testStripEmail(str, res) {
     let addr;
-    addr = EnigmailFuncs.stripEmail(str);
+    addr = AnnealMailFuncs.stripEmail(str);
     Assert.equal(addr, res);
   }
 };
 
 test(function stripEmail() {
-  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff",
+  AnnealMailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff",
     "a@b.de");
 
-  EnigmailFuncsTests.testStripEmail("\"some stuff\" a@b.de",
+  AnnealMailFuncsTests.testStripEmail("\"some stuff\" a@b.de",
     "a@b.de");
 
-  EnigmailFuncsTests.testStripEmail("\"some, stuff\" a@b.de",
+  AnnealMailFuncsTests.testStripEmail("\"some, stuff\" a@b.de",
     "a@b.de");
 
-  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
+  AnnealMailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
     "a@b.de,xy@a.xx");
 
-  EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
+  AnnealMailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
     "a@b.de,aa@bb.de");
 
-  EnigmailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
+  AnnealMailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
     "");
 
-  EnigmailFuncsTests.testStripEmail(";",
+  AnnealMailFuncsTests.testStripEmail(";",
     "");
 
 
-  EnigmailFuncsTests.testStripEmail("    ,,oneRule,;;; , ;",
+  AnnealMailFuncsTests.testStripEmail("    ,,oneRule,;;; , ;",
     "oneRule");
 
-  EnigmailFuncsTests.testStripEmail("    ,,,nokey,;;;; , nokey2 ; , ;",
+  AnnealMailFuncsTests.testStripEmail("    ,,,nokey,;;;; , nokey2 ; , ;",
     "nokey,nokey2");
 
-  EnigmailFuncsTests.testStripEmail(",,,newsgroupa ",
+  AnnealMailFuncsTests.testStripEmail(",,,newsgroupa ",
     "newsgroupa");
 
   // test invalid email addresses:
   Assert.throws(
     function() {
-      EnigmailFuncs.stripEmail(" a@b.de , <aa@bb.de> <aa@bb.dd>");
+      AnnealMailFuncs.stripEmail(" a@b.de , <aa@bb.de> <aa@bb.dd>");
     }
   );
   Assert.throws(
     function() {
-      EnigmailFuncs.stripEmail("\"some stuff a@b.de");
+      AnnealMailFuncs.stripEmail("\"some stuff a@b.de");
     }
   );
 
@@ -70,26 +70,26 @@ test(function stripEmail() {
 test(function compareMimePartLevel() {
   Assert.throws(
     function() {
-      EnigmailFuncs.compareMimePartLevel("1.2.e", "1.2");
+      AnnealMailFuncs.compareMimePartLevel("1.2.e", "1.2");
     }
   );
 
-  let e = EnigmailFuncs.compareMimePartLevel("1.1", "1.1.2");
+  let e = AnnealMailFuncs.compareMimePartLevel("1.1", "1.1.2");
   Assert.equal(e, -2);
 
-  e = EnigmailFuncs.compareMimePartLevel("1.1", "1.2.2");
+  e = AnnealMailFuncs.compareMimePartLevel("1.1", "1.2.2");
   Assert.equal(e, -1);
 
-  e = EnigmailFuncs.compareMimePartLevel("1", "2");
+  e = AnnealMailFuncs.compareMimePartLevel("1", "2");
   Assert.equal(e, -1);
 
-  e = EnigmailFuncs.compareMimePartLevel("1.2", "1.1.2");
+  e = AnnealMailFuncs.compareMimePartLevel("1.2", "1.1.2");
   Assert.equal(e, 1);
 
-  e = EnigmailFuncs.compareMimePartLevel("1.2.2", "1.2");
+  e = AnnealMailFuncs.compareMimePartLevel("1.2.2", "1.2");
   Assert.equal(e, 2);
 
-  e = EnigmailFuncs.compareMimePartLevel("1.2.2", "1.2.2");
+  e = AnnealMailFuncs.compareMimePartLevel("1.2.2", "1.2.2");
   Assert.equal(e, 0);
 
 });

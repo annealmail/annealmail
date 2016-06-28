@@ -8,7 +8,7 @@
 
 /*
  This module is a shim module to make it easier to load
- the Gloda EnigmailMime utilities from the various potential sources
+ the Gloda AnnealMailMime utilities from the various potential sources
 */
 
 "use strict";

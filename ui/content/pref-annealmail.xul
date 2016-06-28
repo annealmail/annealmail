@@ -1,0 +1,507 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % annealMailDTD SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
+%annealMailDTD;
+]>
+<dialog id="annealmailPrefsAdv"
+        title="&annealmail.preferences.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="prefOnLoad();"
+        ondialogaccept="return prefOnAccept();">
+
+  <script type="application/x-javascript" src="chrome://annealmail/content/annealmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://annealmail/content/pref-annealmail.js"/>
+
+  <popupset>
+    <tooltip id="prefs.overrideCcr.tooltip">
+      <description>&annealmail.prefs.overrideCcr.tooltip;</description>
+    </tooltip>
+    <tooltip id="maxIdleMinutes.tooltip">
+      <description>&annealmail.maxIdleMinutes.tooltip;</description>
+    </tooltip>
+    <tooltip id="userNoPassphrase.tooltip">
+      <description>&annealmail.userNoPassphrase.tooltip;</description>
+    </tooltip>
+    <tooltip id="expertUser.tooltip">
+      <description>&annealmail.expertUser.tooltip;</description>
+    </tooltip>
+    <tooltip id="basicUser.tooltip">
+      <description>&annealmail.basicUser.tooltip;</description>
+    </tooltip>
+    <tooltip id="resetPrefs.tooltip">
+      <description>&annealmail.resetPrefs.tooltip;</description>
+    </tooltip>
+    <tooltip id="backupPrefs.tooltip">
+      <description>&annealmail.backupPrefs.tooltip;</description>
+    </tooltip>
+    <tooltip id="wrapHtmlBeforeSend.tooltip">
+      <description>&annealmail.wrapHtmlBeforeSend.tooltip;</description>
+    </tooltip>
+    <tooltip id="autoKeyServerSelection.tooltip">
+      <description>&annealmail.autoKeyServerSelection.tooltip;</description>
+    </tooltip>
+
+    <!-- sending preferences: accepted keys -->
+    <tooltip id="acceptedKeysTrusted.tooltip">
+      <description>&annealmail.acceptedKeysTrusted.tooltip;</description>
+    </tooltip>
+    <tooltip id="acceptedKeysAllUsable.tooltip">
+      <description>&annealmail.acceptedKeysAllUsable.tooltip;</description>
+    </tooltip>
+
+    <!-- sending preferences: auto send encrypted -->
+    <tooltip id="autoSendEncryptedNever.tooltip">
+      <description>&annealmail.autoSendEncryptedNever.tooltip;</description>
+    </tooltip>
+    <tooltip id="autoSendEncryptedIfKeys.tooltip">
+      <description>&annealmail.autoSendEncryptedIfKeys.tooltip;</description>
+    </tooltip>
+
+    <!-- sending preferences: confirm before sending -->
+    <tooltip id="confirmBeforeSendingNever.tooltip">
+      <description>&annealmail.confirmBeforeSendingNever.tooltip;</description>
+    </tooltip>
+    <tooltip id="confirmBeforeSendingAlways.tooltip">
+      <description>&annealmail.confirmBeforeSendingAlways.tooltip;</description>
+    </tooltip>
+    <tooltip id="confirmBeforeSendingIfEncrypted.tooltip">
+      <description>&annealmail.confirmBeforeSendingIfEncrypted.tooltip;</description>
+    </tooltip>
+    <tooltip id="confirmBeforeSendingIfNotEncrypted.tooltip">
+      <description>&annealmail.confirmBeforeSendingIfNotEncrypted.tooltip;</description>
+    </tooltip>
+    <tooltip id="confirmBeforeSendingIfRules.tooltip">
+      <description>&annealmail.confirmBeforeSendingIfRules.tooltip;</description>
+    </tooltip>
+
+    <!-- keySel preferences -->
+    <tooltip id="assignKeysByRules.tooltip">
+      <description>&annealmail.assignKeysByRules.tooltip;</description>
+    </tooltip>
+    <tooltip id="assignKeysByEmailAddr.tooltip">
+      <description>&annealmail.assignKeysByEmailAddr.tooltip;</description>
+    </tooltip>
+    <tooltip id="assignKeysManuallyIfMissing.tooltip">
+      <description>&annealmail.assignKeysManuallyIfMissing.tooltip;</description>
+    </tooltip>
+    <tooltip id="assignKeysManuallyAlways.tooltip">
+      <description>&annealmail.assignKeysManuallyAlways.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="keepCryptoSettingsForReply.tooltip">
+      <description>&annealmail.keepCryptoSettingsForReply.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="doubleDashSeparator.tooltip">
+      <description>&annealmail.doubleDashSeparator.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="useCcrAgent.tooltip">
+      <description>&annealmail.useCcrAgent.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="noHushMailSupport.tooltip">
+      <description>&annealmail.noHushMailSupport.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="mime_parts_on_demand.tooltip">
+      <description>&annealmail.mime_parts_on_demand.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="disableSMIMEui.tooltip">
+      <description>&annealmail.disableSMIMEui.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="agentAdditionalParam.tooltip">
+      <description>&annealmail.agentAdditionalParam.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="protectHeaders.tooltip">
+      <description>&annealmail.protectHeadersPrefs.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="protectedSubjectText.tooltip">
+      <description>&annealmail.protectedSubjectText.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="resetRememberedValues.tooltip">
+      <description>&annealmail.resetRememberedValues.tooltip;</description>
+    </tooltip>
+</popupset>
+
+  <tabbox flex="1" style="margin:5px" id="prefTabs">
+    <tabs id="prefTabBox">
+      <tab id="basicTab"      label="&annealmail.basic.label;"/>
+      <tab id="sendingTab"    label="&annealmail.sending.label;"/>
+      <tab id="keySelTab"     label="&annealmail.keySel.label;" advanced="true"/>
+      <tab id="advancedTab"   label="&annealmail.advanced.label;" advanced="true"/>
+      <tab id="keyserverTab"  label="&annealmail.keyserver.label;" advanced="true"/>
+      <tab id="backupRestore" label="&annealmail.backupRestore.label;"/>
+    </tabs>
+
+    <tabpanels flex="1" id="enigPrefTabPanel">
+      <!-- "Basic" Tab -->
+      <vbox id="basic" flex="1">
+          <description class="annealmailPrefsTitle">&annealmail.basicPrefs.label;</description>
+          <hbox>
+            <groupbox orient="vertical" flex="1">
+              <caption label="&annealmail.prefs.pathsTitle.label;"/>
+              <hbox align="center">
+                <label id="annealmailCcrPath" value="(error)"/>
+              </hbox>
+              <hbox align="center">
+                <checkbox label="&annealmail.prefs.overrideCcr.label;"
+                          tooltip="prefs.overrideCcr.tooltip"
+                          id="enigOverrideCcr"
+                          oncommand="enigActivateDependent(this, 'annealmail_agentPath annealmail_browsePath');"/>
+                <textbox id="annealmail_agentPath" size="30" aria-labelledby="enigOverrideCcr"/>
+                <button id="annealmail_browsePath"
+                        label="&annealmail.browse.label;"
+                  oncommand="enigLocateCcr();"/>
+              </hbox>
+            </groupbox>
+          </hbox>
+          <hbox>
+            <groupbox orient="vertical" flex="1">
+              <caption label="&annealmail.passwordSettings.label;"/>
+              <hbox autostretch="never" align="center">
+                <label control="maxIdleMinutes"
+                       tooltip="maxIdleMinutes.tooltip"
+                       value="&annealmail.maxIdleMinutesHead.label;" id="maxIdleMinutesHeadLabel"/>
+
+                <textbox id="maxIdleMinutes"
+                        aria-labelledby="maxIdleMinutesHeadLabel maxIdleMinutes maxIdleMinutesTailLabel"
+                        type="number"
+                        min="0" max="1440"
+                        size="4"
+                        maxlength="4"
+                        pref="true"
+                        preftype="int"
+                        tooltip="maxIdleMinutes.tooltip"
+                        prefstring="extensions.annealmail.maxIdleMinutes"/>
+
+                <description tooltip="maxIdleMinutes.tooltip" id="maxIdleMinutesTailLabel">&annealmail.maxIdleMinutesTail.label;</description>
+              </hbox>
+
+              <checkbox id="annealmail_noPassphrase"
+                      label="&annealmail.userNoPassphrase.label;"
+                      tooltip="userNoPassphrase.tooltip"
+                      pref="true"
+                      preftype="bool"
+                      prefstring="extensions.annealmail.noPassphrase"
+                      prefattribute="checked"/>
+
+            </groupbox>
+          </hbox>
+
+          <separator/>
+
+          <hbox autostretch="never" align="center">
+            <button id="annealmail_advancedUser"
+                  label="&annealmail.expertUserMenus.label;"
+                  oncommand="enigSwitchAdvancedMode(true)"
+                  tooltip="expertUser.tooltip"/>
+
+            <button id="annealmail_basicUser"
+                  label="&annealmail.basicUserMenus.label;"
+                  oncommand="enigSwitchAdvancedMode(false)"
+                  tooltip="basicUser.tooltip"
+                  hidden="true"/>
+          </hbox>
+
+          <separator/>
+
+          <vbox autostretch="never" align="end">
+            <hbox>
+             <button id="resetPrefs"
+                      label="&annealmail.resetPrefsButton.label;"
+                      tooltip="resetPrefs.tooltip"
+                      oncommand="resetPrefs();"/>
+            </hbox>
+          </vbox>
+
+      </vbox>
+
+      <!-- "Sending" Tab -->
+      <vbox id="sending" flex="1">
+        <description class="annealmailPrefsTitle">&annealmail.SendingPrefs.label;</description>
+
+        <!-- sending preferences: choose between convenient and manual settings -->
+        <hbox>
+          <radiogroup id="annealmail_encryptionModel"
+                      flex="1"
+                      pref="true"
+                      preftype="int"
+                      prefstring="extensions.annealmail.encryptionModel">
+            <radio id="encryptionModelConvenient"
+                   value="0"
+                   label="&annealmail.encryptionModelConvenient.label;"
+                   oncommand="resetSendingPrefsConvenient();"/>
+            <radio id="encryptionModelManually"
+                   value="1"
+                   label="&annealmail.encryptionModelManually.label;"
+                   oncommand="resetSendingPrefsManually();"/>
+          </radiogroup>
+          <!-- sending preferences: help button for convenient settings -->
+          <vbox align="end">
+            <button id="sendingPrefsHelp"
+                    label="&annealmail.help.label;"
+                    oncommand="EnigHelpWindow('sendingPrefs');"/>
+          </vbox>
+        </hbox>
+
+        <!-- elements for manual settings: -->
+        <groupbox id="annealmail_pref_sending_manually">
+
+          <!-- sending preferences: keep sign/enc settings for reply -->
+          <checkbox id="annealmail_keepSettingsForReply"
+                    tooltip="keepCryptoSettingsForReply.tooltip"
+                    label="&annealmail.keepCryptoSettingsForReply.label;" />
+
+          <!-- sending preferences: auto send encrypted -->
+          <groupbox>
+            <caption label="&annealmail.autoSendEncryptedOption.label;"/>
+            <radiogroup id="annealmail_autoSendEncrypted"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.annealmail.autoSendEncrypted">
+              <radio id="autoSendEncryptedNever"
+                    value="0"
+                    label="&annealmail.autoSendEncryptedNever.label;"
+                    tooltip="autoSendEncryptedNever.tooltip"/>
+              <radio id="autoSendEncryptedIfKeys"
+                    value="1"
+                    label="&annealmail.autoSendEncryptedIfKeys.label;"
+                    tooltip="autoSendEncryptedIfKeys.tooltip"/>
+            </radiogroup>
+          </groupbox>
+
+          <!-- sending preferences: accepted keys -->
+          <groupbox>
+            <caption label="&annealmail.acceptedKeysOption.label;"/>
+            <radiogroup id="annealmail_acceptedKeys"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.annealmail.acceptedKeys">
+              <radio id="acceptedKeysValid"
+                    value="0"
+                    label="&annealmail.acceptedKeysTrusted.label;"
+                    tooltip="acceptedKeysTrusted.tooltip"/>
+              <radio id="acceptedKeysAll"
+                    value="1"
+                    label="&annealmail.acceptedKeysAllUsable.label;"
+                    tooltip="acceptedKeysAllUsable.tooltip"/>
+            </radiogroup>
+          </groupbox>
+
+          <!-- options to confirm before sending -->
+          <groupbox>
+            <caption label="&annealmail.confirmBeforeSendingOption.label;"/>
+            <radiogroup id="annealmail_confirmBeforeSending"
+                        pref="true"
+                        preftype="int"
+                        prefstring="extensions.annealmail.confirmBeforeSending">
+
+              <radio id="confirmBeforeSendingNever"
+                    value="0"
+                    label="&annealmail.confirmBeforeSendingNever.label;"
+                    tooltip="confirmBeforeSendingNever.tooltip"/>
+
+              <radio id="confirmBeforeSendingAlways"
+                    value="1"
+                    label="&annealmail.confirmBeforeSendingAlways.label;"
+                    tooltip="confirmBeforeSendingAlways.tooltip"/>
+
+              <radio id="confirmBeforeSendingIfEncrypted"
+                    value="2"
+                    label="&annealmail.confirmBeforeSendingIfEncrypted.label;"
+                    tooltip="confirmBeforeSendingIfEncrypted.tooltip"/>
+
+              <radio id="confirmBeforeSendingIfNotEncrypted"
+                    value="3"
+                    label="&annealmail.confirmBeforeSendingIfNotEncrypted.label;"
+                    tooltip="confirmBeforeSendingIfNotEncrypted.tooltip"/>
+
+              <radio id="confirmBeforeSendingIfRules"
+                    value="4"
+                    label="&annealmail.confirmBeforeSendingIfRules.label;"
+                    tooltip="confirmBeforeSendingIfRules.tooltip"/>
+            </radiogroup>
+          </groupbox>
+        </groupbox>
+        <description>&annealmail.seeAccountSettings.label;</description>
+      </vbox>
+
+      <!-- "Key Selection" Tab -->
+      <vbox id="keySel" flex="1"
+            advanced="true">
+
+          <groupbox>
+            <caption label="&annealmail.recipientsSelectionOption.label;"/>
+
+              <checkbox id="annealmail_assignKeysByRules"
+                        label="&annealmail.assignKeysByRules.label;"
+                        tooltip="assignKeysByRules.tooltip" />
+              <checkbox id="annealmail_assignKeysByEmailAddr"
+                        label="&annealmail.assignKeysByEmailAddr.label;"
+                        tooltip="assignKeysByEmailAddr.tooltip" />
+              <checkbox id="annealmail_assignKeysManuallyIfMissing"
+                        label="&annealmail.assignKeysManuallyIfMissing.label;"
+                        tooltip="assignKeysManuallyIfMissing.tooltip" />
+              <checkbox id="annealmail_assignKeysManuallyAlways"
+                        label="&annealmail.assignKeysManuallyAlways.label;"
+                        tooltip="assignKeysManuallyAlways.tooltip" />
+
+            <vbox autostretch="always" align="end">
+              <button id="openRulesEditor"
+                      label="&annealmail.defineRules.label;"
+                      tooltip="defineRules.tooltip"
+                      oncommand="EnigRulesEditor();"/>
+            </vbox>
+          </groupbox>
+
+      </vbox>
+
+      <!-- "Advanced" Tab -->
+      <vbox id="advanced" flex="1"
+            advanced="true">
+          <description class="annealmailPrefsTitle">&annealmail.moreOptions.label;</description>
+          <spacer flex="0"/>
+          
+          <groupbox>
+            <checkbox id="annealmail_protectHeaders"
+                      label="&annealmail.protectHeadersPrefs.label;"
+                      tooltip="protectHeaders.tooltip"/>
+
+            <hbox>
+              <hbox align="center">
+                <label control="annealmail_protectedSubjectText"
+                       tooltip="protectedSubjectText.tooltip"
+                       value="&annealmail.protectedSubjectText.label;"/>
+              </hbox>
+              <hbox>
+                <textbox id="annealmail_protectedSubjectText"
+                         tooltip="protectedSubjectText.tooltip"
+                         placeholder=""
+                         size="40"/>
+              </hbox>
+            </hbox>
+          </groupbox>
+
+          <checkbox id="annealmail_wrapHtmlBeforeSend"
+                    label="&annealmail.wrapHtmlBeforeSend.label;"
+                    tooltip="wrapHtmlBeforeSend.tooltip"/>
+
+          <checkbox id="annealmail_useDefaultComment"
+                    invert="true"
+                    label="&annealmail.useNonDefaultComment.label;" />
+
+          <checkbox id="annealmail_doubleDashSeparator"
+                    tooltip="doubleDashSeparator.tooltip"
+                    label="&annealmail.doubleDashSeparator.label;" />
+
+          <checkbox id="annealmail_useCcrAgent"
+                    tooltip="useCcrAgent.tooltip"
+                    label="&annealmail.useCcrAgent.label;" />
+
+          <checkbox id="annealmail_hushMailSupport"
+                    invert="true"
+                    tooltip="noHushMailSupport.tooltip"
+                    label="&annealmail.noHushMailSupport.label;" />
+
+          <checkbox id="mime_parts_on_demand"
+                    tooltip="mime_parts_on_demand.tooltip"
+                    label="&annealmail.mime_parts_on_demand.label;" />
+
+          <separator/>
+
+          <hbox>
+            <hbox align="center">
+              <label control="annealmail_agentAdditionalParam"
+                     tooltip="agentAdditionalParam.tooltip"
+                     value="&annealmail.agentAdditionalParam.label;"/>
+            </hbox>
+            <hbox>
+              <textbox id="annealmail_agentAdditionalParam"
+                       tooltip="agentAdditionalParam.tooltip"
+                       size="30"/>
+            </hbox>
+          </hbox>
+
+          <separator/>
+
+          <hbox>
+            <button id="resetRememberedValues"
+                    label="&annealmail.resetRememberedValues.label;"
+                    tooltip="resetRememberedValues.tooltip"
+                    oncommand="resetRememberedValues();"/>
+          </hbox>
+      </vbox>
+
+      <!-- "Key Server" Tab -->
+      <vbox id="keyserver" flex="1"
+            advanced="true">
+          <vbox>
+            <label control="annealmail_keyserver"
+                  value="&annealmail.keyservers.label;:" />
+            <textbox id="annealmail_keyserver"/>
+            <label value="&annealmail.keyservers.sample;" style="font-style: italic;"/>
+          </vbox>
+
+          <checkbox id="annealmail_autoKeyServerSelection"
+                    label="&annealmail.autoKeyServerSelection.label;"
+                    tooltip="autoKeyServerSelection.tooltip"/>
+
+          <separator/>
+
+          <vbox>
+            <label value="&annealmail.autoKeyRetrieve.label;" id="autoKeyRetrieveLabel1"/>
+            <label value="&annealmail.autoKeyRetrieve2.label;" id="autoKeyRetrieveLabel2"/>
+            <textbox id="annealmail_autoKeyRetrieve" size="35" aria-labelledby="autoKeyRetrieveLabel1 autoKeyRetrieveLabel2"/>
+          </vbox>
+
+      </vbox>
+
+      <!-- Backup/Restore Panel -->
+      <vbox id="backupRestoreTab" flex="1">
+
+        <vbox flex="1">
+          <description>
+            &annealmail.backupRestore.desc;
+          </description>
+
+          <separator/>
+
+          <hbox>
+            <button id="backupPrefs"
+                label="&annealmail.backupPrefsButton.label;"
+                tooltip="&annealmail.backupPrefs.tooltip;"
+                oncommand="backupPrefs();"/>
+          </hbox>
+          <separator/>
+
+          <hbox>
+            <button id="restorePrefs"
+                label="&annealmail.restorePrefsButton.label;"
+                tooltip="&annealmail.restorePrefs.tooltip;"
+                oncommand="restorePrefs();"/>
+          </hbox>
+        </vbox>
+      </vbox>
+
+    </tabpanels>
+  </tabbox>
+
+</dialog>

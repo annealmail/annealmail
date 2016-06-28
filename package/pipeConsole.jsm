@@ -7,13 +7,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConsole"];
+var EXPORTED_SYMBOLS = ["AnnealMailConsole"];
 
 const MAX_SIZE = 32768;
 var dataCache = "";
 var gotNewData = false;
 
-const EnigmailConsole = {
+const AnnealMailConsole = {
   write: function(data) {
     dataCache += data;
     if (dataCache.length > MAX_SIZE) {

@@ -9,9 +9,9 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withAnnealMail: false, withTestCcrHome: false */
 
-testing("installGnuPG.jsm"); /*global EnigmailInstallGnuPG: false, Installer: false */
+testing("installGnuPG.jsm"); /*global AnnealMailInstallGnuPG: false, Installer: false */
 
 
 test(function shouldCheckHashSum() {

@@ -1,4 +1,4 @@
-/*global Components: false, Enigmail: false */
+/*global Components: false, AnnealMail: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,15 +8,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailCore"];
+var EXPORTED_SYMBOLS = ["AnnealMailCore"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const enigmailHolder = {
+const annealmailHolder = {
   svc: null
-}; // Global Enigmail Service
-let envList = null; // currently filled from enigmail.js
+}; // Global AnnealMail Service
+let envList = null; // currently filled from annealmail.js
 
 function lazy(importName, name) {
   let holder = null;
@@ -27,7 +27,7 @@ function lazy(importName, name) {
       }
       else {
         const result = {};
-        Components.utils.import("resource://enigmail/" + importName, result);
+        Components.utils.import("resource://annealmail/" + importName, result);
         holder = result[name];
       }
     }
@@ -35,15 +35,15 @@ function lazy(importName, name) {
   };
 }
 
-const EnigmailCore = {
+const AnnealMailCore = {
   version: "",
 
-  init: function(enigmailVersion) {
-    this.version = enigmailVersion;
+  init: function(annealmailVersion) {
+    this.version = annealmailVersion;
   },
 
   /**
-   * get and or initialize the Enigmail service,
+   * get and or initialize the AnnealMail service,
    * including the handling for upgrading old preferences to new versions
    *
    * @win:                - nsIWindow: parent window (optional)
@@ -51,15 +51,15 @@ const EnigmailCore = {
    *                        (to avoid re-check for preferences)
    */
   getService: function(win, startingPreferences) {
-    // Lazy initialization of Enigmail JS component (for efficiency)
+    // Lazy initialization of AnnealMail JS component (for efficiency)
 
-    if (enigmailHolder.svc) {
-      return enigmailHolder.svc.initialized ? enigmailHolder.svc : null;
+    if (annealmailHolder.svc) {
+      return annealmailHolder.svc.initialized ? annealmailHolder.svc : null;
     }
 
     try {
-      enigmailHolder.svc = Cc["@mozdev.org/enigmail/enigmail;1"].createInstance(Ci.nsIEnigmail);
-      return enigmailHolder.svc.wrappedJSObject.getService(enigmailHolder, win, startingPreferences);
+      annealmailHolder.svc = Cc["@mozdev.org/annealmail/annealmail;1"].createInstance(Ci.nsIAnnealMail);
+      return annealmailHolder.svc.wrappedJSObject.getService(annealmailHolder, win, startingPreferences);
     }
     catch (ex) {
       return null;
@@ -67,22 +67,22 @@ const EnigmailCore = {
 
   },
 
-  getEnigmailService: function() {
-    return enigmailHolder.svc;
+  getAnnealMailService: function() {
+    return annealmailHolder.svc;
   },
 
-  setEnigmailService: function(v) {
-    enigmailHolder.svc = v;
+  setAnnealMailService: function(v) {
+    annealmailHolder.svc = v;
   },
 
-  ensuredEnigmailService: function(f) {
-    if (!enigmailHolder.svc) {
-      EnigmailCore.setEnigmailService(f());
+  ensuredAnnealMailService: function(f) {
+    if (!annealmailHolder.svc) {
+      AnnealMailCore.setAnnealMailService(f());
     }
-    return enigmailHolder.svc;
+    return annealmailHolder.svc;
   },
 
-  getKeyRing: lazy("keyRing.jsm", "EnigmailKeyRing"),
+  getKeyRing: lazy("keyRing.jsm", "AnnealMailKeyRing"),
 
   /**
    * obtain a list of all environment variables
@@ -95,7 +95,7 @@ const EnigmailCore = {
   },
 
   addToEnvList: function(str) {
-    EnigmailCore.getEnvList().push(str);
+    AnnealMailCore.getEnvList().push(str);
   },
 
   initEnvList: function() {

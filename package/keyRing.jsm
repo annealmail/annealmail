@@ -8,32 +8,32 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyRing"];
+var EXPORTED_SYMBOLS = ["AnnealMailKeyRing"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+Cu.import("resource://annealmail/core.jsm"); /*global AnnealMailCore: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/execution.jsm"); /*global AnnealMailExecution: false */
+Cu.import("resource://annealmail/locale.jsm"); /*global AnnealMailLocale: false */
+Cu.import("resource://annealmail/files.jsm"); /*global AnnealMailFiles: false */
+Cu.import("resource://annealmail/ccr.jsm"); /*global AnnealMailCcr: false */
+Cu.import("resource://annealmail/trust.jsm"); /*global AnnealMailTrust: false */
+Cu.import("resource://annealmail/armor.jsm"); /*global AnnealMailArmor: false */
+Cu.import("resource://annealmail/os.jsm"); /*global AnnealMailOS: false */
+Cu.import("resource://annealmail/time.jsm"); /*global AnnealMailTime: false */
+Cu.import("resource://annealmail/data.jsm"); /*global AnnealMailData: false */
+Cu.import("resource://annealmail/windows.jsm"); /*global AnnealMailWindows: false */
+Cu.import("resource://annealmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://annealmail/funcs.jsm"); /* global AnnealMailFuncs: false */
+Cu.import("resource://annealmail/lazy.jsm"); /*global AnnealMailLazy: false */
+Cu.import("resource://annealmail/key.jsm"); /*global AnnealMailKey: false */
+const getDialog = AnnealMailLazy.loader("annealmail/dialog.jsm", "AnnealMailDialog");
 
 
-const nsIEnigmail = Ci.nsIEnigmail;
+const nsIAnnealMail = Ci.nsIAnnealMail;
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
@@ -132,9 +132,9 @@ let gSubkeyIndex = [];
 
 */
 
-const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
 
-var EnigmailKeyRing = {
+var AnnealMailKeyRing = {
 
   /**
    * Get the complete list of all public keys, optionally sorted by a column
@@ -210,7 +210,7 @@ var EnigmailKeyRing = {
    * @return Object - found KeyObject or null if key not found
    */
   getKeyById: function(keyId) {
-    EnigmailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
+    AnnealMailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
     let s;
 
     if (keyId.search(/^0x/) === 0) {
@@ -249,7 +249,7 @@ var EnigmailKeyRing = {
 
       for (let j in k.userIds) {
         if (k.userIds[j].type === "uid" && k.userIds[j].userId.search(s) >= 0) {
-          if (!onlyValidUid || (!EnigmailTrust.isInvalid(k.userIds[j].keyTrust))) {
+          if (!onlyValidUid || (!AnnealMailTrust.isInvalid(k.userIds[j].keyTrust))) {
             res.push(k);
             continue;
           }
@@ -285,12 +285,12 @@ var EnigmailKeyRing = {
   },
 
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
-    var command = EnigmailGpg.agentPath;
-    var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
+    var command = AnnealMailCcr.agentPath;
+    var args = AnnealMailCcr.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
+    AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     importedKeysObj.value = "";
 
-    var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
+    var fileName = AnnealMailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
 
     args.push(fileName);
 
@@ -298,8 +298,8 @@ var EnigmailKeyRing = {
     var statusMsgObj = {};
     var exitCodeObj = {};
 
-    var output = EnigmailExecution.execCmd(command, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: error=" + errorMsgObj.value + "\n");
+    var output = AnnealMailExecution.execCmd(command, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
+    AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.importKeyFromFile: error=" + errorMsgObj.value + "\n");
 
     var statusMsg = statusMsgObj.value;
 
@@ -307,7 +307,7 @@ var EnigmailKeyRing = {
 
     if (exitCodeObj.value === 0) {
       // Normal
-      EnigmailKeyRing.clearCache();
+      AnnealMailKeyRing.clearCache();
 
       var statusLines = statusMsg.split(/\r?\n/);
 
@@ -322,7 +322,7 @@ var EnigmailKeyRing = {
           else
             keyList[matches[2]] = Number(matches[1]);
 
-          EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
+          AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
         }
       }
 
@@ -335,21 +335,21 @@ var EnigmailKeyRing = {
   },
 
   /**
-   * Get groups defined in gpg.conf in the same structure as KeyObject
+   * Get groups defined in ccr.conf in the same structure as KeyObject
    *
    * @return Array of KeyObject, with type = "grp"
    */
   getGroups: function() {
-    let groups = EnigmailGpg.getGpgGroups();
+    let groups = AnnealMailCcr.getCcrGroups();
 
     let r = [];
     for (var i = 0; i < groups.length; i++) {
 
       let keyObj = new KeyObject(["grp"]);
       keyObj.keyTrust = "g";
-      keyObj.userId = EnigmailData.convertGpgToUnicode(groups[i].alias).replace(/\\e3A/g, ":");
+      keyObj.userId = AnnealMailData.convertCcrToUnicode(groups[i].alias).replace(/\\e3A/g, ":");
       keyObj.keyId = keyObj.userId;
-      var grpMembers = EnigmailData.convertGpgToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
+      var grpMembers = AnnealMailData.convertCcrToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
       for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
         keyObj.userIds.push({
           userId: grpMembers[grpIdx],
@@ -368,7 +368,7 @@ var EnigmailKeyRing = {
    * no input or return values
    */
   clearCache: function() {
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.clearCache\n");
+    AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.clearCache\n");
     gKeyListObj = {
       keyList: [],
       keySortList: []
@@ -400,11 +400,11 @@ var EnigmailKeyRing = {
     let keyObj = this.getKeyById(keyId);
 
     if (keyObj) {
-      const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+      const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
       let hideInvalidUid = true;
       let maxTrustLevel = TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust);
 
-      if (EnigmailTrust.isInvalid(keyObj.keyTrust)) {
+      if (AnnealMailTrust.isInvalid(keyObj.keyTrust)) {
         // pub key not valid (anymore)-> display all UID's
         hideInvalidUid = false;
       }
@@ -422,7 +422,7 @@ var EnigmailKeyRing = {
             }
             // else do not add uid
           }
-          else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
+          else if (!AnnealMailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
             // UID valid  OR  key not valid, but invalid keys allowed
             r.push(keyObj.userIds[i].userId);
           }
@@ -446,25 +446,25 @@ var EnigmailKeyRing = {
    * @return String - if outputFile is NULL, the key block data; "" if a file is written
    */
   extractKey: function(includeSecretKey, userId, outputFile, exitCodeObj, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
-    let args = EnigmailGpg.getStandardArgs(true).concat(["-a", "--export"]);
+    AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.extractKey: " + userId + "\n");
+    let args = AnnealMailCcr.getStandardArgs(true).concat(["-a", "--export"]);
 
     if (userId) {
       args = args.concat(userId.split(/[ ,\t]+/));
     }
 
     const cmdErrorMsgObj = {};
-    let keyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
+    let keyBlock = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
 
     if ((exitCodeObj.value === 0) && !keyBlock) {
       exitCodeObj.value = -1;
     }
 
     if (exitCodeObj.value !== 0) {
-      errorMsgObj.value = EnigmailLocale.getString("failKeyExtract");
+      errorMsgObj.value = AnnealMailLocale.getString("failKeyExtract");
 
       if (cmdErrorMsgObj.value) {
-        errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+        errorMsgObj.value += "\n" + AnnealMailFiles.formatCmdLine(AnnealMailCcr.agentPath, args);
         errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
       }
 
@@ -472,22 +472,22 @@ var EnigmailKeyRing = {
     }
 
     if (includeSecretKey) {
-      let secretArgs = EnigmailGpg.getStandardArgs(true).concat(["-a", "--export-secret-keys"]);
+      let secretArgs = AnnealMailCcr.getStandardArgs(true).concat(["-a", "--export-secret-keys"]);
 
       if (userId) {
         secretArgs = secretArgs.concat(userId.split(/[ ,\t]+/));
       }
-      const secKeyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, secretArgs, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
+      const secKeyBlock = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, secretArgs, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
 
       if ((exitCodeObj.value === 0) && !secKeyBlock) {
         exitCodeObj.value = -1;
       }
 
       if (exitCodeObj.value !== 0) {
-        errorMsgObj.value = EnigmailLocale.getString("failKeyExtract");
+        errorMsgObj.value = AnnealMailLocale.getString("failKeyExtract");
 
         if (cmdErrorMsgObj.value) {
-          errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, secretArgs);
+          errorMsgObj.value += "\n" + AnnealMailFiles.formatCmdLine(AnnealMailCcr.agentPath, secretArgs);
           errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
         }
 
@@ -501,9 +501,9 @@ var EnigmailKeyRing = {
     }
 
     if (outputFile) {
-      if (!EnigmailFiles.writeFileContents(outputFile, keyBlock, DEFAULT_FILE_PERMS)) {
+      if (!AnnealMailFiles.writeFileContents(outputFile, keyBlock, DEFAULT_FILE_PERMS)) {
         exitCodeObj.value = -1;
-        errorMsgObj.value = EnigmailLocale.getString("fileWriteFailed", [outputFile]);
+        errorMsgObj.value = AnnealMailLocale.getString("fileWriteFailed", [outputFile]);
       }
       return "";
     }
@@ -519,14 +519,14 @@ var EnigmailKeyRing = {
    * @return String - if outputFile is NULL, the key block data; "" if a file is written
    */
   extractOwnerTrust: function(outputFile, exitCodeObj, errorMsgObj) {
-    let args = EnigmailGpg.getStandardArgs(true).concat(["--export-ownertrust"]);
+    let args = AnnealMailCcr.getStandardArgs(true).concat(["--export-ownertrust"]);
 
-    let trustData = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, errorMsgObj);
+    let trustData = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, {}, {}, errorMsgObj);
 
     if (outputFile) {
-      if (!EnigmailFiles.writeFileContents(outputFile, trustData, DEFAULT_FILE_PERMS)) {
+      if (!AnnealMailFiles.writeFileContents(outputFile, trustData, DEFAULT_FILE_PERMS)) {
         exitCodeObj.value = -1;
-        errorMsgObj.value = EnigmailLocale.getString("fileWriteFailed", [outputFile]);
+        errorMsgObj.value = AnnealMailLocale.getString("fileWriteFailed", [outputFile]);
       }
       return "";
     }
@@ -542,12 +542,12 @@ var EnigmailKeyRing = {
    * @return exit code
    */
   importOwnerTrust: function(inputFile, errorMsgObj) {
-    let args = EnigmailGpg.getStandardArgs(true).concat(["--import-ownertrust"]);
+    let args = AnnealMailCcr.getStandardArgs(true).concat(["--import-ownertrust"]);
 
     let exitCodeObj = {};
     try {
-      let trustData = EnigmailFiles.readFile(inputFile);
-      EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
+      let trustData = AnnealMailFiles.readFile(inputFile);
+      AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
     }
     catch (ex) {}
 
@@ -569,18 +569,18 @@ var EnigmailKeyRing = {
    *      ExitCode == -1 => Cancelled by user
    */
   importKey: function(parent, isInteractive, keyBlock, keyId, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + isInteractive + "\n");
+    AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.importKey: id=" + keyId + ", " + isInteractive + "\n");
 
     const beginIndexObj = {};
     const endIndexObj = {};
-    const blockType = EnigmailArmor.locateArmoredBlock(keyBlock, 0, "", beginIndexObj, endIndexObj, {});
+    const blockType = AnnealMailArmor.locateArmoredBlock(keyBlock, 0, "", beginIndexObj, endIndexObj, {});
     if (!blockType) {
-      errorMsgObj.value = EnigmailLocale.getString("noPGPblock");
+      errorMsgObj.value = AnnealMailLocale.getString("noPGPblock");
       return 1;
     }
 
     if (blockType != "PUBLIC KEY BLOCK") {
-      errorMsgObj.value = EnigmailLocale.getString("notFirstBlock");
+      errorMsgObj.value = AnnealMailLocale.getString("notFirstBlock");
       return 1;
     }
 
@@ -588,28 +588,28 @@ var EnigmailKeyRing = {
       endIndexObj.value - beginIndexObj.value + 1);
 
     if (isInteractive) {
-      if (!(getDialog().confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import")))) {
-        errorMsgObj.value = EnigmailLocale.getString("failCancel");
+      if (!(getDialog().confirmDlg(parent, AnnealMailLocale.getString("importKeyConfirm"), AnnealMailLocale.getString("keyMan.button.import")))) {
+        errorMsgObj.value = AnnealMailLocale.getString("failCancel");
         return -1;
       }
     }
 
-    const args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
+    const args = AnnealMailCcr.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
 
     const exitCodeObj = {};
     const statusMsgObj = {};
 
-    EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, pgpBlock, exitCodeObj, {}, statusMsgObj, errorMsgObj);
+    AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, pgpBlock, exitCodeObj, {}, statusMsgObj, errorMsgObj);
 
     const statusMsg = statusMsgObj.value;
 
     if (exitCodeObj.value === 0) {
       // Normal return
-      EnigmailKeyRing.clearCache();
+      AnnealMailKeyRing.clearCache();
       if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
         const matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
         if (matches && (matches.length > 3)) {
-          EnigmailLog.DEBUG("enigmail.js: Enigmail.importKey: IMPORTED 0x" + matches[3] + "\n");
+          AnnealMailLog.DEBUG("annealmail.js: AnnealMail.importKey: IMPORTED 0x" + matches[3] + "\n");
         }
       }
     }
@@ -627,24 +627,24 @@ var EnigmailKeyRing = {
    * @return: nsIFile object or null in case no data / error.
    */
   getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
+    AnnealMailLog.DEBUG("keyRing.js: AnnealMailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
 
-    const args = EnigmailGpg.getStandardArgs(false).
+    const args = AnnealMailCcr.getStandardArgs(false).
     concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
       "--batch", "--no-tty", "--status-fd", "1", "--attribute-fd", "2",
       "--fixed-list-mode", "--list-keys", keyId
     ]);
 
     const photoDataObj = {};
-    const outputTxt = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, photoDataObj);
+    const outputTxt = AnnealMailExecution.simpleExecCmd(AnnealMailCcr.agentPath, args, exitCodeObj, photoDataObj);
 
     if (!outputTxt) {
       exitCodeObj.value = -1;
       return null;
     }
 
-    if (EnigmailOS.isDosLike() && EnigmailGpg.getGpgFeature("windows-photoid-bug")) {
-      // workaround for error in gpg
+    if (AnnealMailOS.isDosLike() && AnnealMailCcr.getCcrFeature("windows-photoid-bug")) {
+      // workaround for error in ccr
       photoDataObj.value = photoDataObj.value.replace(/\r\n/g, "\n");
     }
 
@@ -677,7 +677,7 @@ var EnigmailKeyRing = {
 
       try {
         const flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-        const picFile = EnigmailFiles.getTempDirObj();
+        const picFile = AnnealMailFiles.getTempDirObj();
 
         picFile.append(keyId + ".jpg");
         picFile.createUnique(picFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
@@ -724,16 +724,16 @@ var EnigmailKeyRing = {
    */
   generateKey: function(name, comment, email, expiryDate, keyLength, keyType,
     passphrase, listener) {
-    EnigmailLog.WRITE("keyRing.jsm: generateKey:\n");
+    AnnealMailLog.WRITE("keyRing.jsm: generateKey:\n");
 
-    if (EnigmailKeyRing.isGeneratingKey()) {
+    if (AnnealMailKeyRing.isGeneratingKey()) {
       // key generation already ongoing
       throw Components.results.NS_ERROR_FAILURE;
     }
 
-    const args = EnigmailGpg.getStandardArgs(true).concat(["--gen-key"]);
+    const args = AnnealMailCcr.getStandardArgs(true).concat(["--gen-key"]);
 
-    EnigmailLog.CONSOLE(EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args));
+    AnnealMailLog.CONSOLE(AnnealMailFiles.formatCmdLine(AnnealMailCcr.agentPath, args));
 
     let inputData = "%echo Generating key\nKey-Type: ";
 
@@ -759,13 +759,13 @@ var EnigmailKeyRing = {
     inputData += "Name-Email: " + email + "\n";
     inputData += "Expire-Date: " + String(expiryDate) + "\n";
 
-    EnigmailLog.CONSOLE(inputData + " \n");
+    AnnealMailLog.CONSOLE(inputData + " \n");
 
     if (passphrase.length) {
       inputData += "Passphrase: " + passphrase + "\n";
     }
     else {
-      if (EnigmailGpg.getGpgFeature("genkey-no-protection")) {
+      if (AnnealMailCcr.getCcrFeature("genkey-no-protection")) {
         inputData += "%no-protection\n";
       }
     }
@@ -776,9 +776,9 @@ var EnigmailKeyRing = {
 
     try {
       proc = subprocess.call({
-        command: EnigmailGpg.agentPath,
+        command: AnnealMailCcr.agentPath,
         arguments: args,
-        environment: EnigmailCore.getEnvList(),
+        environment: AnnealMailCore.getEnvList(),
         charset: null,
         stdin: function(pipe) {
           pipe.write(inputData);
@@ -791,7 +791,7 @@ var EnigmailKeyRing = {
           keygenProcess = null;
           try {
             if (result.exitCode === 0) {
-              EnigmailKeyRing.clearCache();
+              AnnealMailKeyRing.clearCache();
             }
             listener.onStopRequest(result.exitCode);
           }
@@ -801,13 +801,13 @@ var EnigmailKeyRing = {
       });
     }
     catch (ex) {
-      EnigmailLog.ERROR("keyRing.jsm: generateKey: subprocess.call failed with '" + ex.toString() + "'\n");
+      AnnealMailLog.ERROR("keyRing.jsm: generateKey: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
 
     keygenProcess = proc;
 
-    EnigmailLog.DEBUG("keyRing.jsm: generateKey: subprocess = " + proc + "\n");
+    AnnealMailLog.DEBUG("keyRing.jsm: generateKey: subprocess = " + proc + "\n");
 
     return proc;
   },
@@ -820,8 +820,8 @@ var EnigmailKeyRing = {
    * @return: found key ID (without leading "0x") or null
    */
   getValidKeyForRecipient: function(emailAddr, minTrustLevelIndex, details) {
-    EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient(): emailAddr=\"" + emailAddr + "\"\n");
-    const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+    AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient(): emailAddr=\"" + emailAddr + "\"\n");
+    const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
     const fullTrustIndex = TRUSTLEVELS_SORTED.indexOf("f");
 
     emailAddr = emailAddr.toLowerCase();
@@ -843,7 +843,7 @@ var EnigmailKeyRing = {
       var keyObj = keyList[keySortList[idx].keyNum];
       var keyTrust = keyObj.keyTrust;
       var keyTrustIndex = TRUSTLEVELS_SORTED.indexOf(keyTrust);
-      //EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  check key " + keyObj.keyId + "\n");
+      //AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  check key " + keyObj.keyId + "\n");
 
       // key trust (our sort criterion) too low?
       // => *** regular END of the loop
@@ -853,19 +853,19 @@ var EnigmailKeyRing = {
             details.msg = "ProblemNoKey";
           }
           let msg = "no key with enough trust level for '" + emailAddr + "' found";
-          EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg + "\n");
+          AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg + "\n");
         }
         return foundKeyId; // **** regular END OF LOOP (return NULL or found single key)
       }
 
       // key valid for encryption?
       if (keyObj.keyUseFor.indexOf("E") < 0) {
-        //EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (not provided for encryption)\n");
+        //AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (not provided for encryption)\n");
         continue; // not valid for encryption => **** CONTINUE the LOOP
       }
       // key disabled?
       if (keyObj.keyUseFor.indexOf("D") >= 0) {
-        //EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (disabled)\n");
+        //AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  skip key " + keyObj.keyId + " (disabled)\n");
         continue; // disabled => **** CONTINUE the LOOP
       }
 
@@ -873,11 +873,11 @@ var EnigmailKeyRing = {
       var userId = keyObj.userId.toLowerCase();
       if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) {
         if (keyTrustIndex < minTrustLevelIndex) {
-          EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching key=" + keyObj.keyId + " found but not enough trust\n");
+          AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching key=" + keyObj.keyId + " found but not enough trust\n");
         }
         else {
           // key with enough trust level found
-          EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
+          AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
 
           // immediately return if a fully or ultimately trusted key is found
           // (faked keys should not be an issue here, so we don't have to check other keys)
@@ -898,7 +898,7 @@ var EnigmailKeyRing = {
                 details.msg = "ProblemMultipleKeys";
               }
               let msg = "multiple matching keys with same trust level found for '" + emailAddr + "' ";
-              EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg +
+              AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg +
                 " trustLevel=\"" + keyTrust + "\" (0x" + foundKeyId + " and 0x" + keyObj.keyId + ")\n");
               return null;
             }
@@ -918,15 +918,15 @@ var EnigmailKeyRing = {
         var subUserId = subUidObj.userId.toLowerCase();
         var subUidTrust = subUidObj.keyTrust;
         var subUidTrustIndex = TRUSTLEVELS_SORTED.indexOf(subUidTrust);
-        //EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  check subUid " + subUidObj.keyId + "\n");
+        //AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  check subUid " + subUidObj.keyId + "\n");
 
         if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (subUidTrustIndex < minTrustLevelIndex) {
-            EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid=" + keyObj.keyId + " found but not enough trust\n");
+            AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid=" + keyObj.keyId + " found but not enough trust\n");
           }
           else {
             // subkey with enough trust level found
-            EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid in key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
+            AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid in key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
 
             if (keyTrustIndex >= fullTrustIndex) {
               // immediately return if a fully or ultimately trusted key is found
@@ -947,7 +947,7 @@ var EnigmailKeyRing = {
                   details.msg = "ProblemMultipleKeys";
                 }
                 let msg = "multiple matching keys with same trust level found for '" + emailAddr + "' ";
-                EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg +
+                AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  " + msg +
                   " trustLevel=\"" + keyTrust + "\" (0x" + foundKeyId + " and 0x" + keyObj.keyId + ")\n");
                 return null;
               }
@@ -962,7 +962,7 @@ var EnigmailKeyRing = {
     } // **** LOOP to check against each key
 
     if (!foundKeyId) {
-      EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  no key for '" + emailAddr + "' found\n");
+      AnnealMailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  no key for '" + emailAddr + "' found\n");
     }
     return foundKeyId;
   },
@@ -1018,7 +1018,7 @@ var EnigmailKeyRing = {
           detailsElem.msg = errMsg;
           details.errArray.push(detailsElem);
         }
-        EnigmailLog.DEBUG("keyRing.jsm: doValidKeysForAllRecipients(): return null (no single valid key found for=\"" + addr + "\" with minTrustLevel=\"" + minTrustLevel + "\")\n");
+        AnnealMailLog.DEBUG("keyRing.jsm: doValidKeysForAllRecipients(): return null (no single valid key found for=\"" + addr + "\" with minTrustLevel=\"" + minTrustLevel + "\")\n");
       }
     }
     return keyMissing;
@@ -1043,7 +1043,7 @@ var EnigmailKeyRing = {
       }
     }
   }
-}; //  EnigmailKeyRing
+}; //  AnnealMailKeyRing
 
 
 /************************ INTERNAL FUNCTIONS ************************/
@@ -1053,7 +1053,7 @@ var EnigmailKeyRing = {
  */
 function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-  let args = EnigmailGpg.getStandardArgs(true);
+  let args = AnnealMailCcr.getStandardArgs(true);
 
   if (secretOnly) {
     args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
@@ -1065,17 +1065,17 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
   statusFlagsObj.value = 0;
 
   const cmdErrorMsgObj = {};
-  let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
+  let listText = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
 
-  if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
+  if (!(statusFlagsObj.value & nsIAnnealMail.BAD_SIGNATURE)) {
     // ignore exit code as recommended by GnuPG authors
     exitCodeObj.value = 0;
   }
 
   if (exitCodeObj.value !== 0) {
-    errorMsgObj.value = EnigmailLocale.getString("badCommand");
+    errorMsgObj.value = AnnealMailLocale.getString("badCommand");
     if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+      errorMsgObj.value += "\n" + AnnealMailFiles.formatCmdLine(AnnealMailCcr.agentPath, args);
       errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
     }
 
@@ -1097,7 +1097,7 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
  * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
  */
 function obtainKeyList(win, secretOnly) {
-  EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
+  AnnealMailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
   let userList = null;
   try {
@@ -1113,7 +1113,7 @@ function obtainKeyList(win, secretOnly) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList: " + ex.toString() + "\n");
+    AnnealMailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList: " + ex.toString() + "\n");
   }
 
   if (typeof(userList) == "string") {
@@ -1157,14 +1157,14 @@ const sortFunctions = {
 
   validity: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(keyListObj.keyList[a.keyNum])) < EnigmailTrust.trustLevelsSorted().indexOf(EnigmailTrust.getTrustCode(
+      return (AnnealMailTrust.trustLevelsSorted().indexOf(AnnealMailTrust.getTrustCode(keyListObj.keyList[a.keyNum])) < AnnealMailTrust.trustLevelsSorted().indexOf(AnnealMailTrust.getTrustCode(
         keyListObj.keyList[b.keyNum]))) ? -sortDirection : sortDirection;
     };
   },
 
   trust: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyNum].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyNum].ownerTrust)) ? -
+      return (AnnealMailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyNum].ownerTrust) < AnnealMailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyNum].ownerTrust)) ? -
         sortDirection : sortDirection;
     };
   },
@@ -1254,47 +1254,47 @@ function getKeyListEntryOfKey(keyId) {
  * no return value
  */
 function loadKeyList(win, sortColumn, sortDirection) {
-  EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
+  AnnealMailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
 
-  var aGpgUserList = obtainKeyList(win, false);
-  if (!aGpgUserList) return;
+  var aCcrUserList = obtainKeyList(win, false);
+  if (!aCcrUserList) return;
 
-  var aGpgSecretsList = obtainKeyList(win, true);
-  if (!aGpgSecretsList) {
-    if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
-        EnigmailLocale.getString("keyMan.button.generateKey"),
-        EnigmailLocale.getString("keyMan.button.skip"))) {
-      EnigmailWindows.openKeyGen();
-      EnigmailKeyRing.clearCache();
+  var aCcrSecretsList = obtainKeyList(win, true);
+  if (!aCcrSecretsList) {
+    if (getDialog().confirmDlg(AnnealMailLocale.getString("noSecretKeys"),
+        AnnealMailLocale.getString("keyMan.button.generateKey"),
+        AnnealMailLocale.getString("keyMan.button.skip"))) {
+      AnnealMailWindows.openKeyGen();
+      AnnealMailKeyRing.clearCache();
       loadKeyList(win, sortColumn, sortDirection);
     }
   }
 
-  createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection);
+  createAndSortKeyList(aCcrUserList, aCcrSecretsList, sortColumn, sortDirection);
 }
 
 
 // returns the output of --with-colons --list-sig
 function getKeySig(keyId, exitCodeObj, errorMsgObj) {
-  const args = EnigmailGpg.getStandardArgs(true).
+  const args = AnnealMailCcr.getStandardArgs(true).
   concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).
   concat(keyId.split(" "));
 
   const statusFlagsObj = {};
   const cmdErrorMsgObj = {};
-  const listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
+  const listText = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
 
-  if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
+  if (!(statusFlagsObj.value & nsIAnnealMail.BAD_SIGNATURE)) {
     // ignore exit code as recommended by GnuPG authors
     exitCodeObj.value = 0;
   }
 
   if (exitCodeObj.value !== 0) {
-    errorMsgObj.value = EnigmailLocale.getString("badCommand");
+    errorMsgObj.value = AnnealMailLocale.getString("badCommand");
     if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+      errorMsgObj.value += "\n" + AnnealMailFiles.formatCmdLine(AnnealMailCcr.agentPath, args);
       errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
     }
 
@@ -1306,7 +1306,7 @@ function getKeySig(keyId, exitCodeObj, errorMsgObj) {
 /**
  * Return signatures for a given key list
  *
- * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
+ * @param String ccrKeyList         Output from ccr such as produced by getKeySig()
  *                                  Only the first public key is processed!
  * @param Boolean ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
  *
@@ -1317,8 +1317,8 @@ function getKeySig(keyId, exitCodeObj, errorMsgObj) {
  *     - sigList: [uid, creationDate, signerKeyId, sigType ]
  */
 
-function extractSignatures(gpgKeyList, ignoreUnknownUid) {
-  EnigmailLog.DEBUG("keyRing.jsm: extractSignatures: " + gpgKeyList + "\n");
+function extractSignatures(ccrKeyList, ignoreUnknownUid) {
+  AnnealMailLog.DEBUG("keyRing.jsm: extractSignatures: " + ccrKeyList + "\n");
 
   var listObj = {};
 
@@ -1327,7 +1327,7 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
     keyId = "",
     fpr = "";
 
-  const lineArr = gpgKeyList.split(/\n/);
+  const lineArr = ccrKeyList.split(/\n/);
   for (let i = 0; i < lineArr.length; i++) {
     // process lines such as:
     //  tru::1:1395895453:1442881280:3:1:5
@@ -1353,11 +1353,11 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
       case "uat":
         currUid = lineTokens[UID_ID];
         listObj[currUid] = {
-          userId: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
+          userId: lineTokens[ENTRY_ID] == "uat" ? AnnealMailLocale.getString("keyring.photo") : AnnealMailData.convertCcrToUnicode(lineTokens[USERID_ID]),
           rawUserId: lineTokens[USERID_ID],
           keyId: keyId,
           fpr: fpr,
-          created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+          created: AnnealMailTime.getDateTime(lineTokens[CREATED_ID], true, false),
           sigList: []
         };
         break;
@@ -1366,8 +1366,8 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
           // ignrore revoked signature
 
           let sig = {
-            userId: EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
-            created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+            userId: AnnealMailData.convertCcrToUnicode(lineTokens[USERID_ID]),
+            created: AnnealMailTime.getDateTime(lineTokens[CREATED_ID], true, false),
             signerKeyId: lineTokens[KEY_ID],
             sigType: lineTokens[SIG_TYPE_ID],
             sigKnown: lineTokens[USERID_ID] != UNKNOWN_SIGNATURE
@@ -1403,7 +1403,7 @@ function createKeyObjects(keyListString, keyListObj) {
   let uatNum = 0; // counter for photos (counts per key)
   let numKeys = 0;
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  const TRUSTLEVELS_SORTED = AnnealMailTrust.trustLevelsSorted();
 
   for (let i = 0; i < keyListString.length; i++) {
     const listRow = keyListString[i].split(/:/);
@@ -1426,7 +1426,7 @@ function createKeyObjects(keyListString, keyListObj) {
             listRow[USERID_ID] = "-";
           }
           if (typeof(keyObj.userId) !== "string") {
-            keyObj.userId = EnigmailData.convertGpgToUnicode(listRow[USERID_ID]);
+            keyObj.userId = AnnealMailData.convertCcrToUnicode(listRow[USERID_ID]);
             keyListObj.keySortList.push({
               userId: keyObj.userId.toLowerCase(),
               keyId: keyObj.keyId,
@@ -1439,7 +1439,7 @@ function createKeyObjects(keyListString, keyListObj) {
             }
           }
           keyObj.userIds.push({
-            userId: EnigmailData.convertGpgToUnicode(listRow[USERID_ID]),
+            userId: AnnealMailData.convertCcrToUnicode(listRow[USERID_ID]),
             keyTrust: listRow[KEY_TRUST_ID],
             uidFpr: listRow[UID_ID],
             type: "uid"
@@ -1448,19 +1448,19 @@ function createKeyObjects(keyListString, keyListObj) {
         case "sub":
           keyObj.subKeys.push({
             keyId: listRow[KEY_ID],
-            expiry: EnigmailTime.getDateTime(listRow[EXPIRY_ID], true, false),
+            expiry: AnnealMailTime.getDateTime(listRow[EXPIRY_ID], true, false),
             expiryTime: Number(listRow[EXPIRY_ID]),
             keyTrust: listRow[KEY_TRUST_ID],
             keyUseFor: listRow[KEY_USE_FOR_ID],
             keySize: listRow[KEY_SIZE_ID],
             algorithm: listRow[KEY_ALGO_ID],
-            created: EnigmailTime.getDateTime(listRow[CREATED_ID], true, false),
+            created: AnnealMailTime.getDateTime(listRow[CREATED_ID], true, false),
             type: "sub"
           });
           break;
         case "uat":
           if (listRow[USERID_ID].indexOf("1 ") === 0) {
-            const userId = EnigmailLocale.getString("userAtt.photo");
+            const userId = AnnealMailLocale.getString("userAtt.photo");
             keyObj.userIds.push({
               userId: userId,
               keyTrust: listRow[KEY_TRUST_ID],
@@ -1500,25 +1500,25 @@ function createKeyObjects(keyListString, keyListObj) {
   }
 }
 
-function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection) {
-  EnigmailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
+function createAndSortKeyList(aCcrUserList, aCcrSecretsList, sortColumn, sortDirection) {
+  AnnealMailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
 
   if (typeof sortColumn !== "string") sortColumn = "userid";
   if (!sortDirection) sortDirection = 1;
 
-  createKeyObjects(aGpgUserList, gKeyListObj);
+  createKeyObjects(aCcrUserList, gKeyListObj);
 
   // create a hash-index on key ID (8 and 16 characters and fingerprint)
   // in a single array
 
-  EnigmailKeyRing.rebuildKeyIndex();
+  AnnealMailKeyRing.rebuildKeyIndex();
 
   // search and mark keys that have secret keys
-  for (let i = 0; i < aGpgSecretsList.length; i++) {
-    let listRow = aGpgSecretsList[i].split(/:/);
+  for (let i = 0; i < aCcrSecretsList.length; i++) {
+    let listRow = aCcrSecretsList[i].split(/:/);
     if (listRow.length >= 0) {
       if (listRow[ENTRY_ID] == "sec") {
-        let k = EnigmailKeyRing.getKeyById(listRow[KEY_ID]);
+        let k = AnnealMailKeyRing.getKeyById(listRow[KEY_ID]);
         if (k && typeof(k) === "object") {
           k.secretAvailable = true;
         }
@@ -1535,9 +1535,9 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
 function KeyObject(lineArr) {
   if (lineArr[ENTRY_ID] === "pub") {
     this.keyId = lineArr[KEY_ID];
-    this.expiry = EnigmailTime.getDateTime(lineArr[EXPIRY_ID], true, false);
+    this.expiry = AnnealMailTime.getDateTime(lineArr[EXPIRY_ID], true, false);
     this.expiryTime = Number(lineArr[EXPIRY_ID]);
-    this.created = EnigmailTime.getDateTime(lineArr[CREATED_ID], true, false);
+    this.created = AnnealMailTime.getDateTime(lineArr[CREATED_ID], true, false);
     this.keyTrust = lineArr[KEY_TRUST_ID];
     this.keyUseFor = lineArr[KEY_USE_FOR_ID];
     this.ownerTrust = lineArr[OWNERTRUST_ID];
@@ -1599,7 +1599,7 @@ KeyObject.prototype = {
         // it would immediately get all signatures for the key (slow!)
         if (typeof this[i] !== "function") {
           if (typeof this[i] === "object") {
-            cp[i] = EnigmailFuncs.cloneObj(this[i]);
+            cp[i] = AnnealMailFuncs.cloneObj(this[i]);
           }
           else
             cp[i] = this[i];
@@ -1631,7 +1631,7 @@ KeyObject.prototype = {
    * @return String - the formatted fingerprint
    */
   get fprFormatted() {
-    let f = EnigmailKey.formatFpr(this.fpr);
+    let f = AnnealMailKey.formatFpr(this.fpr);
     if (f.length === 0) f = this.fpr;
     return f;
   },
@@ -1650,19 +1650,19 @@ KeyObject.prototype = {
     };
     if (this.keyTrust.search(/r/i) >= 0) {
       // public key revoked
-      retVal.reason = EnigmailLocale.getString("keyRing.pubKeyRevoked", [this.userId, "0x" + this.keyId]);
+      retVal.reason = AnnealMailLocale.getString("keyRing.pubKeyRevoked", [this.userId, "0x" + this.keyId]);
     }
     else if (this.keyTrust.search(/e/i) >= 0) {
       // public key expired
-      retVal.reason = EnigmailLocale.getString("keyRing.pubKeyExpired", [this.userId, "0x" + this.keyId]);
+      retVal.reason = AnnealMailLocale.getString("keyRing.pubKeyExpired", [this.userId, "0x" + this.keyId]);
     }
     else if (this.keyTrust.search(/d/i) >= 0 || this.keyUseFor.search(/D/i) >= 0) {
       // public key disabled
-      retVal.reason = EnigmailLocale.getString("keyRing.keyDisabled", [this.userId, "0x" + this.keyId]);
+      retVal.reason = AnnealMailLocale.getString("keyRing.keyDisabled", [this.userId, "0x" + this.keyId]);
     }
     else if (this.keyTrust.search(/i/i) >= 0) {
       // public key invalid
-      retVal.reason = EnigmailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
+      retVal.reason = AnnealMailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
     }
     else
       retVal.keyValid = true;
@@ -1684,7 +1684,7 @@ KeyObject.prototype = {
     if (!retVal.keyValid) return retVal;
 
     if (!this.secretAvailable) {
-      retVal.reason = EnigmailLocale.getString("keyRing.noSecretKey", [this.userId, "0x" + this.keyId]);
+      retVal.reason = AnnealMailLocale.getString("keyRing.noSecretKey", [this.userId, "0x" + this.keyId]);
       retVal.keyValid = false;
     }
     else if (this.keyUseFor.search(/S/) < 0) {
@@ -1692,7 +1692,7 @@ KeyObject.prototype = {
 
       if (this.keyTrust.search(/u/i) < 0) {
         // public key invalid
-        retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
+        retVal.reason = AnnealMailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
       }
       else {
         let expired = 0,
@@ -1712,17 +1712,17 @@ KeyObject.prototype = {
 
         if (found > 0 && (expired > 0 || revoked > 0)) {
           if (found === expired) {
-            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysExpired", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.signSubKeysExpired", [this.userId, "0x" + this.keyId]);
           }
           else if (found === revoked) {
-            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysRevoked", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.signSubKeysRevoked", [this.userId, "0x" + this.keyId]);
           }
           else {
-            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysUnusable", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.signSubKeysUnusable", [this.userId, "0x" + this.keyId]);
           }
         }
         else
-          retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForSigning", [this.userId, "0x" + this.keyId]);
+          retVal.reason = AnnealMailLocale.getString("keyRing.pubKeyNotForSigning", [this.userId, "0x" + this.keyId]);
       }
     }
 
@@ -1746,7 +1746,7 @@ KeyObject.prototype = {
 
       if (this.keyTrust.search(/u/i) < 0) {
         // public key invalid
-        retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
+        retVal.reason = AnnealMailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
       }
       else {
         let expired = 0,
@@ -1767,17 +1767,17 @@ KeyObject.prototype = {
 
         if (found > 0 && (expired > 0 || revoked > 0)) {
           if (found === expired) {
-            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysExpired", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.encSubKeysExpired", [this.userId, "0x" + this.keyId]);
           }
           else if (found === revoked) {
-            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysRevoked", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.encSubKeysRevoked", [this.userId, "0x" + this.keyId]);
           }
           else {
-            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysUnusable", [this.userId, "0x" + this.keyId]);
+            retVal.reason = AnnealMailLocale.getString("keyRing.encSubKeysUnusable", [this.userId, "0x" + this.keyId]);
           }
         }
         else
-          retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForEncryption", [this.userId, "0x" + this.keyId]);
+          retVal.reason = AnnealMailLocale.getString("keyRing.pubKeyNotForEncryption", [this.userId, "0x" + this.keyId]);
       }
     }
 
@@ -1831,4 +1831,4 @@ KeyObject.prototype = {
   }
 };
 
-EnigmailKeyRing.clearCache();
+AnnealMailKeyRing.clearCache();

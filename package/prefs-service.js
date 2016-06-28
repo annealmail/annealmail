@@ -8,22 +8,22 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 
-function EnigmailPrefService() {}
+function AnnealMailPrefService() {}
 
-EnigmailPrefService.prototype = {
+AnnealMailPrefService.prototype = {
   name: "enigprefs",
-  chromePackageName: "enigmail",
+  chromePackageName: "annealmail",
   classID: Components.ID("{847b3ab0-7ab1-11d4-8f02-006008948af5}"),
-  classDescription: "Enigmail Account Manager Extension Service",
+  classDescription: "AnnealMail Account Manager Extension Service",
   contractID: "@mozilla.org/accountmanager/extension;1?name=enigprefs",
   _xpcom_categories: [{
     category: "mailnews-accountmanager-extensions",
-    entry: "Enigmail account manager extension",
+    entry: "AnnealMail account manager extension",
     service: false
   }],
   QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIMsgAccountManagerExtension]),
   showPanel: function(server) {
-    // show Enigmail panel for POP3, IMAP, NNTP and "movemail" (unix) account types
+    // show AnnealMail panel for POP3, IMAP, NNTP and "movemail" (unix) account types
     switch (server.type) {
       case "nntp":
       case "imap":
@@ -35,5 +35,5 @@ EnigmailPrefService.prototype = {
   }
 };
 
-var components = [EnigmailPrefService];
+var components = [AnnealMailPrefService];
 const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);

@@ -45,7 +45,7 @@ while [ $# -gt 0 ]; do
 #   ${PYTHON} -u ${TOPDIR}/mozilla/config/pythonpath.py \
 #     -I${TOPDIR}/mozilla/xpcom/typelib/xpt/tools \
 #     ${DEPTH}/mozilla/dist/sdk/bin/header.py \
-#     -I${TOPDIR}/mailnews/extensions/enigmail/public \
+#     -I${TOPDIR}/mailnews/extensions/annealmail/public \
 #     -I../../../../mozilla/dist/idl \
 #     ${SRCDIR}/${XPTBASE}.idl \
 #     -d .deps/${XPTBASE}.pp \
@@ -59,6 +59,6 @@ mkdir -p ${DIST}/components
 ${PYTHON} \
   ${TYPELIB_DIR}/xpt.py \
   link \
-  ${DIST}/components/enigmail.xpt \
+  ${DIST}/components/annealmail.xpt \
   $XPTFILES
 

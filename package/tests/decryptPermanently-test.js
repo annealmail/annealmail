@@ -9,16 +9,16 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, component: false, withTestGpgHome: false, withEnigmail: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, component: false, withTestCcrHome: false, withAnnealMail: false */
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
-testing("decryptPermanently.jsm"); /*global EnigmailDecryptPermanently: false, Promise: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+testing("decryptPermanently.jsm"); /*global AnnealMailDecryptPermanently: false, Promise: false */
+component("annealmail/keyRing.jsm"); /*global AnnealMailKeyRing: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
-component("enigmail/glodaMime.jsm");
-component("enigmail/streams.jsm"); /*global EnigmailStreams: false */
+component("annealmail/glodaMime.jsm");
+component("annealmail/streams.jsm"); /*global AnnealMailStreams: false */
 
-test(withTestGpgHome(withEnigmail(function messageIsCopiedToNewDir() {
+test(withTestCcrHome(withAnnealMail(function messageIsCopiedToNewDir() {
   loadSecretKey();
   MailHelper.cleanMailFolder(MailHelper.getRootFolder());
   const sourceFolder = MailHelper.createMailFolder("source-box");
@@ -28,13 +28,13 @@ test(withTestGpgHome(withEnigmail(function messageIsCopiedToNewDir() {
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = false;
   const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  AnnealMailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
 
   Assert.equal(targetFolder.getTotalMessages(false), 1);
   Assert.equal(sourceFolder.getTotalMessages(false), 1);
 })));
 
-test(withTestGpgHome(withEnigmail(function messageIsMovedToNewDir() {
+test(withTestCcrHome(withAnnealMail(function messageIsMovedToNewDir() {
   loadSecretKey();
   MailHelper.cleanMailFolder(MailHelper.rootFolder);
   const sourceFolder = MailHelper.createMailFolder("source-box");
@@ -44,13 +44,13 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedToNewDir() {
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
   const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  AnnealMailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
 
   Assert.equal(targetFolder.getTotalMessages(false), 1);
   Assert.equal(sourceFolder.getTotalMessages(false), 0);
 })));
 
-test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
+test(withTestCcrHome(withAnnealMail(function messageIsMovedAndDecrypted() {
   loadSecretKey();
   MailHelper.cleanMailFolder(MailHelper.rootFolder);
   const sourceFolder = MailHelper.createMailFolder("source-box");
@@ -60,7 +60,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
   const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  AnnealMailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
   do_test_pending();
@@ -76,7 +76,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
   );
 })));
 
-test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecrypted() {
+test(withTestCcrHome(withAnnealMail(function messageWithAttachemntIsMovedAndDecrypted() {
   loadSecretKey();
   loadPublicKey();
   MailHelper.cleanMailFolder(MailHelper.getRootFolder());
@@ -87,7 +87,7 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
   const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  AnnealMailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
   do_test_pending();
@@ -108,12 +108,12 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
 
 var loadSecretKey = function() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(secretKey, [], {});
+  AnnealMailKeyRing.importKeyFromFile(secretKey, [], {});
 };
 
 var loadPublicKey = function() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
-  EnigmailKeyRing.importKeyFromFile(publicKey, [], {});
+  AnnealMailKeyRing.importKeyFromFile(publicKey, [], {});
 };
 
 function stringFromUrl(url) {
@@ -123,7 +123,7 @@ function stringFromUrl(url) {
     const iOService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     const uri = iOService.newURI(url, null, null);
     const attChannel = iOService.newChannelFromURI(uri);
-    const listener = EnigmailStreams.newStringStreamListener(function(data) {
+    const listener = AnnealMailStreams.newStringStreamListener(function(data) {
       result = data;
       inspector.exitNestedEventLoop();
       resolve();

@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EnigmailMime = {
+var AnnealMailMime = {
   extractProtectedHeaders: function(str) {
     return {
       startPos: 10,
@@ -22,11 +22,11 @@ var EnigmailMime = {
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false */
+testing("mimeDecrypt.jsm"); /* global AnnealMailMimeDecrypt: false */
 
 
 test(function extractEncryptedHeadersTest() {
-  var dec = new EnigmailMimeDecrypt();
+  var dec = new AnnealMailMimeDecrypt();
   dec.decryptedData = 'This is a Hello World example';
 
   dec.extractEncryptedHeaders();

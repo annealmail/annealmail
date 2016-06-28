@@ -9,14 +9,14 @@
 /* eslint no-invalid-this: 0 */
 
 /**
- * This module serves to integrate pEp into Enigmail
+ * This module serves to integrate pEp into AnnealMail
  *
  * The module is still a prototype - not ready for daily use!
  */
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailpEp"];
+var EXPORTED_SYMBOLS = ["AnnealMailpEp"];
 
 const connectAddress = "http://127.0.0.1:2369";
 const baseUrl = "/ja/0.1/";
@@ -24,19 +24,19 @@ const baseUrl = "/ja/0.1/";
 const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
-const pepServerPath = "/Users/pbr/enigmail/pEp/pEpJSONServerAdapter/server/mt-server";
+const pepServerPath = "/Users/pbr/annealmail/pEp/pEpJSONServerAdapter/server/mt-server";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://annealmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://annealmail/log.jsm"); /*global AnnealMailLog: false */
+Cu.import("resource://annealmail/timer.jsm"); /*global AnnealMailTimer: false */
 
 var gRequestId = 1;
 
-var EnigmailpEp = {
+var AnnealMailpEp = {
 
   /**
    * get the pEp version number
@@ -65,10 +65,10 @@ var EnigmailpEp = {
    * get the path to the GnuPG executable
    *
    * @return: Promise.
-   *  then:  String - Full path to gpg executable
+   *  then:  String - Full path to ccr executable
    *  catch: String, String - failure code, errer description
    */
-  getGpgPath: function() {
+  getCcrPath: function() {
 
     let onLoad = function(responseObj) {
       let path = null;
@@ -79,7 +79,7 @@ var EnigmailpEp = {
       return path;
     };
 
-    return this._callPepFunction(FT_CALL_FUNCTION, "get_gpg_path", [
+    return this._callPepFunction(FT_CALL_FUNCTION, "get_ccr_path", [
       ["OP"]
     ], onLoad);
 
@@ -108,7 +108,7 @@ var EnigmailpEp = {
     this._withSession(deferred,
       function(sessionId) {
         try {
-          let msgId = "enigmail-" + String(gRequestId++);
+          let msgId = "annealmail-" + String(gRequestId++);
           let params = [
             sessionId, // session
             { // src message
@@ -167,7 +167,7 @@ var EnigmailpEp = {
     this._withSession(deferred,
       function(sessionId) {
         try {
-          let msgId = "enigmail-" + String(gRequestId++);
+          let msgId = "annealmail-" + String(gRequestId++);
           let params = [
             sessionId, // session
             { // src message
@@ -258,7 +258,7 @@ var EnigmailpEp = {
     this._withSession(deferred,
       function(sessionId) {
         try {
-          let msgId = "enigmail-" + String(gRequestId++);
+          let msgId = "annealmail-" + String(gRequestId++);
           let params = [
             sessionId, // session
             { // src message
@@ -432,7 +432,7 @@ var EnigmailpEp = {
       process.init(exec);
       process.run(false, [], 0);
 
-      EnigmailTimer.setTimeout(function _f() {
+      AnnealMailTimer.setTimeout(function _f() {
           let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
           oReq.addEventListener("load", onLoadListener);

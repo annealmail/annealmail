@@ -6,23 +6,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+<?xml-stylesheet href="chrome://annealmail/skin/annealmail.css"
                  type="text/css"?>
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window SYSTEM "chrome://annealmail/locale/annealmail.dtd" >
 
-<overlay id="enigmailColumnOverlay"
+<overlay id="annealmailColumnOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <tree id="threadTree">
    <treecols id="threadCols">
     <splitter class="tree-splitter" />
-    <treecol id="enigmailStatusCol" persist="hidden ordinal width"
+    <treecol id="annealmailStatusCol" persist="hidden ordinal width"
              currentView="unthreaded" flex="2"
-             label="&enigmail.msgViewColumn.label;" tooltiptext="&enigmail.msgViewColumn.tooltip;" />
+             label="&annealmail.msgViewColumn.label;" tooltiptext="&annealmail.msgViewColumn.tooltip;" />
    </treecols>
   </tree>
 
-  <script type="text/javascript" src="chrome://enigmail/content/columnOverlay.js"/>
+  <script type="text/javascript" src="chrome://annealmail/content/columnOverlay.js"/>
 </overlay>
