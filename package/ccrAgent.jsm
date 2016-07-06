@@ -413,7 +413,7 @@ var AnnealMailCcrAgent = {
       agentName = "ccr2.exe;ccr.exe;ccr1.exe";
     }
     else {
-      agentName = "ccr2;ccr;ccr1";
+      agentName = "ccr";
     }
 
 
@@ -563,7 +563,7 @@ var AnnealMailCcrAgent = {
     const versionParts = outStr.replace(/[\r\n].*/g, "").replace(/ *\(ccr4win.*\)/i, "").split(/ /);
     const ccrVersion = versionParts[versionParts.length - 1];
 
-    AnnealMailLog.DEBUG("annealmail.js: detected GnuPG version '" + ccrVersion + "'\n");
+    AnnealMailLog.DEBUG("annealmail.js: detected CodeCrypt version '" + ccrVersion + "'\n");
     AnnealMailCcr.agentVersion = ccrVersion;
 
     if (!AnnealMailCcr.getCcrFeature("version-supported")) {

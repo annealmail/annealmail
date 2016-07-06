@@ -87,7 +87,7 @@ const AnnealMailCcr = {
 
     switch (featureName) {
       case 'version-supported':
-        return vc.compare(ccrVersion, "2.0.7") >= 0;
+        return vc.compare(ccrVersion, "0.0.7") >= 0;
       case 'supports-ccr-agent':
         return vc.compare(ccrVersion, "2.0") >= 0;
       case 'autostart-ccr-agent':
