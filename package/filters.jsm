@@ -30,7 +30,7 @@ const Ci = Components.interfaces;
  */
 
 const filterActionMoveDecrypt = {
-  id: "annealmail@annealmail.net#filterActionMoveDecrypt",
+  id: "annealmail@annealmail.org#filterActionMoveDecrypt",
   name: AnnealMailLocale.getString("filter.decryptMove.label"),
   value: "movemessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
@@ -72,7 +72,7 @@ const filterActionMoveDecrypt = {
  * message untouched
  */
 const filterActionCopyDecrypt = {
-  id: "annealmail@annealmail.net#filterActionCopyDecrypt",
+  id: "annealmail@annealmail.org#filterActionCopyDecrypt",
   name: AnnealMailLocale.getString("filter.decryptCopy.label"),
   value: "copymessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {

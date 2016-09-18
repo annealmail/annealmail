@@ -43,7 +43,7 @@ cat > ${ANNEALLANG}/install.rdf <<EOT
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>annealmail-${ANNEALLANG}@www.annealmail.net</em:id>
+    <em:id>annealmail-${ANNEALLANG}@www.annealmail.org</em:id>
     <em:version>${ANNEALVERSION}</em:version>
 
     <!-- Target Application (Thunderbird) this extension can install into,

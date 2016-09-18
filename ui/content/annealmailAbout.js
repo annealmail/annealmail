@@ -13,7 +13,7 @@
 
 /* global AnnealMailLog: false, AnnealMailLocale: false, AnnealMailCore: false, AnnealMailCcrAgent: false */
 
-/* global EnigBuildDate: false, EnigGetHttpUri: false, EnigOpenUrlExternally: false */
+/* global AnnealBuildDate: false, EnigGetHttpUri: false, EnigOpenUrlExternally: false */
 
 function enigAboutLoad() {
   AnnealMailLog.DEBUG("annealmailAbout.js: enigAboutLoad\n");
@@ -22,7 +22,7 @@ function enigAboutLoad() {
   if (!contentFrame)
     return;
 
-  var enigVersion = AnnealMailApp.getVersion() + " (" + EnigBuildDate + ")";
+  var enigVersion = AnnealMailApp.getVersion() + " (" + AnnealBuildDate + ")";
   var versionElement = contentFrame.document.getElementById('version');
   if (versionElement)
     versionElement.firstChild.data = AnnealMailLocale.getString("usingVersion", enigVersion);

@@ -561,11 +561,11 @@ treechildren::-moz-tree-cell-text(STYLE) {}
  *  Rules for filter actions
  ******************************/
 
-.ruleactiontarget[type="annealmail@annealmail.net#filterActionMoveDecrypt"] {
+.ruleactiontarget[type="annealmail@annealmail.org#filterActionMoveDecrypt"] {
   -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
 }
 
-.ruleactiontarget[type="annealmail@annealmail.net#filterActionCopyDecrypt"] {
+.ruleactiontarget[type="annealmail@annealmail.org#filterActionCopyDecrypt"] {
   -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
 }
 

@@ -29,12 +29,12 @@ var AnnealMailFilterEditor = {
 
     for (let i = 0; i < gActionListOrdered.length; i++) {
       let action = gActionListOrdered.queryElementAt(i, Components.interfaces.nsIMsgRuleAction);
-      if (action.customId == "annealmail@annealmail.net#filterActionCopyDecrypt") {
+      if (action.customId == "annealmail@annealmail.org#filterActionCopyDecrypt") {
         hasCopyAction = i;
         break;
       }
 
-      if (action.customId == "annealmail@annealmail.net#filterActionMoveDecrypt") {
+      if (action.customId == "annealmail@annealmail.org#filterActionMoveDecrypt") {
         hasMoveAction = i;
         if (i < gActionListOrdered.length - 1) {
           forbidden = i;

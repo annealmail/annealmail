@@ -4,8 +4,8 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>2.0a1pre</em:version>
+    <em:id>AnnealMail@mapmeld.com</em:id>
+    <em:version>2.0.1</em:version>
     <em:type>2</em:type> <!-- type = extension -->
     <em:unpack>true</em:unpack>
 
@@ -40,9 +40,9 @@
 
     <!-- Front End MetaData -->
     <em:name>AnnealMail</em:name>
-    <em:description>OpenPGP message encryption and authentication</em:description>
+    <em:description>Post-quantum message encryption and authentication</em:description>
     <em:creator>AnnealMail Team</em:creator>
-    <em:homepageURL>http://www.annealmail.net/</em:homepageURL>
+    <em:homepageURL>http://www.annealmail.org/</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://annealmail/content/pref-annealmail.xul</em:optionsURL>

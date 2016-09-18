@@ -49,7 +49,7 @@ const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.annealmail.net/service/getGnupdDownload.svc";
+const queryUrl = "https://www.annealmail.org/service/getGnupdDownload.svc";
 
 function getTempDir() {
   let ds = Cc[DIR_SERV_CONTRACTID].getService();

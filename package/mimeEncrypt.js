@@ -25,7 +25,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 
-const PGPMIME_JS_ENCRYPT_CONTRACTID = "@annealmail.net/annealmail/composesecure;1";
+const PGPMIME_JS_ENCRYPT_CONTRACTID = "@annealmail.org/annealmail/composesecure;1";
 const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
