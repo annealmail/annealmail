@@ -1,12 +1,12 @@
 <!ENTITY annealmail.label                   "AnnealMail">
 
 <!ENTITY annealmail.keyUserId.label         "Account / User ID">
-<!ENTITY annealmail.keygenTitle.label       "Generate OpenPGP Key">
+<!ENTITY annealmail.keygenTitle.label       "Generate CodeCrypt Key">
 <!ENTITY annealmail.useForSigning.label     "Use generated key for the selected identity">
 <!ENTITY annealmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY annealmail.keyPassphrase.label     "Passphrase">
 <!ENTITY annealmail.keyPassphraseRepeat.label "Passphrase (repeat)">
-<!ENTITY annealmail.generateKey.tooltip     "Generates a new OpenPGP compliant key for encryption and/or signing">
+<!ENTITY annealmail.generateKey.tooltip     "Generates a new CodeCrypt key for encryption and/or signing">
 <!ENTITY annealmail.cancelKey.label         "Cancel">
 <!ENTITY annealmail.cancelKey.tooltip       "Cancel Key Generation">
 <!ENTITY annealmail.keyGen.expiry.title     "Key expiry">
@@ -25,7 +25,7 @@
 
 <!ENTITY annealmail.passwordSettings.label   "Passphrase settings">
 <!ENTITY annealmail.userNoPassphrase.label   "Never ask for any passphrase">
-<!ENTITY annealmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
+<!ENTITY annealmail.userNoPassphrase.tooltip "Activate if your CodeCrypt key is not protected by a passphrase.">
 <!ENTITY annealmail.expertUserMenus.label    "Display Expert Settings and Menus">
 <!ENTITY annealmail.expertUser.tooltip       "Press if you want to see menu items and options for advanced users.">
 <!ENTITY annealmail.basicUserMenus.label     "Hide Expert Settings and Menus">
@@ -56,12 +56,12 @@
 <!ENTITY annealmail.resetPrefs.tooltip     "Set all AnnealMail preferences back to their default value.">
 
 <!ENTITY annealmail.backupPrefsButton.label "Export Settings and Keys">
-<!ENTITY annealmail.backupPrefs.tooltip     "Save all AnnealMail preferences including your OpenPGP keys to a file.">
+<!ENTITY annealmail.backupPrefs.tooltip     "Save all AnnealMail preferences including your CodeCrypt keys to a file.">
 
 <!ENTITY annealmail.restorePrefsButton.label "Restore Settings and Keys">
-<!ENTITY annealmail.restorePrefs.tooltip     "Restore all AnnealMail preferences including your OpenPGP keys from a file.">
+<!ENTITY annealmail.restorePrefs.tooltip     "Restore all AnnealMail preferences including your CodeCrypt keys from a file.">
 
-<!ENTITY annealmail.backupRestore.desc       "Export (backup) and Restore your AnnealMail settings including your OpenPGP keys.">
+<!ENTITY annealmail.backupRestore.desc       "Export (backup) and Restore your AnnealMail settings including your CodeCrypt keys.">
 
 <!ENTITY annealmail.basic.label            "Basic">
 <!ENTITY annealmail.sending.label          "Sending">
@@ -74,7 +74,7 @@
 
 <!ENTITY annealmail.moreOptions.label       "More Options">
 
-<!ENTITY annealmail.useNonDefaultComment.label "Add AnnealMail comment in OpenPGP signature">
+<!ENTITY annealmail.useNonDefaultComment.label "Add AnnealMail comment in CodeCrypt signature">
 
 <!ENTITY annealmail.keyserver.label         "Keyserver">
 <!ENTITY annealmail.keyserverDlg.label      "Select Keyserver">
@@ -209,7 +209,7 @@
 <!-- Sending Preferences -->
 
 <!ENTITY annealmail.SendingPrefs.label              "General Preferences for Sending">
-<!ENTITY annealmail.seeAccountSettings.label        "See also account specific AnnealMail settings (see Account Settings -> OpenPGP Security)">
+<!ENTITY annealmail.seeAccountSettings.label        "See also account specific AnnealMail settings (see Account Settings -> CodeCrypt Security)">
 
 <!ENTITY annealmail.encryptionModelConvenient.label "Convenient encryption settings">
 <!ENTITY annealmail.encryptionModelManually.label   "Manual encryption settings">
@@ -306,7 +306,7 @@
 
 <!ENTITY annealmail.ctxDecryptOpen.label              "Decrypt and Open">
 <!ENTITY annealmail.ctxDecryptSave.label              "Decrypt and Save As...">
-<!ENTITY annealmail.ctxImportKey.label                "Import OpenPGP Key">
+<!ENTITY annealmail.ctxImportKey.label                "Import CodeCrypt Key">
 <!ENTITY annealmail.ctxVerifyAtt.label                "Verify signature">
 <!ENTITY annealmail.ctxDecryptOpen.accesskey          "D">
 <!ENTITY annealmail.ctxDecryptSave.accesskey          "C">
@@ -320,11 +320,11 @@
 <!ENTITY annealmail.exchangeGarbage.fixButton.label   "Repair message">
 <!ENTITY annealmail.exchangeGarbage.waitMessage       "Please wait ...">
 
-<!ENTITY annealmail.amPrefTitle.label                 "OpenPGP Options">
-<!ENTITY annealmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by AnnealMail. You need to have CodeCrypt (ccr) installed in order to use this feature.">
-<!ENTITY annealmail.amPrefEnablePgp.label             "Enable OpenPGP support (AnnealMail) for this identity">
-<!ENTITY annealmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
-<!ENTITY annealmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID (0x1234ABCD):">
+<!ENTITY annealmail.amPrefTitle.label                 "CodeCrypt Options">
+<!ENTITY annealmail.amPrefDesc.label                  "Support for CodeCrypt encryption and signing messages is provided by AnnealMail. You need to have CodeCrypt (ccr) installed in order to use this feature.">
+<!ENTITY annealmail.amPrefEnablePgp.label             "Enable CodeCrypt support (AnnealMail) for this identity">
+<!ENTITY annealmail.amPrefUseFromAddr.label           "Use email address of this identity to identify CodeCrypt key">
+<!ENTITY annealmail.amPrefUseKeyId.label              "Use specific CodeCrypt key ID (0x1234ABCD):">
 <!ENTITY annealmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY annealmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY annealmail.encryptionDlg.label               "AnnealMail Encryption &amp; Signing Settings">
@@ -338,18 +338,18 @@
 <!ENTITY annealmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY annealmail.encDlgReset.label                 "Reset to Defaults">
 <!ENTITY annealmail.encDlgReset.accesskey             "R">
-<!ENTITY annealmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
-<!ENTITY annealmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
+<!ENTITY annealmail.amPrefPgpHeader.label             "Send 'CodeCrypt' Header">
+<!ENTITY annealmail.amPrefPgpHeader.id.label          "Send CodeCrypt Key ID">
 <!ENTITY annealmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
 
 <!ENTITY annealmail.progressText.label               "Progress:">
 
-<!ENTITY annealmail.openPgpSecurity.label            "OpenPGP Security">
+<!ENTITY annealmail.openPgpSecurity.label            "CodeCrypt Security">
 
 <!ENTITY annealmail.pgpSecurityInfo.label            "AnnealMail Security Info ...">
 <!ENTITY annealmail.copySecurityInfo.label           "Copy AnnealMail Security Info">
-<!ENTITY annealmail.showPhoto.label                  "View OpenPGP Photo ID">
-<!ENTITY annealmail.photoViewer.title                "OpenPGP Photo Viewer">
+<!ENTITY annealmail.showPhoto.label                  "View CodeCrypt Photo ID">
+<!ENTITY annealmail.photoViewer.title                "CodeCrypt Photo Viewer">
 <!ENTITY annealmail.displayKeyProperties.label       "View Key Properties">
 <!ENTITY annealmail.signSenderKey.label              "Sign Key ...">
 <!ENTITY annealmail.trustSenderKey.label             "Set Owner Trust ...">
@@ -373,7 +373,7 @@
 <!ENTITY annealmail.action.label                      "Action">
 <!ENTITY annealmail.nextRule.label                    "Continue with next rule for the matching address">
 <!ENTITY annealmail.nextAddress.label                 "Do not check further rules for the matching address">
-<!ENTITY annealmail.useKeys.label                     "Use the following OpenPGP keys:">
+<!ENTITY annealmail.useKeys.label                     "Use the following CodeCrypt keys:">
 <!ENTITY annealmail.selKeysButton.accesskey           "S">
 <!ENTITY annealmail.setDefaultsFor.label              "Defaults for ...">
 <!ENTITY annealmail.encryption.label                  "Encryption">
@@ -395,7 +395,7 @@
 
 <!ENTITY annealmail.rulesEditor.label                 "AnnealMail - Per-Recipient Rules Editor">
 <!ENTITY annealmail.email.label                       "Email">
-<!ENTITY annealmail.pgpKeys.label                     "OpenPGP Key(s)">
+<!ENTITY annealmail.pgpKeys.label                     "CodeCrypt Key(s)">
 <!ENTITY annealmail.sign.label                        "Sign">
 <!ENTITY annealmail.encrypt.label                     "Encrypt">
 <!ENTITY annealmail.edit.label                        "Modify">
@@ -412,7 +412,7 @@
 <!ENTITY annealmail.clearSearch.label                 "Clear">
 <!ENTITY annealmail.clearSearch.accesskey             "C">
 
-<!ENTITY annealmail.searchKeyDlg.label               "Download OpenPGP Keys">
+<!ENTITY annealmail.searchKeyDlg.label               "Download CodeCrypt Keys">
 <!ENTITY annealmail.searchKeyDlgCapt.label           "Found Keys - Select to Import">
 <!ENTITY annealmail.searchKeyDlgSelAll.label         "Select/Deselect all">
 
@@ -583,7 +583,7 @@
 <!ENTITY annealmail.keyDetails.keyValidity.label       "Validity">
 <!ENTITY annealmail.keyDetails.alsoKnown.label         "Also known as">
 
-<!ENTITY annealmail.cardDetails.title                  "OpenPGP SmartCard Details">
+<!ENTITY annealmail.cardDetails.title                  "CodeCrypt SmartCard Details">
 <!ENTITY annealmail.cardDetails.cardMenu.label         "SmartCard">
 <!ENTITY annealmail.cardDetails.adminPin.label         "Change PIN">
 <!ENTITY annealmail.cardDetails.genCardKey.label       "Generate Key">
@@ -617,7 +617,7 @@
 <!ENTITY annealmail.cardDetails.cardMenu.accesskey     "S">
 <!ENTITY annealmail.cardDetails.editData.accesskey     "E">
 
-<!ENTITY annealmail.genCardKey.title                   "Generate OpenPGP Key">
+<!ENTITY annealmail.genCardKey.title                   "Generate CodeCrypt Key">
 <!ENTITY annealmail.genCardKey.backupKey.label         "Save backup of key outside the card">
 <!ENTITY annealmail.genCardKey.desc                    "<a class='annealmailStrong'>NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. You will be alerted when key generation is completed.">
 
@@ -680,7 +680,7 @@
 
 <!ENTITY annealmail.setupWiz.pgKeySel.title            "Key Selection">
 <!ENTITY annealmail.setupWiz.pgKeySel.subtitle         "Create A Key To Sign And Encrypt Email">
-<!ENTITY annealmail.setupWiz.pgKeySel.desc2            "We have detected that you already have an OpenPGP key. You can either
+<!ENTITY annealmail.setupWiz.pgKeySel.desc2            "We have detected that you already have a CodeCrypt key. You can either
                                                       use one of your existing keys, or create a new key pair.">
 <!ENTITY annealmail.setupWiz.pgKeySel.newKey           "I want to create a new key pair for signing and encrypting my email">
 <!ENTITY annealmail.setupWiz.pgKeySel.useExistingKey   "I want to select one of the keys below for signing and encrypting my email:">
@@ -702,13 +702,13 @@
 <!ENTITY annealmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
 
 <!-- wizard: no key found step -->
-<!ENTITY annealmail.setupWiz.pgNoKeyFound.title2       "Create or Import OpenPGP Keys">
-<!ENTITY annealmail.setupWiz.pgNoKeyFound.desc2        "You don't seem to have any OpenPGP keys yet. Would you like to create a new key, or
+<!ENTITY annealmail.setupWiz.pgNoKeyFound.title2       "Create or Import CodeCrypt Keys">
+<!ENTITY annealmail.setupWiz.pgNoKeyFound.desc2        "You don't seem to have any CodeCrypt keys yet. Would you like to create a new key, or
                                                       do you want to import keys from a file?">
 <!ENTITY annealmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
 
 <!-- wizard: import key page -->
-<!ENTITY annealmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
+<!ENTITY annealmail.setupWiz.pgKeyImport.title         "Import CodeCrypt Keys">
 <!ENTITY annealmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
 <!ENTITY annealmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the private keys to
                                                       import. The entry for private keys can be left empty if the first file
@@ -729,7 +729,7 @@
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY annealmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
-<!ENTITY annealmail.setupWiz.pgImportSettings.desc     "AnnealMail allows to transfer all its settings including your OpenPGP
+<!ENTITY annealmail.setupWiz.pgImportSettings.desc     "AnnealMail allows to transfer all its settings including your CodeCrypt
                                                       keys to a new computer. This is done in two steps:
                                                       <html:ol>
                                                         <html:li>export your data from your old computer using the backup wizard from the AnnealMail Preferences</html:li>
@@ -756,8 +756,8 @@
 
 <!ENTITY annealmail.addPhoto.question.label            "Do you want to add the following picture to the following key?">
 <!ENTITY annealmail.addPhoto.title                     "Add Photo to Key">
-<!ENTITY annealmail.msgViewColumn.label                "OpenPGP">
-<!ENTITY annealmail.msgViewColumn.tooltip              "Sort by the OpenPGP status">
+<!ENTITY annealmail.msgViewColumn.label                "CodeCrypt">
+<!ENTITY annealmail.msgViewColumn.tooltip              "Sort by the CodeCrypt status">
 <!ENTITY annealmail.addToRule.title                    "Add Key to Per-Recipient Rule">
 <!ENTITY annealmail.addToRule.useRuleButton.label      "Add Key to Selected Rule">
 <!ENTITY annealmail.addToRule.useRuleButton.accesskey  "A">
@@ -771,7 +771,7 @@
 <!-- Export wizard -->
 <!ENTITY annealmail.exportWiz.title                    "Export your AnnealMail Settings">
 <!ENTITY annealmail.exportWiz.pgIntro.title            "Welcome to the Export Settings Wizard">
-<!ENTITY annealmail.exportWiz.pgIntro.desc1            "AnnealMail allows to transfer all its settings including your OpenPGP
+<!ENTITY annealmail.exportWiz.pgIntro.desc1            "AnnealMail allows to transfer all its settings including your CodeCrypt
                                                       keys to a new computer. This is done in two steps:
                                                       <html:ol>
                                                         <html:li>export your data from your old computer using this wizard</html:li>
@@ -780,7 +780,7 @@
 <!ENTITY annealmail.exportWiz.pgIntro.specifyFile      "Please specify the export file:">
 <!ENTITY annealmail.exportWiz.pgExport.title           "Exporting AnnealMail Settings">
 <!ENTITY annealmail.exportWiz.pgExport.exporting       "Saving in progress. You might be asked for the passphrase(s) of your key(s).">
-<!ENTITY annealmail.exportWiz.pgExport.done            "Your OpenPGP keys and your AnnealMail settings are now saved.
+<!ENTITY annealmail.exportWiz.pgExport.done            "Your CodeCrypt keys and your AnnealMail settings are now saved.
                                                       Please transfer the generated file to your new computer, launch
                                                       Thunderbird and start the Setup Wizard from the AnnealMail menu.">
 <!ENTITY annealmail.exportWiz.pgExport.failed          "An error occurred during the export. The settings could not be exported.">

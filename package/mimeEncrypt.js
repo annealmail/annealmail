@@ -7,7 +7,7 @@
 "use strict";
 
 /**
- *  Module for creating PGP/MIME signed and/or encrypted messages
+ *  Module for creating CCR/MIME signed and/or encrypted messages
  *  implemented as XPCOM component
  */
 
@@ -309,32 +309,32 @@ PgpMimeEncrypt.prototype = {
   encryptedHeaders: function(isEightBit) {
     LOCAL_DEBUG("mimeEncrypt.js: encryptedHeaders\n");
     this.writeOut("Content-Type: multipart/encrypted;\r\n" +
-      " protocol=\"application/pgp-encrypted\";\r\n" +
+      " protocol=\"application/ccr-encrypted\";\r\n" +
       " boundary=\"" + this.cryptoBoundary + "\"\r\n" +
       "\r\n" +
-      "This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n" +
+      "This is a CodeCrypt/MIME encrypted message (RFC 4880 and 3156)\r\n" +
       "--" + this.cryptoBoundary + "\r\n" +
-      "Content-Type: application/pgp-encrypted\r\n" +
-      "Content-Description: PGP/MIME version identification\r\n" +
+      "Content-Type: application/ccr-encrypted\r\n" +
+      "Content-Description: CCR/MIME version identification\r\n" +
       "\r\n" +
       "Version: 1\r\n" +
       "\r\n" +
       "--" + this.cryptoBoundary + "\r\n" +
       "Content-Type: application/octet-stream; name=\"encrypted.asc\"\r\n" +
-      "Content-Description: OpenPGP encrypted message\r\n" +
+      "Content-Description: CodeCrypt encrypted message\r\n" +
       "Content-Disposition: inline; filename=\"encrypted.asc\"\r\n" +
       "\r\n");
   },
 
   signedHeaders1: function(isEightBit) {
     LOCAL_DEBUG("mimeEncrypt.js: signedHeaders1\n");
-    this.writeOut("Content-Type: multipart/signed; micalg=pgp-" +
+    this.writeOut("Content-Type: multipart/signed; micalg=ccr-" +
       this.hashAlgorithm.toLowerCase() +
       ";\r\n" +
-      " protocol=\"application/pgp-signature\";\r\n" +
+      " protocol=\"application/ccr-signature\";\r\n" +
       " boundary=\"" + this.cryptoBoundary + "\"\r\n" +
       (isEightBit ? "Content-Transfer-Encoding: 8bit\r\n\r\n" : "\r\n") +
-      "This is an OpenPGP/MIME signed message (RFC 4880 and 3156)\r\n" +
+      "This is a CodeCrypt/MIME signed message (RFC 4880 and 3156)\r\n" +
       "--" + this.cryptoBoundary + "\r\n");
   },
 
@@ -343,8 +343,8 @@ PgpMimeEncrypt.prototype = {
     LOCAL_DEBUG("mimeEncrypt.js: signedHeaders2\n");
 
     this.writeOut("\r\n--" + this.cryptoBoundary + "\r\n" +
-      "Content-Type: application/pgp-signature; name=\"signature.asc\"\r\n" +
-      "Content-Description: OpenPGP digital signature\r\n" +
+      "Content-Type: application/ccr-signature; name=\"signature.asc\"\r\n" +
+      "Content-Description: CodeCrypt digital signature\r\n" +
       "Content-Disposition: attachment; filename=\"signature.asc\"\r\n\r\n");
   },
 
@@ -443,7 +443,7 @@ PgpMimeEncrypt.prototype = {
       }
       else if (this.inputMode == 1) {
         if (this.cryptoMode == MIME_SIGNED) {
-          // special treatments for various special cases with PGP/MIME signed messages
+          // special treatments for various special cases with CCR/MIME signed messages
           if (line.substr(0, 5) == "From ") {
             LOCAL_DEBUG("mimeEncrypt.js: added >From\n");
             this.writeToPipe(">");

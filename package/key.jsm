@@ -113,7 +113,7 @@ var AnnealMailKey = {
 
   /**
    * Format a key fingerprint
-   * @fingerprint |string|  -  unformated OpenPGP fingerprint
+   * @fingerprint |string|  -  unformated fingerprint
    *
    * @return |string| - formatted string
    */
@@ -227,7 +227,7 @@ var AnnealMailKey = {
   },
 
   /**
-   * Get details (key ID, UID) of the data contained in a OpenPGP key block
+   * Get details (key ID, UID) of the data contained in a key block
    *
    * @param keyBlockStr  String: the contents of one or more public keys
    * @param errorMsgObj  Object: obj.value will contain an error message in case of failures

@@ -196,7 +196,7 @@ DecryptMessageIntoFolder.prototype = {
         if (suffixIndexEnd > 0 &&
           a.contentType.search(/application\/pgp-signature/i) < 0) {
 
-          // possible OpenPGP attachment
+          // possible key attachment
           let p = self.decryptAttachment(a, a.name.substring(0, suffixIndexEnd));
           this.decryptionTasks.push(p);
         }

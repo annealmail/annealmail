@@ -389,7 +389,7 @@ var AnnealMailRules = {
           //          => mark all matching address as no longer open, but assign no keys
           //             (thus, add it to the addrNoKeyList)
           // - empty: Either if "Continue with next rule for the matching address"
-          //          OR: if "Use the following OpenPGP keys:" with no keys and
+          //          OR: if "Use the following keys:" with no keys and
           //              warning (will turn off encryption) acknowledged
           //          => then we only process the flags
 

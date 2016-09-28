@@ -47,7 +47,7 @@ Handler.prototype = {
     }
   },
 
-  helpInfo: "  -pgpkeyman         Open the OpenPGP key management.\n",
+  helpInfo: "  -pgpkeyman         Open key management.\n",
 
   lockFactory: function(lock) {}
 };
