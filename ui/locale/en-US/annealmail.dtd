@@ -39,7 +39,7 @@
 <!ENTITY annealmail.agentAdditionalParam.label    "Additional parameters for CodeCrypt">
 <!ENTITY annealmail.agentAdditionalParam.tooltip  "Specify options that will be used by CodeCrypt.">
 
-<!ENTITY annealmail.protectHeadersPrefs.label    "Encrypt subject by default (PGP/MIME encrypted message only)">
+<!ENTITY annealmail.protectHeadersPrefs.label    "Encrypt subject by default (CCR/MIME encrypted message only)">
 <!ENTITY annealmail.protectHeadersPrefs.tooltip  "Remove subject and other sensitive headers from encrypted messages.">
 <!ENTITY annealmail.protectedSubjectText.label    "Subject text to protect encrypted messages">
 <!ENTITY annealmail.protectedSubjectText.tooltip  "Specify the subject that will be publicly visible instead of the real subject when sending encrypted messages">
@@ -66,7 +66,7 @@
 <!ENTITY annealmail.basic.label            "Basic">
 <!ENTITY annealmail.sending.label          "Sending">
 <!ENTITY annealmail.keySel.label           "Key Selection">
-<!ENTITY annealmail.pgpMime.label          "PGP/MIME">
+<!ENTITY annealmail.pgpMime.label          "CCR/MIME">
 <!ENTITY annealmail.advanced.label         "Advanced">
 <!ENTITY annealmail.backupRestore.label    "Backup/Restore">
 
@@ -91,7 +91,7 @@
 <!ENTITY annealmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
 <!ENTITY annealmail.useCcrAgent.tooltip          "Use ccr-agent for all passphrase input">
 <!ENTITY annealmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for CodeCrypt. Disable if recipients have old Hushmail keys.">
-<!ENTITY annealmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
+<!ENTITY annealmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving CCR/MIME messages on IMAP folders.">
 <!ENTITY annealmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
 
 <!ENTITY annealmail.autoKeyServerSelection.label     "Always use first keyserver">
@@ -163,8 +163,8 @@
 <!ENTITY annealmail.pgpAccountSettings.label     "Signing/Encryption Options...">
 <!ENTITY annealmail.sendOptionsMenu.label        "Send Options...">
 <!ENTITY annealmail.defaultKeySelOpts.label      "Key Selection Options...">
-<!ENTITY annealmail.usePgpMime.label            "Protocol: PGP/MIME">
-<!ENTITY annealmail.useInline.label            "Protocol: Inline PGP">
+<!ENTITY annealmail.usePgpMime.label            "Protocol: CCR/MIME">
+<!ENTITY annealmail.useInline.label            "Protocol: Inline CCR">
 
 <!ENTITY annealmail.tempTrustAllKeys.label       "Trust the keys of all recipients">
 <!ENTITY annealmail.undoencryption.label         "Undo Encryption">
@@ -194,7 +194,7 @@
 <!-- account specific options -->
 <!ENTITY annealmail.defaultSigning.label            "Sign messages by default">
 <!ENTITY annealmail.defaultEncryption.label         "Encrypt messages by default">
-<!ENTITY annealmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
+<!ENTITY annealmail.usePGPMimeAlways.label          "Use CCR/MIME by default">
 
 <!ENTITY annealmail.afterDefaultsAndRules.label     "After application of defaults and rules:">
 <!ENTITY annealmail.finallySignEncrypted.label      "sign encrypted messages">
@@ -289,14 +289,14 @@
 <!ENTITY annealmail.enigAttachNoneSign.label              "Sign the message text, but not the attachments">
 <!ENTITY annealmail.enigAttachNoneEncrypt.label           "Encrypt the message text, but not the attachments">
 <!ENTITY annealmail.enigAttachNoneEncryptAndSign.label    "Encrypt and sign the message text, but not the attachments">
-<!ENTITY annealmail.enigEncryptAttachInline.label         "Encrypt/sign each attachment separately and send the message using inline PGP">
-<!ENTITY annealmail.enigAttachInlineSign.label            "Sign each attachment separately and send the message using inline PGP">
-<!ENTITY annealmail.enigAttachInlineEncrypt.label         "Encrypt each attachment separately and send the message using inline PGP">
-<!ENTITY annealmail.enigAttachInlineEncryptAndSign.label  "Encrypt and sign each attachment separately and send the message using inline PGP">
-<!ENTITY annealmail.enigEncryptAttachPgpMime.label        "Encrypt/sign the message as a whole and send it using PGP/MIME">
-<!ENTITY annealmail.enigAttachPgpMimeSign.label           "Sign the message as a whole and send it using PGP/MIME">
-<!ENTITY annealmail.enigAttachPgpMimeEncrypt.label        "Encrypt the message as a whole and send it using PGP/MIME">
-<!ENTITY annealmail.enigAttachPgpMimeEncryptAndSign.label "Encrypt and sign the message as a whole and send it using PGP/MIME">
+<!ENTITY annealmail.enigEncryptAttachInline.label         "Encrypt/sign each attachment separately and send the message using inline CCR">
+<!ENTITY annealmail.enigAttachInlineSign.label            "Sign each attachment separately and send the message using inline CCR">
+<!ENTITY annealmail.enigAttachInlineEncrypt.label         "Encrypt each attachment separately and send the message using inline CCR">
+<!ENTITY annealmail.enigAttachInlineEncryptAndSign.label  "Encrypt and sign each attachment separately and send the message using inline CCR">
+<!ENTITY annealmail.enigEncryptAttachPgpMime.label        "Encrypt/sign the message as a whole and send it using CCR/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeSign.label           "Sign the message as a whole and send it using CCR/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeEncrypt.label        "Encrypt the message as a whole and send it using CCR/MIME">
+<!ENTITY annealmail.enigAttachPgpMimeEncryptAndSign.label "Encrypt and sign the message as a whole and send it using CCR/MIME">
 <!ENTITY annealmail.enigEncryptAttachDontEncryptMsg.label        "Don't encrypt/sign the message at all">
 <!ENTITY annealmail.enigAttachDontEncryptMsgSign.label           "Don't sign the message at all">
 <!ENTITY annealmail.enigAttachDontEncryptMsgEncrypt.label        "Don't encrypt the message at all">
@@ -316,7 +316,7 @@
 <!ENTITY annealmail.revealAttachmentsButton.label     "The names of the files attached are hidden. Press the 'Reveal' button to retrieve the original file names.">
 <!ENTITY annealmail.revealAttachments.button          "Reveal">
 
-<!ENTITY annealmail.exchangeGarbage.desc              "This is a broken PGP/MIME message from MS-Exchange. If you cannot access the attachments or have problems with replying or forwarding, press the 'Repair message' button to fix the message">
+<!ENTITY annealmail.exchangeGarbage.desc              "This is a broken CCR/MIME message from MS-Exchange. If you cannot access the attachments or have problems with replying or forwarding, press the 'Repair message' button to fix the message">
 <!ENTITY annealmail.exchangeGarbage.fixButton.label   "Repair message">
 <!ENTITY annealmail.exchangeGarbage.waitMessage       "Please wait ...">
 
@@ -332,9 +332,9 @@
 <!ENTITY annealmail.encDlgEncrypt.accesskey           "E">
 <!ENTITY annealmail.encDlgSign.label                  "Sign Message">
 <!ENTITY annealmail.encDlgSign.accesskey              "S">
-<!ENTITY annealmail.encDlgPgpMime.label               "Use PGP/MIME">
+<!ENTITY annealmail.encDlgPgpMime.label               "Use CCR/MIME">
 <!ENTITY annealmail.encDlgPgpMime.accesskey           "P">
-<!ENTITY annealmail.encDlgInlinePgp.label             "Use Inline PGP">
+<!ENTITY annealmail.encDlgInlinePgp.label             "Use Inline CCR">
 <!ENTITY annealmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY annealmail.encDlgReset.label                 "Reset to Defaults">
 <!ENTITY annealmail.encDlgReset.accesskey             "R">
@@ -366,7 +366,7 @@
 <!ENTITY annealmail.wrapSelectionList.label           "Select wrap">
 <!ENTITY annealmail.compose.wrap_radio.label          "Wrap automatically (good signature, but may not look good)">
 <!ENTITY annealmail.compose.sendasis_radio.label      "Send as is (and risk a bad signature)">
-<!ENTITY annealmail.compose.use_mime_radio.label      "Use PGP/MIME (good signature, but some receivers cannot decode it)">
+<!ENTITY annealmail.compose.use_mime_radio.label      "Use CCR/MIME (good signature, but some receivers cannot decode it)">
 <!ENTITY annealmail.compose.editmanually.label        "Edit manually">
 
 <!ENTITY annealmail.selKeysButton.label               "Select Key(s)...">
