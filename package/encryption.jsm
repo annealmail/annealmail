@@ -391,11 +391,20 @@ const AnnealMailEncryption = {
     var encryptArgs = ['-C'];
     if (signMsg) {
       encryptArgs[0] += 's';
-      encryptArgs = encryptArgs.concat(['-u', fromMailAddr.substring(2, fromMailAddr.indexOf('.'))]);
+      var fromMailFormat = (fromMailAddr[0] === '@') ? fromMailAddr.substring(2, fromMailAddr.indexOf('.')) : fromMailAddr;
+      encryptArgs = encryptArgs.concat(['-u', fromMailFormat]);
     }
     if (encryptMsg) {
-      encryptArgs[0] += 'e';
-      encryptArgs = encryptArgs.concat(['-r', toMailAddr.substring(2, toMailAddr.indexOf('.'))]);
+      encryptArgs[0] += 'ae';
+      var toMailFormat = toMailAddr;
+      if (toMailAddr[0] === '@') {
+        toMailFormat = '@' + toMailAddr.substring(2, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('0x_@') === 0) {
+        toMailFormat = '@' + toMailAddr.substring(4, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('0x@') === 0) {
+        toMailFormat = '@' + toMailAddr.substring(3, toMailAddr.indexOf('.')).toLowerCase();
+      }
+      encryptArgs = encryptArgs.concat(['-r', toMailFormat]);
     }
 
     var inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);

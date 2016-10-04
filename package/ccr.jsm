@@ -168,6 +168,7 @@ const AnnealMailCcr = {
     // AnnealMail hack
     //const listText = AnnealMailExecution.execCmd(AnnealMailCcr.agentPath, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, cmdErrorMsgObj);
     const listText = 'cfg:version:2.0.30\ncfg:pubkey:1;2;3;16;17\ncfg:cipher:1;2;3;4;7;8;9;10;11;12;13\ncfg:ciphername:IDEA;3DES;CAST5;BLOWFISH;AES;AES192;AES256;TWOFISH;CAMELLIA128;CAMELLIA192;CAMELLIA256\ncfg:digest:1;2;3;8;9;10;11\ncfg:digestname:MD5;SHA1;RIPEMD160;SHA256;SHA384;SHA512;SHA224\ncfg:compress:0;1;2;3\n';
+    exitCodeObj.value = 0;
 
     /*
     if (exitCodeObj.value !== 0) {
