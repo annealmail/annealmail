@@ -387,6 +387,17 @@ const AnnealMailEncryption = {
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
+    // AnnealMail hacks
+    var encryptArgs = ['-C'];
+    if (signMsg) {
+      encryptArgs[0] += 's';
+      encryptArgs = encryptArgs.concat(['-u', fromMailAddr.substring(2, fromMailAddr.indexOf('.'))]);
+    }
+    if (encryptMsg) {
+      encryptArgs[0] += 'e';
+      encryptArgs = encryptArgs.concat(['-r', toMailAddr.substring(2, toMailAddr.indexOf('.'))]);
+    }
+
     var inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
     var listener = AnnealMailExecution.newSimpleListener(
@@ -401,11 +412,15 @@ const AnnealMailEncryption = {
         }
       });
 
-
+/*
     var proc = AnnealMailEncryption.encryptMessageStart(parent, uiFlags,
       fromMailAddr, toMailAddr, bccMailAddr,
       null, sendFlags,
       listener, statusFlagsObj, errorMsgObj);
+*/
+
+    var proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath, encryptArgs, signMsg, parent, listener, statusFlagsObj);
+
     if (!proc) {
       exitCodeObj.value = -1;
       AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
@@ -425,14 +440,20 @@ const AnnealMailEncryption = {
     statusFlagsObj.statusMsg = retStatusObj.statusMsg;
     errorMsgObj.value = retStatusObj.errorMsg;
 
-
     if ((exitCodeObj.value === 0) && listener.stdoutData.length === 0)
       exitCodeObj.value = -1;
 
     if (exitCodeObj.value === 0) {
       // Normal return
       AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
-      return AnnealMailData.getUnicodeData(listener.stdoutData);
+      var encryptedContent = listener.stdoutData;
+      return AnnealMailData.getUnicodeData(encryptedContent);
+    }
+
+    if (exitCodeObj.value === 0) {
+      // Normal return
+      AnnealMailLog.DEBUG("  <=== encryptMessage()\n");
+      return AnnealMailData.getUnicodeData(encryptedContent);
     }
 
     // Error processing

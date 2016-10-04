@@ -1053,13 +1053,13 @@ var AnnealMailKeyRing = {
  */
 function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-  let args = AnnealMailCcr.getStandardArgs(true);
-
+  // AnnealMail hack
+  let args = []; // AnnealMailCcr.getStandardArgs(true);
   if (secretOnly) {
-    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
+    args = args.concat(["--list-secret"]);
   }
   else {
-    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
+    args = args.concat(["--list"]);
   }
 
   statusFlagsObj.value = 0;
@@ -1082,7 +1082,53 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
     return "";
   }
 
-  listText = listText.replace(/(\r\n|\r)/g, "\n");
+  // AnnealMail hack
+  var gpgLikeOutput = '';
+  if (!secretOnly) {
+    gpgLikeOutput = 'tru::1:1474907685::3:1:5\n';
+  }
+  var keys = listText.split(/\r\n|\r/);
+  for (var k = 0; k < keys.length; k++) {
+    var key = keys[k];
+    if (!key.length) {
+      continue;
+    }
+
+    var insecrets = 'u';
+    // if (secretkeys.indexOf(key.replace('pubkey', 'keypair')
+    // insecrets = 'u' or '-'
+
+    var algorithm = key.split('\t')[1];
+    var purpose = '';
+    if (algorithm.indexOf('FMTSEQ128C') > -1) {
+      purpose = 'SIGNATURE';
+    } else if (algorithm.indexOf('MDPC') > -1) {
+      purpose = 'ENCRYPTION';
+    }
+    var fingerprint = key.split('\t')[2];
+    var humanid = key.split('\t')[3] + ' (' + purpose + ') <alpha@annealmail.org>';
+    var keyline = ['', '', '', ''];
+    keyline[1] = 'fpr:::::::::FINGERPRINT:';
+    if (secretOnly) {
+      keyline[0] = 'sec::4096:1:SOMECODE1:START:EXPIRATION:::::::::';
+      keyline[2] = 'uid:::::::SOMECODE2::HUMANID:';
+      keyline[3] = 'ssb::4096:1:SOMECODE3:START:::::::';
+    } else {
+      keyline[0] = 'pub:INSECRETS:4096:1:SOMECODE1:START:EXPIRATION::u:::scESC:';
+      keyline[2] = 'uid:INSECRETS::::START::SOMECODE2::HUMANID:';
+      keyline[3] = 'sub:INSECRETS:4096:1:SOMECODE3:START:EXPIRATION:::::e:';
+    }
+    keyline = keyline.join('\n')
+      .replace(/INSECRETS/g, insecrets)
+      .replace(/START/g, '1474907681')
+      .replace(/EXPIRATION/g, '')
+      .replace(/FINGERPRINT/g, fingerprint)
+      .replace(/HUMANID/g, humanid)
+      .replace(/SOMECODE1/g, '_' + fingerprint);
+    gpgLikeOutput += keyline + '\n';
+  }
+
+  listText = gpgLikeOutput.replace(/(\r\n|\r)/g, "\n") + "\n";
 
   return listText;
 }
