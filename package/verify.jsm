@@ -32,8 +32,8 @@ const AnnealMailVerifyAttachment = {
     const verifyFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(verifyFile.QueryInterface(Ci.nsIFile)));
     const sigFilePath = AnnealMailFiles.getEscapedFilename(AnnealMailFiles.getFilePathReadonly(sigFile.QueryInterface(Ci.nsIFile)));
 
-    const args = AnnealMailCcr.getStandardArgs(true).
-    concat(["--verify", sigFilePath, verifyFilePath]);
+    var args = []; // AnnealMailCcr.getStandardArgs(true).
+    args = args.concat(["-vC", sigFilePath, verifyFilePath]);
 
     const listener = AnnealMailExecution.newSimpleListener();
 

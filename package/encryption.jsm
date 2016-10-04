@@ -233,16 +233,17 @@ const AnnealMailEncryption = {
     AnnealMailLog.DEBUG("encryption.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + AnnealMailData.bytesToHex(
       AnnealMailData.pack(sendFlags, 4)) + ")\n");
 
+/*
     let keyUseability = this.determineOwnKeyUsability(sendFlags, fromMailAddr);
 
     if (!keyUseability.keyId) {
       AnnealMailLog.DEBUG("encryption.jsm: encryptMessageStart: own key invalid\n");
       errorMsgObj.value = keyUseability.errorMsg;
       statusFlagsObj.value = nsIAnnealMail.INVALID_RECIPIENT | nsIAnnealMail.NO_SECKEY | nsIAnnealMail.DISPLAY_MESSAGE;
-
       return null;
     }
     // TODO: else - use the found key ID
+*/
 
     var pgpMime = uiFlags & nsIAnnealMail.UI_PGP_MIME;
 
@@ -267,10 +268,39 @@ const AnnealMailEncryption = {
     }
 
     var encryptArgs = AnnealMailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+
+    /*
     if (!encryptArgs)
       return null;
-
+  */
     var signMsg = sendFlags & nsIAnnealMail.SEND_SIGNED;
+    var encryptMsg = sendFlags & nsIAnnealMail.SEND_ENCRYPTED;
+
+    var encryptArgs = ['-'];
+    if (signMsg) {
+      encryptArgs[0] += 'Cs';
+      var fromMailFormat = fromMailAddr;
+      if ((fromMailAddr[0] === '@') || (fromMailAddr.indexOf('0x@') === 0)) {
+        fromMailFormat = fromMailAddr.substring(2, fromMailAddr.indexOf('.'));
+      } else if (fromMailAddr.indexOf('@') > 0) {
+        fromMailFormat = fromMailAddr.split('@')[0];
+      }
+      encryptArgs = encryptArgs.concat(['-u', fromMailFormat]);
+    }
+    if (encryptMsg) {
+      encryptArgs[0] += 'ae';
+      var toMailFormat = toMailAddr;
+      if (toMailAddr[0] === '@') {
+        toMailFormat = '@' + toMailAddr.substring(2, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('0x_@') === 0) {
+        toMailFormat = '@' + toMailAddr.substring(4, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('0x@') === 0) {
+        toMailFormat = '@' + toMailAddr.substring(3, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('@') > 0) {
+        toMailFormat = toMailAddr.split('@')[0];
+      }
+      encryptArgs = encryptArgs.concat(['-r', toMailFormat]);
+    }
 
     var proc = AnnealMailExecution.execStart(AnnealMailCcrAgent.agentPath, encryptArgs, signMsg, win, listener, statusFlagsObj);
 
@@ -388,10 +418,15 @@ const AnnealMailEncryption = {
     }
 
     // AnnealMail hacks
-    var encryptArgs = ['-C'];
+    var encryptArgs = ['-'];
     if (signMsg) {
-      encryptArgs[0] += 's';
-      var fromMailFormat = (fromMailAddr[0] === '@') ? fromMailAddr.substring(2, fromMailAddr.indexOf('.')) : fromMailAddr;
+      encryptArgs[0] += 'Cs';
+      var fromMailFormat = fromMailAddr;
+      if ((fromMailAddr[0] === '@') || (fromMailAddr.indexOf('0x@') === 0)) {
+        fromMailFormat = fromMailAddr.substring(2, fromMailAddr.indexOf('.'));
+      } else if (fromMailAddr.indexOf('@') > 0) {
+        fromMailFormat = fromMailAddr.split('@')[0];
+      }
       encryptArgs = encryptArgs.concat(['-u', fromMailFormat]);
     }
     if (encryptMsg) {
@@ -403,6 +438,8 @@ const AnnealMailEncryption = {
         toMailFormat = '@' + toMailAddr.substring(4, toMailAddr.indexOf('.')).toLowerCase();
       } else if (toMailAddr.indexOf('0x@') === 0) {
         toMailFormat = '@' + toMailAddr.substring(3, toMailAddr.indexOf('.')).toLowerCase();
+      } else if (toMailAddr.indexOf('@') > 0) {
+        toMailFormat = toMailAddr.split('@')[0];
       }
       encryptArgs = encryptArgs.concat(['-r', toMailFormat]);
     }

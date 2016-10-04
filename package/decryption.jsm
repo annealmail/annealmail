@@ -78,8 +78,9 @@ const AnnealMailDecryption = {
       return null;
     }
 
-    var args = AnnealMailCcr.getStandardArgs(true);
+    var args = []; //AnnealMailCcr.getStandardArgs(true);
 
+/*
     var keyserver = AnnealMailPrefs.getPref("autoKeyRetrieve");
     if (keyserver && keyserver !== "") {
       keyserver = keyserver.trim();
@@ -93,8 +94,10 @@ const AnnealMailDecryption = {
       args.push("--keyserver");
       args.push(keyserver);
     }
+*/
 
     if (noOutput) {
+      args.push("-C");
       args.push("--verify");
 
       if (mimeSignatureFile) {
@@ -104,11 +107,13 @@ const AnnealMailDecryption = {
 
     }
     else {
+      /*
       if (maxOutputLength) {
         args.push("--max-output");
         args.push(String(maxOutputLength));
       }
-
+      */
+      args.push("-a");
       args.push("--decrypt");
     }
 

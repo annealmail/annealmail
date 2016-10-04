@@ -447,10 +447,12 @@ var AnnealMailKeyRing = {
    */
   extractKey: function(includeSecretKey, userId, outputFile, exitCodeObj, errorMsgObj) {
     AnnealMailLog.DEBUG("keyRing.jsm: AnnealMailKeyRing.extractKey: " + userId + "\n");
-    let args = AnnealMailCcr.getStandardArgs(true).concat(["-a", "--export"]);
+    let args = ["-paF"];
 
     if (userId) {
-      args = args.concat(userId.split(/[ ,\t]+/));
+      var adjustedID = userId.split(/[ ,\t]+/);
+      AnnealMailLog.ERROR(adjustedID);
+      args = args.concat(adjustedID);
     }
 
     const cmdErrorMsgObj = {};
@@ -1087,7 +1089,7 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
   if (!secretOnly) {
     gpgLikeOutput = 'tru::1:1474907685::3:1:5\n';
   }
-  var keys = listText.split(/\r\n|\r/);
+  var keys = listText.split(/\r\n|\r|\n/);
   for (var k = 0; k < keys.length; k++) {
     var key = keys[k];
     if (!key.length) {
@@ -1106,7 +1108,13 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
       purpose = 'ENCRYPTION';
     }
     var fingerprint = key.split('\t')[2];
-    var humanid = key.split('\t')[3] + ' (' + purpose + ') <alpha@annealmail.org>';
+    var humanid = key.split('\t')[3] + '_' + purpose;
+    if (humanid.indexOf('@') > -1) {
+      // registered with an e-mail like ID
+      humanid += ' <' + humanid + '>';
+    } else {
+      humanid += ' <alpha@annealmail.org>';
+    }
     var keyline = ['', '', '', ''];
     keyline[1] = 'fpr:::::::::FINGERPRINT:';
     if (secretOnly) {
@@ -1128,9 +1136,7 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
     gpgLikeOutput += keyline + '\n';
   }
 
-  listText = gpgLikeOutput.replace(/(\r\n|\r)/g, "\n") + "\n";
-
-  return listText;
+  return gpgLikeOutput.replace(/(\r\n|\r)/g, "\n");
 }
 
 
