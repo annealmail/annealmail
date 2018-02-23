@@ -1,3 +1,5 @@
+## Warning: this proof-of-concept application is based on an older version of Enigmail, which has since patched security vulnerabilities.
+
 # AnnealMail
 
 <a href="http://annealmail.org">AnnealMail</a> encrypts your e-mail with post-quantum computer encryption.
